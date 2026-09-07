@@ -4,7 +4,7 @@
 
 > Using NASA FIRMS, OpenStreetMap & Satellite Data | SIH 2026 | NTRO
 
-![Python](https://img.shields.io/badge/Python-3.10+-blue) ![Status](https://img.shields.io/badge/Status-Part%201%20Complete-brightgreen) ![License](https://img.shields.io/badge/License-MIT-yellow)
+![Python](https://img.shields.io/badge/Python-3.10+-blue) ![Status](https://img.shields.io/badge/Status-Part%201%20%26%20Web%20Dashboard%20Complete-brightgreen) ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ## 📋 Table of Contents
 - [Problem Statement](#-problem-statement)
@@ -79,10 +79,11 @@ Explain the SIH problem: Industrial facilities generate thermal signatures obser
 | Part | Name | Status | Description |
 |------|------|--------|-------------|
 | 1 | Data Ingestion & Preprocessing | ✅ Complete | Fetches thermal data from NASA FIRMS, industrial facilities from OSM, cleans data, engineers features |
+| - | Interactive Web Dashboard (Part 1 Preview) | ✅ Complete | Full-featured GIS web application (Flask + Leaflet/Folium + Chart.js) with real-time analytics & filters |
 | 2 | Spatial Analysis & Enrichment | 🔲 Planned | Proximity analysis, hotspot detection, temporal clustering, spatial statistics |
 | 3 | AI/ML Classification Engine | 🔲 Planned | ML models to classify fire types (industrial, forest, agricultural, etc.) |
-| 4 | GIS Visualization & Dashboard | 🔲 Planned | Interactive web map with Folium/Leaflet, heatmaps, overlays, filter panels |
-| 5 | Monitoring, Alerts & Deployment | 🔲 Planned | Automated pipeline, alert system, REST API, Docker deployment |
+| 4 | GIS Visualization & Advanced Dashboard | 🔲 Planned | Production GIS layers, multi-temporal playback, satellite imagery overlays |
+| 5 | Monitoring, Alerts & Deployment | 🔲 Planned | Automated pipeline, alert system (SMS/Email), REST API, Docker deployment |
 
 ## 🔄 Detailed Flow of All 5 Parts
 
@@ -417,9 +418,29 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env and add your NASA FIRMS API key
 
-# Run Part 1: Data Ingestion & Preprocessing
+# Run Part 1: Data Ingestion & Preprocessing Pipeline
 python main.py --part 1
+
+# Launch the Interactive Web Dashboard (Flask + Folium + Chart.js)
+python main.py --part web --port 5000
 ```
+
+### 🌐 Web Dashboard Features (Live Preview)
+Navigate to `http://localhost:5000` to view:
+- **Interactive Geospatial Map**: Clustered NASA FIRMS hotspots with satellite/dark-mode basemaps and 2km industrial buffers
+- **Categorized Thermal Markers**: Distinct color-coding for Industrial Fires (Red), Gas Flares (Orange), Forest Fires (Green), Agricultural Stubble (Yellow), Mining Operations (Gray)
+- **Live Analytical Counters**: Real-time stats on average brightness (Kelvin), Fire Radiative Power (MW), day vs. night ratios, and high-confidence detections
+- **Dynamic Chart.js Visualizations**: Breakdown of thermal sources across industrial clusters
+- **Filtering & Refresh**: Instant filter by fire category and instant data re-synthesis
+
+#### REST API Endpoints
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Interactive Web Dashboard UI |
+| `/api/stats` | GET | Thermal detection summary statistics (JSON) |
+| `/api/fires` | GET | Active fire detection records with engineered features |
+| `/api/facilities` | GET | Industrial facility registry with coordinates and types |
+| `/api/refresh` | POST/GET | Re-query / refresh active thermal sources |
 
 ## 📂 Project Structure
 ```text
@@ -428,7 +449,7 @@ SIH-2026/
 ├── requirements.txt
 ├── .env.example
 ├── .gitignore
-├── main.py                          # Entry point
+├── main.py                          # CLI & Server entry point
 ├── config/
 │   ├── __init__.py
 │   └── settings.py                  # Configuration & constants
@@ -441,17 +462,24 @@ SIH-2026/
 │   ├── pipeline.py                  # Pipeline orchestrator
 │   ├── data_ingestion/
 │   │   ├── __init__.py
-│   │   ├── firms_client.py          # NASA FIRMS API client
-│   │   ├── osm_client.py            # OSM Overpass API client
+│   │   ├── firms_client.py          # NASA FIRMS API client (VIIRS/MODIS)
+│   │   ├── osm_client.py            # OSM Overpass API client (8 facility types)
 │   │   └── land_cover.py            # Land cover classification
 │   ├── preprocessing/
 │   │   ├── __init__.py
 │   │   ├── data_cleaner.py          # Data cleaning & validation
-│   │   └── feature_engineer.py      # Feature engineering
-│   ├── spatial_analysis/            # Part 2 (planned)
-│   ├── ml_classifier/               # Part 3 (planned)
-│   ├── visualization/               # Part 4 (planned)
-│   └── monitoring/                  # Part 5 (planned)
+│   │   └── feature_engineer.py      # Spatial & temporal feature engineering
+│   ├── web/                         # Interactive GIS Web Dashboard
+│   │   ├── __init__.py
+│   │   ├── app.py                   # Flask server application & API routes
+│   │   ├── demo_data.py             # Realistic thermal & facility synthesizer
+│   │   ├── map_generator.py         # Folium/Leaflet map rendering engine
+│   │   └── templates/
+│   │       └── dashboard.html       # Responsive dark-theme dashboard UI
+│   ├── spatial_analysis/            # Part 2 (Next Step)
+│   ├── ml_classifier/               # Part 3 (Next Step)
+│   ├── visualization/               # Part 4 (Next Step)
+│   └── monitoring/                  # Part 5 (Next Step)
 ├── models/                          # Trained ML models
 ├── output/                          # Generated maps & reports
 └── tests/                           # Unit tests
@@ -465,10 +493,52 @@ SIH-2026/
 | CORINE Land Cover | https://land.copernicus.eu | Land use/land cover classification |
 | Sentinel-2 | https://dataspace.copernicus.eu | Multispectral satellite imagery |
 
+## 🗺️ Next Steps & Execution Roadmap
+
+Following the successful completion of **Part 1 (Data Ingestion & Preprocessing)** and the **Web Dashboard Preview**, here is the actionable phase-by-phase execution roadmap for subsequent parts:
+
+### 📍 Phase 2: Spatial Analysis & Thermal Hotspot Analytics (Part 2)
+1. **Multi-Ring Buffer Analysis (`src/spatial_analysis/buffer_analysis.py`)**:
+   - Construct radial impact rings (500m, 1km, 2km, 5km) around high-risk assets (refineries, power plants, chemical reactors).
+   - Evaluate intersecting thermal points to calculate facility exposure scores.
+2. **Spatial Autocorrelation & Density Estimation (`src/spatial_analysis/hotspot_detection.py`)**:
+   - Implement **Getis-Ord Gi\*** statistics to separate statistically significant hot clusters from isolated anomalies.
+   - Deploy Kernel Density Estimation (KDE) surfaces across regional industrial hubs (Jamnagar, Singrauli, Korba, Dahej).
+3. **Temporal DBSCAN Persistence Clustering (`src/spatial_analysis/temporal_clustering.py`)**:
+   - Spatio-temporal DBSCAN ($eps_{spatial} \le 1\text{km}$, $eps_{temporal} \le 48\text{h}$) to identify long-term combustion (gas flares, smoldering mines) vs. episodic wildfires.
+
+### 📍 Phase 3: Supervised AI/ML Classification Engine (Part 3)
+1. **Dataset Synthesis & Ground-Truth Annotation (`src/ml_classifier/dataset_builder.py`)**:
+   - Cross-reference FIRMS observations with known OSM facility polygon intersections.
+   - Aggregate labelled training instances across 6 target classes: *Industrial Fire, Gas Flare, Forest Fire, Agricultural Burning, Mining Activity, Other/Unknown*.
+2. **Model Training & Ensembling (`src/ml_classifier/train.py`)**:
+   - Train baseline **Random Forest** and high-performance **XGBoost / LightGBM** models.
+   - Perform feature importance attribution (SHAP values) on thermal radiative power, spatial distances, and diurnal ratios.
+   - Save serialized inference pipelines (`models/fire_classifier_xgb.joblib`).
+3. **Real-time Model Inference (`src/ml_classifier/inference.py`)**:
+   - Integrate inference directly into the ingestion pipeline, assigning classification labels and confidence percentages (0-100%).
+
+### 📍 Phase 4: Full Production GIS & Multi-Temporal Dashboard (Part 4)
+1. **Copernicus Sentinel-2 Surface Reflectance Integration**:
+   - Fetch before/after SWIR (Short-Wave Infrared) bands for high-confidence industrial fires to confirm structural damage.
+2. **Temporal Time-Lapse Slider**:
+   - Enable interactive temporal playback showing thermal plume evolution and dispersion over 7-30 days.
+3. **Analytical Drilldown & PDF Risk Reports**:
+   - Export automated forensic incident reports for NTRO/disaster management teams.
+
+### 📍 Phase 5: Automated Alerting, Monitoring & Docker Deployment (Part 5)
+1. **Scheduled Ingestion Worker**:
+   - Background daemon/cron pipeline polling FIRMS API every 3 hours as satellite passes are published.
+2. **Multi-Channel Alert Dispatcher**:
+   - Immediate notification dispatch (Email/SMTP, Webhooks, Telegram) whenever an anomaly triggers high industrial confidence near critical infrastructure.
+3. **Production Containerization**:
+   - Multi-stage `Dockerfile` and `docker-compose.yml` for zero-configuration multi-platform deployment.
+
+---
+
 ## 📜 License
 MIT License
 
 ## 👥 Team
 SIH 2026 Hackathon Team
 
----

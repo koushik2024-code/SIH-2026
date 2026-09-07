@@ -9,7 +9,7 @@ data/cache/*
 !data/cache/.gitkeep
 *.csv
 *.geojson
-output/
-*.html
+output/*.html
+!src/web/templates/*.html
 .vscode/
 venv/

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 Industrial Fire Detection | SIH 2026</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS (Dark Mode Base) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-color: #0f1117;
+            --sidebar-bg: #161b22;
+            --card-bg: #1c2333;
+            --card-border: #30363d;
+            --accent-primary: #e74c3c;
+            --text-main: #e6edf3;
+            --text-secondary: #8b949e;
+            
+            --success-color: #2ea043;
+            --warning-color: #d29922;
+            --info-color: #388bfd;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--sidebar-bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--card-border);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Navbar */
+        .top-navbar {
+            height: 60px;
+            background-color: var(--sidebar-bg);
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+
+        .navbar-brand-custom {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badges-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent-primary);
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+            animation: pulse 1.5s infinite;
+            margin-right: 5px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+
+        /* Layout Layout */
+        .app-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Cards */
+        .stat-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border-color: var(--text-secondary);
+        }
+
+        .stat-card-title {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-card-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .stat-card-value.large {
+            font-size: 2.2rem;
+            color: var(--accent-primary);
+        }
+
+        /* Map Container */
+        .map-wrapper {
+            flex: 1;
+            position: relative;
+            background-color: #000;
+        }
+
+        /* Bottom Cards */
+        .bottom-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 15px;
+            background-color: var(--bg-color);
+            border-top: 1px solid var(--card-border);
+        }
+
+        .bottom-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.2s;
+        }
+
+        .bottom-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--text-secondary);
+        }
+
+        .bottom-card-icon {
+            font-size: 1.8rem;
+            color: var(--text-secondary);
+            background: rgba(255,255,255,0.05);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+        
+        .icon-temp { color: var(--accent-primary); }
+        .icon-fire { color: #fd7e14; }
+        .icon-daynight { color: var(--warning-color); }
+        .icon-conf { color: var(--success-color); }
+
+        .bottom-card-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .bottom-card-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .bottom-card-val {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 200px;
+            width: 100%;
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Legend & Filters */
+        .section-title {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin: 15px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .legend-item, .filter-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        /* Custom Checkbox */
+        .form-check-input {
+            background-color: var(--bg-color);
+            border-color: var(--card-border);
+        }
+        .form-check-input:checked {
+            background-color: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+        .form-check-label {
+            color: var(--text-main);
+            font-size: 0.85rem;
+        }
+
+        .btn-apply {
+            width: 100%;
+            margin-top: 15px;
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+        }
+        .btn-apply:hover {
+            background-color: var(--card-border);
+            color: #fff;
+        }
+
+        .date-range {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            background: rgba(0,0,0,0.2);
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .app-container { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--card-border); padding: 15px; }
+            .bottom-stats { grid-template-columns: repeat(2, 1fr); }
+            .main-content { overflow: auto; }
+            .map-wrapper { min-height: 400px; }
+        }
+        @media (max-width: 576px) {
+            .bottom-stats { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP NAVBAR -->
+    <header class="top-navbar">
+        <div class="navbar-brand-custom">
+            🔥 Industrial Fire Detection System
+        </div>
+        
+        <div class="badges-container d-none d-md-flex">
+            <span class="badge bg-primary text-light px-3 py-2 rounded-pill"><i class="fas fa-trophy me-1"></i> SIH 2026</span>
+            <span class="badge bg-success text-light px-3 py-2 rounded-pill"><i class="fas fa-shield-alt me-1"></i> NTRO</span>
+            <span class="badge bg-danger text-light px-3 py-2 rounded-pill d-flex align-items-center">
+                <span class="pulse-dot"></span> Part 1 Active
+            </span>
+        </div>
+
+        <button id="refreshBtn" class="btn btn-outline-danger btn-sm px-3">
+            <i class="fas fa-sync-alt me-2"></i>Refresh Data
+        </button>
+    </header>
+
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="date-range">
+                <i class="far fa-calendar-alt me-1"></i> 
+                {{ stats.date_range.start }} - {{ stats.date_range.end }}
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-title">Total Detections <i class="fas fa-satellite-dish"></i></div>
+                <div class="stat-card-value large counter" data-target="{{ stats.total_fires }}">0</div>
+            </div>
+
+            <div class="stat-card" style="border-left: 3px solid var(--accent-primary);">
+                <div class="stat-card-title">Industrial Facilities <i class="fas fa-industry"></i></div>
+                <div class="stat-card-value text-danger counter" data-target="{{ stats.industrial_count }}">0</div>
+            </div>
+
+            <div class="stat-card" style="border-left: 3px solid var(--success-color);">
+                <div class="stat-card-title">Forest Fires <i class="fas fa-tree"></i></div>
+                <div class="stat-card-value text-success counter" data-target="{{ stats.fire_type_distribution.get('Forest Fire', 0) }}">0</div>
+            </div>
+
+            <div class="stat-card" style="border-left: 3px solid var(--warning-color);">
+                <div class="stat-card-title">Agricultural <i class="fas fa-seedling"></i></div>
+                <div class="stat-card-value text-warning counter" data-target="{{ stats.fire_type_distribution.get('Agricultural Burning', 0) }}">0</div>
+            </div>
+
+            <div class="stat-card" style="border-left: 3px solid #fd7e14;">
+                <div class="stat-card-title">Gas Flares <i class="fas fa-fire-alt"></i></div>
+                <div class="stat-card-value counter" style="color: #fd7e14;" data-target="{{ stats.fire_type_distribution.get('Gas Flare', 0) }}">0</div>
+            </div>
+
+            <div class="section-title">Distribution</div>
+            <div class="chart-container">
+                <canvas id="fireDonutChart"></canvas>
+            </div>
+
+            <div class="section-title">Filters</div>
+            <form id="filterForm">
+                {% for type in all_fire_types %}
+                <div class="form-check filter-item">
+                    <input class="form-check-input" type="checkbox" name="fire_type" value="{{ type }}" id="chk_{{ loop.index }}" 
+                        {% if type in selected_types %}checked{% endif %}>
+                    <label class="form-check-label d-flex align-items-center" for="chk_{{ loop.index }}">
+                        <span class="color-dot ms-2 me-2" style="background-color: {{ fire_type_colors.get(type, '#ffffff') }};"></span>
+                        {{ type }}
+                    </label>
+                </div>
+                {% endfor %}
+                <button type="button" id="applyFiltersBtn" class="btn btn-apply btn-sm">Apply Filters</button>
+            </form>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- Map Container -->
+            <div class="map-wrapper">
+                <iframe id="map-frame" style="width:100%; height:100%; border:none; display:block;"></iframe>
+            </div>
+
+            <!-- Bottom Stats Row -->
+            <div class="bottom-stats">
+                <div class="bottom-card">
+                    <div class="bottom-card-icon icon-temp"><i class="fas fa-thermometer-half"></i></div>
+                    <div class="bottom-card-info">
+                        <div class="bottom-card-label">Avg Brightness</div>
+                        <div class="bottom-card-val">{{ "%.2f"|format(stats.avg_brightness) }} K</div>
+                    </div>
+                </div>
+
+                <div class="bottom-card">
+                    <div class="bottom-card-icon icon-fire"><i class="fas fa-fire"></i></div>
+                    <div class="bottom-card-info">
+                        <div class="bottom-card-label">Avg FRP</div>
+                        <div class="bottom-card-val">{{ "%.2f"|format(stats.avg_frp) }} MW</div>
+                    </div>
+                </div>
+
+                <div class="bottom-card">
+                    <div class="bottom-card-icon icon-daynight"><i class="fas fa-cloud-sun"></i></div>
+                    <div class="bottom-card-info">
+                        <div class="bottom-card-label">Day vs Night</div>
+                        <div class="bottom-card-val">{{ stats.daytime_fires }} / {{ stats.nighttime_fires }}</div>
+                    </div>
+                </div>
+
+                <div class="bottom-card">
+                    <div class="bottom-card-icon icon-conf"><i class="fas fa-check-circle"></i></div>
+                    <div class="bottom-card-info">
+                        <div class="bottom-card-label">High Confidence</div>
+                        <div class="bottom-card-val">{{ stats.high_confidence }}</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.css"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // 1. Safely load the Folium map into the iframe
+        var mapHtml = {{ map_html | tojson }};
+        document.getElementById('map-frame').srcdoc = mapHtml;
+
+        // 2. Animate numbers (Count-up effect)
+        const counters = document.querySelectorAll('.counter');
+        const speed = 200; // lower is faster
+
+        counters.forEach(counter => {
+            const updateCount = () => {
+                const target = +counter.getAttribute('data-target');
+                const count = +counter.innerText;
+                const inc = target / speed;
+
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + inc);
+                    setTimeout(updateCount, 10);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+            updateCount();
+        });
+
+        // 3. Initialize Chart.js Donut Chart
+        const fireDist = {{ stats.fire_type_distribution | tojson }};
+        const colorMap = {{ fire_type_colors | tojson }};
+        
+        const labels = Object.keys(fireDist);
+        const data = Object.values(fireDist);
+        const bgColors = labels.map(label => colorMap[label] || '#ffffff');
+
+        const ctx = document.getElementById('fireDonutChart').getContext('2d');
+        const fireDonutChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: bgColors,
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        display: false // Using our own sidebar legend/filters
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(28, 35, 51, 0.9)',
+                        titleColor: '#e6edf3',
+                        bodyColor: '#e6edf3',
+                        borderColor: '#30363d',
+                        borderWidth: 1
+                    }
+                }
+            }
+        });
+
+        // 4. Handle Filter Application
+        document.getElementById('applyFiltersBtn').addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('input[name="fire_type"]:checked');
+            const selected = Array.from(checkboxes).map(cb => encodeURIComponent(cb.value));
+            
+            let url = new URL(window.location.href);
+            url.search = ''; // clear current params
+            selected.forEach(val => url.searchParams.append('fire_type', decodeURIComponent(val)));
+            
+            window.location.href = url.toString();
+        });
+
+        // 5. Handle Refresh Button
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            const btn = this;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Refreshing...';
+            btn.disabled = true;
+
+            // Call API refresh then reload page
+            fetch('/api/refresh', { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        console.error('Refresh failed');
+                        btn.innerHTML = '<i class="fas fa-sync-alt me-2"></i>Refresh Data';
+                        btn.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    // Fallback reload just in case
+                    window.location.reload();
+                });
+        });
+    </script>
+</body>
+</html>
