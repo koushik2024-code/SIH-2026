@@ -10,3 +10,4 @@ python-dotenv>=1.0.0
 overpy>=0.7
 tqdm>=4.66.0
 flask>=3.0.0
+schedule>=1.2.0
