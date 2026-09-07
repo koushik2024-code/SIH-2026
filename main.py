@@ -4,6 +4,10 @@ import sys
 
 def setup_logging():
     """Setup basic logging for the entry point."""
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -13,13 +17,16 @@ def setup_logging():
 def print_banner():
     """Print project banner."""
     banner = """
-    ╔═══════════════════════════════════════════════════════════╗
-    ║   🔥 INDUSTRIAL FIRE DETECTION SYSTEM (SIH-2026)  🔥    ║
-    ║   AI-Based Classification of Thermal Sources             ║
-    ║   NASA FIRMS  |  OpenStreetMap  |  Satellite Data         ║
-    ╚═══════════════════════════════════════════════════════════╝
+    ===============================================================
+       INDUSTRIAL FIRE & PERSISTENT THERMAL SOURCE DETECTION
+                     SIH 2026 | NTRO Challenge
+         NASA FIRMS  |  OpenStreetMap  |  Satellite Data
+    ===============================================================
     """
-    print(banner)
+    try:
+        print(banner)
+    except Exception:
+        pass
 
 def main():
     setup_logging()
@@ -47,10 +54,10 @@ def main():
         elif args.part == 'web':
             from src.web.app import create_app
             logger.info(f"Starting Web Dashboard on http://localhost:{args.port}")
-            print(f"\n    🌐 Dashboard: http://localhost:{args.port}")
-            print(f"    📊 API Stats: http://localhost:{args.port}/api/stats")
-            print(f"    🔥 API Fires: http://localhost:{args.port}/api/fires")
-            print(f"    🏭 API Facilities: http://localhost:{args.port}/api/facilities\n")
+            print(f"\n    [+] Dashboard:      http://localhost:{args.port}")
+            print(f"    [+] API Stats:      http://localhost:{args.port}/api/stats")
+            print(f"    [+] API Fires:      http://localhost:{args.port}/api/fires")
+            print(f"    [+] API Facilities: http://localhost:{args.port}/api/facilities\n")
             app = create_app()
             app.run(debug=args.debug, port=args.port, host='0.0.0.0')
         else:

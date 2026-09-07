@@ -127,7 +127,9 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            overflow: hidden;
+            overflow-y: auto;
+            min-height: 0;
+            height: calc(100vh - 60px);
         }
 
         /* Cards */
@@ -172,7 +174,17 @@
         .map-wrapper {
             flex: 1;
             position: relative;
-            background-color: #000;
+            background-color: #0b0e14;
+            min-height: 480px;
+            width: 100%;
+        }
+
+        #map-frame {
+            width: 100%;
+            height: 100%;
+            min-height: 480px;
+            border: none;
+            display: block;
         }
 
         /* Bottom Cards */
@@ -437,13 +449,21 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.css"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         // 1. Safely load the Folium map into the iframe
         var mapHtml = {{ map_html | tojson }};
-        document.getElementById('map-frame').srcdoc = mapHtml;
+        var mapFrame = document.getElementById('map-frame');
+        
+        if (window.location.protocol === 'file:' || window.location.pathname.endsWith('.html') || window.location.pathname.includes('/docs/')) {
+            mapFrame.src = "map.html";
+        } else if (mapHtml && mapHtml.length > 50) {
+            mapFrame.srcdoc = mapHtml;
+        } else {
+            mapFrame.src = "/map" + window.location.search;
+        }
 
         // 2. Animate numbers (Count-up effect)
         const counters = document.querySelectorAll('.counter');

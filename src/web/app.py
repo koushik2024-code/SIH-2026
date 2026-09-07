@@ -61,6 +61,15 @@ def create_app():
                              selected_types=selected_types,
                              fire_type_colors=MapGenerator.FIRE_TYPE_COLORS)
     
+    @app.route('/map')
+    def render_map():
+        """Render standalone Folium map."""
+        fire_df, facilities_gdf = get_data()
+        selected_types = request.args.getlist('fire_type')
+        if not selected_types:
+            selected_types = list(MapGenerator.FIRE_TYPE_COLORS.keys())
+        return _map_gen.create_dashboard_map(fire_df, facilities_gdf, selected_types)
+    
     @app.route('/api/stats')
     def api_stats():
         """Return fire statistics as JSON."""
