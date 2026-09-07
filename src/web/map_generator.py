@@ -1,7 +1,10 @@
 import folium
 from folium.plugins import HeatMap, MarkerCluster, MiniMap
 import pandas as pd
-import geopandas as gpd
+try:
+    import geopandas as gpd
+except ImportError:
+    gpd = None
 import logging
 
 logger = logging.getLogger(__name__)

@@ -1,7 +1,11 @@
 import pandas as pd
 import numpy as np
-import geopandas as gpd
-from shapely.geometry import Point
+try:
+    import geopandas as gpd
+    from shapely.geometry import Point
+    HAS_GEOPANDAS = True
+except ImportError:
+    HAS_GEOPANDAS = False
 from datetime import datetime, timedelta
 import random
 import hashlib
@@ -74,8 +78,9 @@ class DemoDataGenerator:
                 "tags": "{}"
             })
         df = pd.DataFrame(records)
-        gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.longitude, df.latitude), crs="EPSG:4326")
-        return gdf
+        if HAS_GEOPANDAS:
+            return gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.longitude, df.latitude), crs="EPSG:4326")
+        return df
     
     def generate_fire_data(self, n_fires: int = 500, days_back: int = 3) -> pd.DataFrame:
         """Generate realistic fire detection data."""

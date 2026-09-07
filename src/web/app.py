@@ -83,7 +83,9 @@ def create_app():
         """Return facility data as JSON."""
         _, facilities_gdf = get_data()
         if facilities_gdf is not None and not facilities_gdf.empty:
-            df_copy = facilities_gdf.drop(columns=['geometry']).copy()
+            df_copy = facilities_gdf.copy()
+            if 'geometry' in df_copy.columns:
+                df_copy = df_copy.drop(columns=['geometry'])
             return jsonify(df_copy.to_dict(orient='records'))
         return jsonify([])
     

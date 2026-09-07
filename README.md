@@ -4,7 +4,19 @@
 
 > Using NASA FIRMS, OpenStreetMap & Satellite Data | SIH 2026 | NTRO
 
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-181717?logo=github&logoColor=white)](https://github.com/koushik2024-code/SIH-2026)
+[![Live Deployed Website](https://img.shields.io/badge/Live%20Demo-Website%20Active-success?logo=google-chrome&logoColor=white)](https://koushik2024-code.github.io/SIH-2026/)
 ![Python](https://img.shields.io/badge/Python-3.10+-blue) ![Status](https://img.shields.io/badge/Status-Part%201%20%26%20Web%20Dashboard%20Complete-brightgreen) ![License](https://img.shields.io/badge/License-MIT-yellow)
+
+---
+
+### 🔗 Project Links
+| Resource | URL |
+| :--- | :--- |
+| **🌐 Live Deployed Website** | [https://koushik2024-code.github.io/SIH-2026/](https://koushik2024-code.github.io/SIH-2026/) |
+| **💻 Official GitHub Repository** | [https://github.com/koushik2024-code/SIH-2026](https://github.com/koushik2024-code/SIH-2026) |
+
+---
 
 ## 📋 Table of Contents
 - [Problem Statement](#-problem-statement)
