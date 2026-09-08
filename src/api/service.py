@@ -1,6 +1,6 @@
 import logging
 import math
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 import pandas as pd
 
 from config import settings
