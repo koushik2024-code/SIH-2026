@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚨 Alert Incident Operations Center | SIH 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --bg-surface: #111827;
+            --bg-card: #182234;
+            --border-color: #243248;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --danger: #ef4444;
+            --warning: #f97316;
+            --caution: #eab308;
+            --success: #10b981;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.25);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navbar */
+        .navbar {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #ef4444, #f97316);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+        .brand-text h1 { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
+        .brand-text p { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .nav-links { display: flex; align-items: center; gap: 14px; }
+        .nav-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .nav-btn-subtle {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border-color: var(--border-color);
+        }
+        .nav-btn-subtle:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
+        .nav-btn-primary {
+            background: linear-gradient(135deg, #0284c7, #0ea5e9);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+        .nav-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4); }
+        .nav-btn-danger {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        .nav-btn-danger:hover { transform: translateY(-1px); }
+
+        /* Status Indicator */
+        .live-pulse {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #34d399;
+        }
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse-ring 1.8s infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Container */
+        .container { max-width: 1400px; margin: 0 auto; padding: 28px; width: 100%; flex: 1; }
+
+        /* KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+        }
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+        .kpi-card.critical::after { background: var(--danger); }
+        .kpi-card.warning::after { background: var(--warning); }
+        .kpi-card.info::after { background: var(--accent); }
+        .kpi-card.success::after { background: var(--success); }
+
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .kpi-card.critical .kpi-icon { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .kpi-card.warning .kpi-icon { background: rgba(249, 115, 22, 0.15); color: var(--warning); }
+        .kpi-card.info .kpi-icon { background: rgba(56, 189, 248, 0.15); color: var(--accent); }
+        .kpi-card.success .kpi-icon { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+
+        .kpi-content h3 { font-size: 24px; font-weight: 800; }
+        .kpi-content p { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-top: 2px; }
+
+        /* Filter Controls & Toolbar */
+        .toolbar {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .filter-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .filter-chip {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .filter-chip:hover, .filter-chip.active {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        /* Alerts List */
+        .alerts-feed { display: flex; flex-direction: column; gap: 14px; }
+        .alert-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+        .alert-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+            border-color: #3b506e;
+        }
+        .alert-card.severity-CRITICAL { border-left: 5px solid var(--danger); }
+        .alert-card.severity-HIGH { border-left: 5px solid var(--warning); }
+        .alert-card.severity-WARNING { border-left: 5px solid var(--caution); }
+        .alert-card.severity-INFO { border-left: 5px solid var(--accent); }
+
+        .alert-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+        .alert-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .severity-badge {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.05em;
+        }
+        .badge-CRITICAL { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.5); }
+        .badge-HIGH { background: rgba(249, 115, 22, 0.2); color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.5); }
+        .badge-WARNING { background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.5); }
+        .badge-INFO { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.5); }
+
+        .status-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+        .status-ACTIVE { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+        .status-ACKNOWLEDGED { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+
+        .alert-title { font-size: 17px; font-weight: 700; color: #ffffff; margin-top: 4px; }
+        .alert-timestamp { font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+        .alert-body {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            padding: 12px 16px;
+        }
+
+        .alert-stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            font-size: 13px;
+        }
+        .stat-pill {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        .stat-pill .label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px; }
+        .stat-pill .val { font-weight: 700; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; }
+
+        .alert-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+        .channel-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .channel-tag {
+            font-size: 11px;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .actions { display: flex; gap: 10px; }
+        .btn-action {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .btn-action:hover { background: rgba(255, 255, 255, 0.12); }
+        .btn-ack { background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); color: #34d399; }
+        .btn-ack:hover { background: rgba(16, 185, 129, 0.35); }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--bg-card);
+            border: 1px dashed var(--border-color);
+            border-radius: 12px;
+        }
+        .empty-state i { font-size: 48px; color: var(--success); margin-bottom: 16px; }
+        .empty-state h3 { font-size: 18px; margin-bottom: 8px; }
+        .empty-state p { color: var(--text-secondary); font-size: 14px; }
+
+        /* Toast Container */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .toast {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 16px 20px;
+            min-width: 320px;
+            max-width: 420px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            animation: slideIn 0.3s ease forwards;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <a href="/" class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-bell-slash"></i></div>
+            <div class="brand-text">
+                <h1>INCIDENT OPERATIONS CENTER</h1>
+                <p>Part 5.2 Multi-Channel Alert & Monitoring System</p>
+            </div>
+        </a>
+
+        <div class="nav-links">
+            <div class="live-pulse">
+                <span class="pulse-dot"></span>
+                <span id="sse-status">LIVE DISPATCHER ACTIVE</span>
+            </div>
+            <button class="nav-btn nav-btn-danger" onclick="triggerTestAlert()">
+                <i class="fa-solid fa-flask"></i> Trigger Test Alert
+            </button>
+            <a href="/" class="nav-btn nav-btn-subtle">
+                <i class="fa-solid fa-map"></i> View Map
+            </a>
+            <a href="/reports" class="nav-btn nav-btn-subtle">
+                <i class="fa-solid fa-file-invoice"></i> Reports
+            </a>
+            <a href="/analytics" class="nav-btn nav-btn-subtle">
+                <i class="fa-solid fa-chart-line"></i> Analytics
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+
+        <!-- Executive KPI Metric Tiles -->
+        <section class="kpi-grid">
+            <div class="kpi-card critical">
+                <div class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="kpi-content">
+                    <h3 id="kpi-critical">{{ stats.get('critical_active_alerts', 0) }}</h3>
+                    <p>Critical Active Hazards</p>
+                </div>
+            </div>
+            <div class="kpi-card warning">
+                <div class="kpi-icon"><i class="fa-solid fa-bell"></i></div>
+                <div class="kpi-content">
+                    <h3 id="kpi-active">{{ stats.get('active_alerts', 0) }}</h3>
+                    <p>Active Unresolved Alerts</p>
+                </div>
+            </div>
+            <div class="kpi-card info">
+                <div class="kpi-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                <div class="kpi-content">
+                    <h3 id="kpi-total">{{ stats.get('total_alerts', 0) }}</h3>
+                    <p>Total Dispatched</p>
+                </div>
+            </div>
+            <div class="kpi-card success">
+                <div class="kpi-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+                <div class="kpi-content">
+                    <h3>5 Channels</h3>
+                    <p>SMTP • SMS • SSE • LOG • WEBHOOK</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters & Action Bar -->
+        <section class="toolbar">
+            <div class="filter-group">
+                <span style="font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-right:4px;">Filter:</span>
+                <a href="/alerts" class="filter-chip {% if current_status == 'ALL' and current_severity == 'ALL' %}active{% endif %}">All Incidents</a>
+                <a href="/alerts?severity=CRITICAL" class="filter-chip {% if current_severity == 'CRITICAL' %}active{% endif %}">🚨 Critical</a>
+                <a href="/alerts?severity=HIGH" class="filter-chip {% if current_severity == 'HIGH' %}active{% endif %}">⚠️ High</a>
+                <a href="/alerts?status=ACTIVE" class="filter-chip {% if current_status == 'ACTIVE' %}active{% endif %}">Active Only</a>
+                <a href="/alerts?status=ACKNOWLEDGED" class="filter-chip {% if current_status == 'ACKNOWLEDGED' %}active{% endif %}">Acknowledged</a>
+            </div>
+
+            <div style="font-size: 13px; color: var(--text-secondary);">
+                Auto-updating via SSE Stream: <span style="color:#34d399; font-weight:600;">60 FPS</span>
+            </div>
+        </section>
+
+        <!-- Alerts Stream Feed -->
+        <section class="alerts-feed" id="alerts-list">
+            {% if alerts %}
+                {% for alert in alerts %}
+                    <div class="alert-card severity-{{ alert.severity }}" id="alert-card-{{ alert.alert_id }}">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-{{ alert.severity }}">{{ alert.severity }}</span>
+                                    <span class="status-badge status-{{ alert.status }}" id="status-tag-{{ alert.alert_id }}">{{ alert.status }}</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> {{ alert.timestamp }}</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: {{ alert.alert_id }}</span>
+                                </div>
+                                <h2 class="alert-title">{{ alert.title }}</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            {{ alert.description }}
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">{{ alert.facility_name }}</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">{{ "%.2f"|format(alert.distance_km|float) }} km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">{{ "%.1f"|format(alert.frp|float) }} MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">{{ "%.4f"|format(alert.latitude|float) }}, {{ "%.4f"|format(alert.longitude|float) }}</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                {% if alert.channels_dispatched %}
+                                    {% for ch in alert.channels_dispatched %}
+                                        <span class="channel-tag">
+                                            {% if ch == 'email' %}<i class="fa-solid fa-envelope"></i> SMTP Email
+                                            {% elif ch == 'sms' %}<i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            {% elif ch == 'dashboard' %}<i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            {% elif ch == 'log' %}<i class="fa-solid fa-file-lines"></i> Audit Log
+                                            {% elif ch == 'webhook' %}<i class="fa-solid fa-paper-plane"></i> Webhook
+                                            {% else %}{{ ch }}{% endif %}
+                                        </span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="channel-tag"><i class="fa-solid fa-shield"></i> Multi-Channel Broadcast</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="actions">
+                                <a href="/?search={{ alert.facility_name }}" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                {% if alert.status == 'ACTIVE' %}
+                                    <button class="btn-action btn-ack" id="ack-btn-{{ alert.alert_id }}" onclick="acknowledgeAlert('{{ alert.alert_id }}')">
+                                        <i class="fa-solid fa-check"></i> Acknowledge
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <h3>No Active Alerts</h3>
+                    <p>No thermal hazard trigger conditions currently match the selected filter criteria.</p>
+                </div>
+            {% endif %}
+        </section>
+
+    </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <script>
+        // Real-time Server-Sent Events (SSE) listener
+        function setupAlertStream() {
+            if (!window.EventSource) {
+                console.warn("Server-Sent Events not supported by this browser.");
+                return;
+            }
+
+            const evtSource = new EventSource('/api/alerts/stream');
+            const statusEl = document.getElementById('sse-status');
+
+            evtSource.addEventListener('connected', function(e) {
+                console.log("Connected to Alert Stream SSE.");
+                if (statusEl) statusEl.innerText = "STREAM CONNECTED";
+            });
+
+            evtSource.addEventListener('alert', function(e) {
+                try {
+                    const alertData = JSON.parse(e.data);
+                    console.log("New Real-time Alert Received:", alertData);
+                    showToast(alertData);
+                    prependAlertCard(alertData);
+                    updateKpiCounters();
+                } catch (err) {
+                    console.error("Error processing SSE alert:", err);
+                }
+            });
+
+            evtSource.onerror = function(err) {
+                console.warn("SSE stream disconnected; reconnecting...", err);
+                if (statusEl) statusEl.innerText = "RECONNECTING...";
+            };
+        }
+
+        // Acknowledge alert via API
+        async function acknowledgeAlert(alertId) {
+            try {
+                const res = await fetch(`/api/alerts/${alertId}/ack`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user: 'operator_ui'})
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    const statusTag = document.getElementById(`status-tag-${alertId}`);
+                    if (statusTag) {
+                        statusTag.innerText = 'ACKNOWLEDGED';
+                        statusTag.className = 'status-badge status-ACKNOWLEDGED';
+                    }
+                    const ackBtn = document.getElementById(`ack-btn-${alertId}`);
+                    if (ackBtn) ackBtn.remove();
+                    updateKpiCounters();
+                }
+            } catch (err) {
+                console.error("Failed to acknowledge alert:", err);
+            }
+        }
+
+        // Trigger diagnostic test alert
+        async function triggerTestAlert() {
+            try {
+                const res = await fetch('/api/alerts/test', { method: 'POST' });
+                const data = await res.json();
+                if (data.alert) {
+                    showToast(data.alert);
+                }
+            } catch (err) {
+                alert("Failed to trigger test alert: " + err);
+            }
+        }
+
+        // Update KPI metrics via API
+        async function updateKpiCounters() {
+            try {
+                const res = await fetch('/api/alerts/stats');
+                const data = await res.json();
+                if (data.total_alerts !== undefined) {
+                    document.getElementById('kpi-total').innerText = data.total_alerts;
+                    document.getElementById('kpi-active').innerText = data.active_alerts;
+                    document.getElementById('kpi-critical').innerText = data.critical_active_alerts;
+                }
+            } catch (err) {}
+        }
+
+        // Toast notification popup
+        function showToast(alert) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <div style="font-size:24px; color:${alert.severity === 'CRITICAL' ? '#ef4444' : '#f97316'};">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:#94a3b8;">${alert.severity} ALERT</div>
+                    <div style="font-weight:700; font-size:14px; margin:2px 0;">${alert.title}</div>
+                    <div style="font-size:12px; color:#cbd5e1;">Near ${alert.facility_name} (${alert.distance_km ? alert.distance_km.toFixed(1) : 0}km)</div>
+                </div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 6000);
+        }
+
+        // Dynamically prepend newly arrived alert to top of list
+        function prependAlertCard(alert) {
+            const list = document.getElementById('alerts-list');
+            if (!list) return;
+
+            const card = document.createElement('div');
+            card.className = `alert-card severity-${alert.severity}`;
+            card.id = `alert-card-${alert.alert_id}`;
+            card.innerHTML = `
+                <div class="alert-header">
+                    <div>
+                        <div class="alert-meta">
+                            <span class="severity-badge badge-${alert.severity}">${alert.severity}</span>
+                            <span class="status-badge status-${alert.status}">${alert.status}</span>
+                            <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> Just Now</span>
+                            <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ${alert.alert_id}</span>
+                        </div>
+                        <h2 class="alert-title">${alert.title}</h2>
+                    </div>
+                </div>
+                <div class="alert-body">${alert.description}</div>
+                <div class="alert-stats-row">
+                    <div class="stat-pill"><div class="label">Target Facility</div><div class="val">${alert.facility_name}</div></div>
+                    <div class="stat-pill"><div class="label">Proximity Distance</div><div class="val">${(alert.distance_km || 0).toFixed(2)} km</div></div>
+                    <div class="stat-pill"><div class="label">Thermal FRP</div><div class="val">${(alert.frp || 0).toFixed(1)} MW</div></div>
+                    <div class="stat-pill"><div class="label">Coordinates</div><div class="val">${(alert.latitude || 0).toFixed(4)}, ${(alert.longitude || 0).toFixed(4)}</div></div>
+                </div>
+                <div class="alert-footer">
+                    <div class="channel-tags">
+                        <span style="font-size:11px; color:var(--text-muted); font-weight:600;">CHANNELS:</span>
+                        <span class="channel-tag"><i class="fa-solid fa-satellite-dish"></i> Dispatched Live</span>
+                    </div>
+                    <div class="actions">
+                        <a href="/?search=${encodeURIComponent(alert.facility_name)}" class="btn-action"><i class="fa-solid fa-crosshairs"></i> Locate</a>
+                        <button class="btn-action btn-ack" onclick="acknowledgeAlert('${alert.alert_id}')"><i class="fa-solid fa-check"></i> Acknowledge</button>
+                    </div>
+                </div>
+            `;
+            list.insertBefore(card, list.firstChild);
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', setupAlertStream);
+    </script>
+</body>
+</html>
