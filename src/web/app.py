@@ -2,6 +2,8 @@ import os
 import sys
 import json
 import logging
+import pandas as pd
+from typing import Optional, List, Any, Dict
 from flask import Flask, render_template, request, jsonify
 
 # Ensure project root is in path
@@ -9,6 +11,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 from src.web.demo_data import DemoDataGenerator
 from src.web.map_generator import MapGenerator
+from src.visualization.analytics_panels import AnalyticsEngine
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +20,7 @@ _fire_df = None
 _facilities_gdf = None
 _map_gen = MapGenerator()
 _demo_gen = DemoDataGenerator()
+_analytics_engine = AnalyticsEngine()
 
 def get_data():
     """Get fire and facility data, prioritizing persistent SQLite database."""
@@ -52,6 +56,70 @@ def get_data():
 
     return _fire_df, _facilities_gdf
 
+def filter_fire_dataframe(
+    df: pd.DataFrame,
+    selected_types: Optional[List[str]] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    min_confidence: Optional[Any] = None,
+    search: Optional[str] = None,
+) -> pd.DataFrame:
+    """Filter fire dataframe by type, date range, confidence threshold, and search query."""
+    if df is None or df.empty:
+        return pd.DataFrame()
+
+    filtered = df.copy()
+
+    # 1. Fire type filter
+    if selected_types and "fire_type" in filtered.columns:
+        filtered = filtered[filtered["fire_type"].isin(selected_types)]
+
+    # 2. Date range filter
+    if start_date and str(start_date).strip() and "acq_date" in filtered.columns:
+        filtered = filtered[filtered["acq_date"].astype(str) >= str(start_date).strip()]
+    if end_date and str(end_date).strip() and "acq_date" in filtered.columns:
+        filtered = filtered[filtered["acq_date"].astype(str) <= str(end_date).strip()]
+
+    # 3. Confidence threshold filter
+    if min_confidence is not None and str(min_confidence).strip() and "confidence" in filtered.columns:
+        try:
+            min_c = float(min_confidence)
+            if min_c > 0:
+                def to_num(val):
+                    try:
+                        return float(val)
+                    except Exception:
+                        s = str(val).lower().strip()
+                        if s in ["h", "high"]:
+                            return 85
+                        elif s in ["n", "nominal", "medium", "med"]:
+                            return 60
+                        elif s in ["l", "low"]:
+                            return 30
+                        return 50
+                conf_series = filtered["confidence"].apply(to_num)
+                filtered = filtered[conf_series >= min_c]
+        except (ValueError, TypeError):
+            pass
+
+    # 4. Search query filter
+    if search and str(search).strip():
+        q = str(search).lower().strip()
+        conditions = []
+        if "nearest_facility_name" in filtered.columns:
+            conditions.append(filtered["nearest_facility_name"].astype(str).str.lower().str.contains(q, na=False))
+        if "detection_id" in filtered.columns:
+            conditions.append(filtered["detection_id"].astype(str).str.lower().str.contains(q, na=False))
+        if "fire_type" in filtered.columns:
+            conditions.append(filtered["fire_type"].astype(str).str.lower().str.contains(q, na=False))
+        if conditions:
+            combined = conditions[0]
+            for c in conditions[1:]:
+                combined = combined | c
+            filtered = filtered[combined]
+
+    return filtered
+
 def create_app():
     """Flask application factory."""
     template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -62,7 +130,7 @@ def create_app():
     
     @app.route('/')
     def index():
-        """Main dashboard page."""
+        """Main dashboard page with interactive controls."""
         fire_df, facilities_gdf = get_data()
         
         # Get filter parameters
@@ -70,12 +138,37 @@ def create_app():
         if not selected_types:
             selected_types = list(MapGenerator.FIRE_TYPE_COLORS.keys())
         
+        start_date = request.args.get('start_date', '')
+        end_date = request.args.get('end_date', '')
+        min_confidence = request.args.get('min_confidence', '0')
+        search_query = request.args.get('search', '')
+
+        # Filter fire dataset for analytics & visualization
+        filtered_fires = filter_fire_dataframe(
+            fire_df,
+            selected_types=selected_types,
+            start_date=start_date,
+            end_date=end_date,
+            min_confidence=min_confidence,
+            search=search_query,
+        )
+        
         # Generate map
-        map_html = _map_gen.create_dashboard_map(fire_df, facilities_gdf, selected_types)
+        map_html = _map_gen.create_dashboard_map(filtered_fires, facilities_gdf, selected_types)
         
-        # Get statistics
-        stats = _map_gen.get_fire_statistics(fire_df)
+        # Get statistics (reflecting filtered view or baseline)
+        stats = _map_gen.get_fire_statistics(filtered_fires if not filtered_fires.empty else fire_df)
         
+        # Overall dataset bounds
+        overall_start = str(fire_df['acq_date'].min()) if not fire_df.empty and 'acq_date' in fire_df.columns else ""
+        overall_end = str(fire_df['acq_date'].max()) if not fire_df.empty and 'acq_date' in fire_df.columns else ""
+
+        # Extract facility names for autocomplete datalist
+        facility_names = []
+        if facilities_gdf is not None and not (hasattr(facilities_gdf, 'empty') and facilities_gdf.empty):
+            if 'name' in facilities_gdf.columns:
+                facility_names = [str(n).strip() for n in facilities_gdf['name'].dropna().unique() if str(n).strip()]
+
         # Get all available fire types for filter checkboxes
         all_fire_types = list(MapGenerator.FIRE_TYPE_COLORS.keys())
         
@@ -84,30 +177,159 @@ def create_app():
                              stats=stats,
                              all_fire_types=all_fire_types,
                              selected_types=selected_types,
-                             fire_type_colors=MapGenerator.FIRE_TYPE_COLORS)
+                             fire_type_colors=MapGenerator.FIRE_TYPE_COLORS,
+                             start_date=start_date or overall_start,
+                             end_date=end_date or overall_end,
+                             min_confidence=min_confidence,
+                             search_query=search_query,
+                             facility_names=facility_names,
+                             total_unfiltered=len(fire_df),
+                             total_filtered=len(filtered_fires))
     
     @app.route('/map')
     def render_map():
-        """Render standalone Folium map."""
+        """Render standalone Folium map with optional query filters."""
         fire_df, facilities_gdf = get_data()
         selected_types = request.args.getlist('fire_type')
         if not selected_types:
             selected_types = list(MapGenerator.FIRE_TYPE_COLORS.keys())
-        return _map_gen.create_dashboard_map(fire_df, facilities_gdf, selected_types)
+
+        start_date = request.args.get('start_date', '')
+        end_date = request.args.get('end_date', '')
+        min_confidence = request.args.get('min_confidence', '0')
+        search_query = request.args.get('search', '')
+
+        filtered_fires = filter_fire_dataframe(
+            fire_df,
+            selected_types=selected_types,
+            start_date=start_date,
+            end_date=end_date,
+            min_confidence=min_confidence,
+            search=search_query,
+        )
+
+        return _map_gen.create_dashboard_map(filtered_fires, facilities_gdf, selected_types)
+    
+    @app.route('/analytics')
+    def analytics():
+        """Render comprehensive spatial intelligence and fire analytics panel."""
+        fire_df, facilities_gdf = get_data()
+
+        selected_types = request.args.getlist('fire_type')
+        if not selected_types:
+            selected_types = list(MapGenerator.FIRE_TYPE_COLORS.keys())
+
+        start_date = request.args.get('start_date', '')
+        end_date = request.args.get('end_date', '')
+        min_confidence = request.args.get('min_confidence', '0')
+        search_query = request.args.get('search', '')
+
+        filtered_fires = filter_fire_dataframe(
+            fire_df,
+            selected_types=selected_types,
+            start_date=start_date,
+            end_date=end_date,
+            min_confidence=min_confidence,
+            search=search_query,
+        )
+
+        analytics_data = _analytics_engine.generate_full_analytics(
+            filtered_fires if not filtered_fires.empty else fire_df,
+            facilities_gdf
+        )
+
+        return render_template(
+            'analytics.html',
+            **analytics_data,
+            start_date=start_date,
+            end_date=end_date,
+            min_confidence=min_confidence,
+            search_query=search_query,
+            total_fires=len(filtered_fires),
+        )
+
+    @app.route('/api/analytics')
+    def api_analytics():
+        """Return full structured fire analytics payload as JSON."""
+        fire_df, facilities_gdf = get_data()
+        selected_types = request.args.getlist('fire_type')
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        min_confidence = request.args.get('min_confidence')
+        search_query = request.args.get('search')
+
+        filtered_fires = filter_fire_dataframe(
+            fire_df,
+            selected_types=selected_types if selected_types else None,
+            start_date=start_date,
+            end_date=end_date,
+            min_confidence=min_confidence,
+            search=search_query,
+        )
+
+        payload = _analytics_engine.generate_full_analytics(
+            filtered_fires if not filtered_fires.empty else fire_df,
+            facilities_gdf
+        )
+        return jsonify(payload)
+
+    @app.route('/api/analytics/export', methods=['POST', 'GET'])
+    def api_analytics_export():
+        """Export static charts and standalone HTML report to disk."""
+        fire_df, facilities_gdf = get_data()
+        from config import settings
+        out_dir = settings.BASE_DIR / "output"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        report_path = out_dir / "analytics_dashboard.html"
+        _analytics_engine.generate_standalone_report_html(fire_df, facilities_gdf, report_path)
+        figures = _analytics_engine.export_matplotlib_charts(fire_df, facilities_gdf, out_dir)
+        return jsonify({
+            "status": "success",
+            "report_path": str(report_path),
+            "figures": {k: str(v) for k, v in figures.items()}
+        })
     
     @app.route('/api/stats')
     def api_stats():
-        """Return fire statistics as JSON."""
+        """Return fire statistics as JSON with optional filters."""
         fire_df, _ = get_data()
-        stats = _map_gen.get_fire_statistics(fire_df)
+        selected_types = request.args.getlist('fire_type')
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        min_confidence = request.args.get('min_confidence')
+        search_query = request.args.get('search')
+
+        filtered_fires = filter_fire_dataframe(
+            fire_df,
+            selected_types=selected_types if selected_types else None,
+            start_date=start_date,
+            end_date=end_date,
+            min_confidence=min_confidence,
+            search=search_query,
+        )
+        stats = _map_gen.get_fire_statistics(filtered_fires)
         return jsonify(stats)
     
     @app.route('/api/fires')
     def api_fires():
-        """Return fire data as JSON."""
+        """Return fire data as JSON with optional filters."""
         fire_df, _ = get_data()
-        # Convert datetime to string for JSON serialization
-        df_copy = fire_df.copy()
+        selected_types = request.args.getlist('fire_type')
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
+        min_confidence = request.args.get('min_confidence')
+        search_query = request.args.get('search')
+
+        filtered_fires = filter_fire_dataframe(
+            fire_df,
+            selected_types=selected_types if selected_types else None,
+            start_date=start_date,
+            end_date=end_date,
+            min_confidence=min_confidence,
+            search=search_query,
+        )
+
+        df_copy = filtered_fires.copy()
         if 'datetime' in df_copy.columns:
             df_copy['datetime'] = df_copy['datetime'].astype(str)
         return jsonify(df_copy.to_dict(orient='records'))

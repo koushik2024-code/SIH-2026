@@ -1,3 +1,33 @@
+import argparse
+import logging
+import sys
+
+def setup_logging():
+    """Setup basic logging for the entry point."""
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        handlers=[logging.StreamHandler(sys.stdout)]
+    )
+
+def print_banner():
+    """Print project banner."""
+    banner = """
+    ===============================================================
+       INDUSTRIAL FIRE & PERSISTENT THERMAL SOURCE DETECTION
+                     SIH 2026 | NTRO Challenge
+         NASA FIRMS  |  OpenStreetMap  |  Satellite Data
+    ===============================================================
+    """
+    try:
+        print(banner)
+    except Exception:
+        pass
+
 def main():
     setup_logging()
     logger = logging.getLogger(__name__)
@@ -8,9 +38,9 @@ def main():
     parser.add_argument(
         "--part",
         type=str,
-        choices=["1", "2", "2.2", "2.3", "2.4", "3", "3.5", "4", "5", "web"],
+        choices=["1", "2", "2.2", "2.3", "2.4", "3", "3.5", "4", "4.1", "4.2", "4.3", "4.4", "5", "web"],
         default="web",
-        help="Which part to run (1-5, 2.2, 2.3, 2.4) or 'web' for dashboard",
+        help="Which part to run (1-5, 2.2, 2.3, 2.4, 4.1, 4.2, 4.3, 4.4) or 'web' for dashboard",
     )
     parser.add_argument(
         "--bbox",
@@ -406,21 +436,162 @@ def main():
 
             logger.info("Part 3.5 execution completed successfully.")
 
-        elif args.part == "4":
-            from src.classification.classify_pipeline import (
-                ClassificationPipeline,
+        elif args.part in ["4", "4.1", "4.2", "4.3"]:
+            from src.visualization import InteractiveGISMap
+            from config import settings
+
+            is_part_4_3 = (args.part == "4.3")
+            is_part_4_2 = (args.part == "4.2")
+
+            if is_part_4_3:
+                part_label = "Part 4.3: Dashboard Controls & Interactive GIS Filtering Interface"
+                out_filename = "dashboard_map.html"
+            elif is_part_4_2:
+                part_label = "Part 4.2: Data Overlay Layers & Multi-Temporal GIS Analytics"
+                out_filename = "overlay_map.html"
+            else:
+                part_label = "Part 4.1: GIS Visualization & Interactive Map Engine"
+                out_filename = "interactive_map.html"
+
+            logger.info(f"Starting {part_label}")
+
+            fire_df, facilities_gdf = InteractiveGISMap.load_datasets(
+                simulate=args.simulate, days=args.days
             )
 
-            logger.info("Starting Part 4: Inference Pipeline")
-
-            pipeline = ClassificationPipeline()
-            classified_df = pipeline.run_inference_pipeline()
-
-            if classified_df.empty:
-                logger.error("Inference pipeline failed.")
+            if fire_df.empty:
+                logger.error("No fire detections available to map.")
                 sys.exit(1)
 
-            logger.info("Part 4 execution completed successfully.")
+            gis_engine = InteractiveGISMap(enable_temporal_slider=True, enable_controls=True)
+            out_output = settings.OUTPUT_DIR / out_filename
+            out_interactive = settings.OUTPUT_DIR / "interactive_map.html"
+            out_root = settings.BASE_DIR / "map.html"
+            out_docs = settings.BASE_DIR / "docs" / "map.html"
+
+            # Export to primary output path
+            gis_engine.export_html(
+                output_path=out_output,
+                fire_df=fire_df,
+                facilities_gdf=facilities_gdf,
+                enable_temporal_slider=True,
+                enable_controls=True,
+            )
+
+            # Ensure interactive_map.html is always kept synchronized
+            if out_output != out_interactive:
+                gis_engine.export_html(
+                    output_path=out_interactive,
+                    fire_df=fire_df,
+                    facilities_gdf=facilities_gdf,
+                    enable_temporal_slider=True,
+                    enable_controls=True,
+                )
+
+            # Synchronize to root map.html and docs/map.html for deployment
+            gis_engine.export_html(
+                output_path=out_root,
+                fire_df=fire_df,
+                facilities_gdf=facilities_gdf,
+                enable_temporal_slider=True,
+                enable_controls=True,
+            )
+
+            if out_docs.parent.exists():
+                gis_engine.export_html(
+                    output_path=out_docs,
+                    fire_df=fire_df,
+                    facilities_gdf=facilities_gdf,
+                    enable_temporal_slider=True,
+                    enable_controls=True,
+                )
+
+            part_name = "Part 4.3" if is_part_4_3 else ("Part 4.2" if is_part_4_2 else "Part 4.1")
+            logger.info(f"{part_name} Map successfully generated:")
+            logger.info(f"  [+] Standalone Output Map:  {out_output}")
+            logger.info(f"  [+] Root Application Map:   {out_root}")
+            logger.info(f"  [+] GitHub Pages Live Map:  {out_docs}")
+            logger.info(f"{part_name} execution completed successfully.")
+
+        elif args.part == "4.4":
+            import json
+            from src.visualization import InteractiveGISMap, AnalyticsEngine
+            from config import settings
+
+            logger.info("Starting Part 4.4: Analytics Panels & Comprehensive Visual Intelligence")
+
+            fire_df, facilities_gdf = InteractiveGISMap.load_datasets(
+                simulate=args.simulate, days=args.days
+            )
+
+            if fire_df.empty:
+                logger.error("No fire detections available for analytics computation.")
+                sys.exit(1)
+
+            analytics_engine = AnalyticsEngine()
+            
+            out_dashboard_html = settings.OUTPUT_DIR / "analytics_dashboard.html"
+            out_summary_json = settings.OUTPUT_DIR / "analytics_summary.json"
+            out_root_html = settings.BASE_DIR / "analytics.html"
+            out_docs_html = settings.BASE_DIR / "docs" / "analytics.html"
+
+            # 1. Generate standalone dashboard HTML
+            analytics_engine.generate_standalone_report_html(
+                fire_df=fire_df,
+                facilities_gdf=facilities_gdf,
+                output_path=out_dashboard_html,
+            )
+
+            # Synchronize to root analytics.html and docs/analytics.html if directory exists
+            analytics_engine.generate_standalone_report_html(
+                fire_df=fire_df,
+                facilities_gdf=facilities_gdf,
+                output_path=out_root_html,
+            )
+            if out_docs_html.parent.exists():
+                analytics_engine.generate_standalone_report_html(
+                    fire_df=fire_df,
+                    facilities_gdf=facilities_gdf,
+                    output_path=out_docs_html,
+                )
+
+            # 2. Export structured summary JSON
+            analytics_data = analytics_engine.generate_full_analytics(fire_df, facilities_gdf)
+            with open(out_summary_json, "w", encoding="utf-8") as f:
+                json.dump(analytics_data, f, indent=2)
+
+            # 3. Export static Matplotlib figures
+            figures = analytics_engine.export_matplotlib_charts(
+                fire_df=fire_df,
+                facilities_gdf=facilities_gdf,
+                output_dir=settings.OUTPUT_DIR,
+            )
+
+            reg = analytics_data["regional_summary"]
+            dist = analytics_data["fire_type_distribution"]
+            top_facs = analytics_data["top_facilities"]
+            ts = analytics_data["time_series"]
+
+            logger.info("=================================================================")
+            logger.info("       PART 4.4 ANALYTICS & VISUAL INTELLIGENCE BRIEFING         ")
+            logger.info("=================================================================")
+            logger.info(f"  [+] Total Fire Detections:          {reg['total_detections']:,}")
+            logger.info(f"  [+] Industrial Asset Exposure:      {reg['industrial_fire_count']} ({reg['industrial_exposure_rate']}%)")
+            logger.info(f"  [+] Radiative Power (Mean / Peak):  {reg['avg_frp']} MW / {reg['peak_frp']} MW")
+            logger.info(f"  [+] High-Confidence Verifications:  {reg['high_confidence_rate']}%")
+            logger.info(f"  [+] Time Series Span:               {len(ts['dates'])} observation days")
+            logger.info(f"  [+] Monitored Industrial Sites:     {len(top_facs)} priority hazard facilities")
+            if top_facs:
+                top1 = top_facs[0]
+                logger.info(f"  [!] Highest Risk Facility:          {top1['name']} ({top1['fire_count']} fires, min dist: {top1['min_distance_km']} km, risk: {top1.get('risk_level', 'HIGH')})")
+            logger.info("-----------------------------------------------------------------")
+            logger.info(f"  [+] Standalone Analytics Report:    {out_dashboard_html}")
+            logger.info(f"  [+] Structured Analytics JSON:      {out_summary_json}")
+            logger.info(f"  [+] Root Deployment Report:         {out_root_html}")
+            for fig_key, fig_path in figures.items():
+                logger.info(f"  [+] Static Analytics Figure:        {fig_path}")
+            logger.info("=================================================================")
+            logger.info("Part 4.4 execution completed successfully.")
 
         elif args.part == "5":
             from src.pipeline_automation import (

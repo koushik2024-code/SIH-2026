@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Fire Analytics & Spatial Intelligence | SIH 2026</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS (Dark Mode Base) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --sidebar-bg: #161b22;
+            --card-bg: #161b22;
+            --card-border: #30363d;
+            --accent-primary: #e74c3c;
+            --text-main: #e6edf3;
+            --text-secondary: #8b949e;
+            --blue-accent: #58a6ff;
+            --green-accent: #2ea043;
+            --yellow-accent: #f1c40f;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Top Navbar */
+        .top-navbar {
+            background-color: var(--sidebar-bg);
+            border-bottom: 1px solid var(--card-border);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand-custom {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Analytics Cards */
+        .analytics-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .analytics-card:hover {
+            border-color: #58a6ff;
+            box-shadow: 0 6px 20px rgba(88, 166, 255, 0.12);
+        }
+
+        .card-header-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card-title-flex {
+            font-size: 1.05rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        /* KPI Cards */
+        .kpi-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+        }
+        .kpi-val {
+            font-size: 1.85rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+        .kpi-lbl {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Custom Table */
+        .table-analytics {
+            width: 100%;
+            color: var(--text-main);
+            font-size: 0.85rem;
+            border-collapse: collapse;
+        }
+        .table-analytics th {
+            background-color: #21262d;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            padding: 10px 12px;
+            border-bottom: 2px solid var(--card-border);
+        }
+        .table-analytics td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--card-border);
+            vertical-align: middle;
+        }
+        .table-analytics tr:hover {
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        .badge-pill-custom {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <header class="top-navbar">
+        <div class="navbar-brand-custom">
+            📊 Fire Spatial Intelligence & Analytics
+        </div>
+
+        <div class="d-none d-md-flex align-items-center gap-2">
+            <span class="badge bg-primary text-light px-3 py-2 rounded-pill"><i class="fas fa-trophy me-1"></i> SIH 2026</span>
+            <span class="badge bg-success text-light px-3 py-2 rounded-pill"><i class="fas fa-shield-alt me-1"></i> NTRO</span>
+            <span class="badge bg-danger text-light px-3 py-2 rounded-pill"><i class="fas fa-chart-bar me-1"></i> Part 4.4 Active</span>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="/" class="btn btn-outline-danger btn-sm px-3">
+                <i class="fas fa-map me-1"></i> GIS Map View
+            </a>
+            <a href="/api/analytics" target="_blank" class="btn btn-outline-secondary btn-sm px-3">
+                <i class="fas fa-code me-1"></i> Raw JSON API
+            </a>
+        </div>
+    </header>
+
+    <div class="container py-4">
+        <!-- 4 Top KPI Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-lg-3 col-sm-6">
+                <div class="kpi-card" style="border-left: 4px solid var(--blue-accent);">
+                    <div class="kpi-val text-primary">{{ regional.total_detections }}</div>
+                    <div class="kpi-lbl">Total Fire Detections</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="kpi-card" style="border-left: 4px solid var(--accent-primary);">
+                    <div class="kpi-val text-danger">{{ regional.industrial_fire_count }} <span style="font-size: 1rem;">({{ regional.industrial_exposure_rate }}%)</span></div>
+                    <div class="kpi-lbl">Industrial Asset Exposure</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="kpi-card" style="border-left: 4px solid var(--yellow-accent);">
+                    <div class="kpi-val text-warning">{{ regional.avg_frp }} <span style="font-size: 0.9rem;">MW</span></div>
+                    <div class="kpi-lbl">Mean Radiative Power (Peak: {{ regional.peak_frp }} MW)</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="kpi-card" style="border-left: 4px solid var(--green-accent);">
+                    <div class="kpi-val text-success">{{ regional.high_confidence_rate }}%</div>
+                    <div class="kpi-lbl">High-Confidence Verified</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 1: Distribution Donut & Category Metrics Table -->
+        <div class="row g-4 mb-2">
+            <div class="col-lg-5">
+                <div class="analytics-card h-100">
+                    <div class="card-header-flex">
+                        <h5 class="card-title-flex"><i class="fas fa-chart-pie text-danger"></i> Fire Type Distribution</h5>
+                        <span class="badge bg-secondary">Part 4.4.1</span>
+                    </div>
+                    <div style="height: 270px; position: relative;">
+                        <canvas id="fireTypeDonut"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="analytics-card h-100">
+                    <div class="card-header-flex">
+                        <h5 class="card-title-flex"><i class="fas fa-table text-primary"></i> Category Metrics Breakdown</h5>
+                        <span class="badge bg-secondary">Quantitative Breakdown</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table-analytics">
+                            <thead>
+                                <tr>
+                                    <th>Classification</th>
+                                    <th class="text-center">Detections</th>
+                                    <th class="text-center">Share</th>
+                                    <th class="text-center">Avg FRP</th>
+                                    <th class="text-center">Brightness Temp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in distribution.table %}
+                                <tr>
+                                    <td>
+                                        <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background-color:{{ item.color }}; margin-right:8px;"></span>
+                                        <strong>{{ item.category }}</strong>
+                                    </td>
+                                    <td class="text-center">{{ item.count }}</td>
+                                    <td class="text-center">{{ item.percentage }}%</td>
+                                    <td class="text-center">{{ item.avg_frp }} MW</td>
+                                    <td class="text-center">{{ item.avg_brightness }} K</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 2: Time Series Analysis -->
+        <div class="row mb-2">
+            <div class="col-12">
+                <div class="analytics-card">
+                    <div class="card-header-flex">
+                        <h5 class="card-title-flex"><i class="fas fa-chart-line text-warning"></i> Time Series of Fire Detections & Radiative Energy</h5>
+                        <span class="badge bg-secondary">Part 4.4.2</span>
+                    </div>
+                    <p class="text-secondary small mb-3">Chronological surveillance displaying daily fire detection volume against aggregate Fire Radiative Power (MW).</p>
+                    <div style="height: 320px; position: relative;">
+                        <canvas id="timeSeriesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 3: Top Facilities Leaderboard (Horizontal Bar + Criticality Table) -->
+        <div class="row g-4 mb-2">
+            <div class="col-lg-6">
+                <div class="analytics-card h-100">
+                    <div class="card-header-flex">
+                        <h5 class="card-title-flex"><i class="fas fa-industry text-danger"></i> Top Impacted Facilities</h5>
+                        <span class="badge bg-secondary">Part 4.4.3 Chart</span>
+                    </div>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="facilitiesBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="analytics-card h-100">
+                    <div class="card-header-flex">
+                        <h5 class="card-title-flex"><i class="fas fa-exclamation-triangle text-danger"></i> Proximity Hazard Leaderboard</h5>
+                        <span class="badge bg-secondary">Part 4.4.3 Table</span>
+                    </div>
+                    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                        <table class="table-analytics">
+                            <thead>
+                                <tr>
+                                    <th>Facility</th>
+                                    <th class="text-center">Fires (&le;5km)</th>
+                                    <th class="text-center">Min Dist</th>
+                                    <th class="text-center">Risk Level</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for fac in top_facilities %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ fac.name }}</strong><br>
+                                        <small class="text-secondary">{{ fac.facility_type }}</small>
+                                    </td>
+                                    <td class="text-center text-danger fw-bold">{{ fac.fire_count }}</td>
+                                    <td class="text-center text-warning">{{ fac.min_distance_km }} km</td>
+                                    <td class="text-center">
+                                        <span class="badge-pill-custom {{ fac.risk_badge_class }}">
+                                            {{ fac.risk_level }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr><td colspan="4" class="text-center text-secondary">No facilities within proximity threshold.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 4: Regional Summary Statistics & Diurnal Split -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="analytics-card h-100">
+                    <div class="card-header-flex">
+                        <h5 class="card-title-flex"><i class="fas fa-compass text-success"></i> Regional Surveillance Risk Matrix</h5>
+                        <span class="badge bg-secondary">Part 4.4.4</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table-analytics">
+                            <thead>
+                                <tr>
+                                    <th>Surveillance Zone</th>
+                                    <th class="text-center">Total Anomalies</th>
+                                    <th class="text-center">Industrial Count</th>
+                                    <th class="text-center">Mean FRP</th>
+                                    <th class="text-center">Dominant Class</th>
+                                    <th class="text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for q in regional.quadrants %}
+                                <tr>
+                                    <td><strong>{{ q.region }}</strong></td>
+                                    <td class="text-center">{{ q.fire_count }}</td>
+                                    <td class="text-center text-danger fw-bold">{{ q.industrial_count }}</td>
+                                    <td class="text-center">{{ q.avg_frp }} MW</td>
+                                    <td class="text-center">{{ q.dominant_type }}</td>
+                                    <td class="text-center fw-bold" style="color: {{ '#cf222e' if q.risk_status == 'CRITICAL' else '#3fb950' }};">
+                                        {{ q.risk_status }}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr><td colspan="6" class="text-center text-secondary">Regional spatial zones not calculated.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="analytics-card h-100">
+                    <div class="card-header-flex">
+                        <h5 class="card-title-flex"><i class="fas fa-sun text-warning"></i> Diurnal Sun/Night Split</h5>
+                        <span class="badge bg-secondary">Diurnal Ratio</span>
+                    </div>
+                    <div style="height: 180px; position: relative;">
+                        <canvas id="diurnalDonut"></canvas>
+                    </div>
+                    <div class="d-flex justify-content-around mt-3 text-center">
+                        <div>
+                            <div class="fw-bold text-warning">{{ regional.daytime_count }}</div>
+                            <small class="text-secondary">☀️ Daytime ({{ regional.day_percentage }}%)</small>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-info">{{ regional.nighttime_count }}</div>
+                            <small class="text-secondary">🌙 Nighttime ({{ (100.0 - regional.day_percentage)|round(1) }}%)</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js Render Scripts -->
+    <script>
+        // 1. Fire Type Donut Chart
+        const distData = {{ distribution | tojson }};
+        new Chart(document.getElementById('fireTypeDonut'), {
+            type: 'doughnut',
+            data: {
+                labels: distData.labels,
+                datasets: [{
+                    data: distData.counts,
+                    backgroundColor: distData.colors,
+                    borderWidth: 0,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '68%',
+                plugins: {
+                    legend: { position: 'right', labels: { color: '#e6edf3', font: { size: 11 } } },
+                    tooltip: {
+                        backgroundColor: 'rgba(22, 27, 34, 0.95)',
+                        borderColor: '#30363d',
+                        borderWidth: 1
+                    }
+                }
+            }
+        });
+
+        // 2. Time Series Dual-Axis Chart
+        const tsData = {{ time_series | tojson }};
+        new Chart(document.getElementById('timeSeriesChart'), {
+            type: 'bar',
+            data: {
+                labels: tsData.dates,
+                datasets: [
+                    {
+                        label: 'Detection Frequency',
+                        data: tsData.counts,
+                        backgroundColor: 'rgba(88, 166, 255, 0.65)',
+                        borderColor: '#58a6ff',
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Total FRP (MW)',
+                        data: tsData.total_frp,
+                        type: 'line',
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                        borderWidth: 2.5,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    x: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        ticks: { color: '#58a6ff' },
+                        title: { display: true, text: 'Detection Count', color: '#58a6ff' },
+                        grid: { color: '#21262d' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        ticks: { color: '#e74c3c' },
+                        title: { display: true, text: 'Total FRP (MW)', color: '#e74c3c' },
+                        grid: { drawOnChartArea: false }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#e6edf3' } }
+                }
+            }
+        });
+
+        // 3. Top Facilities Horizontal Bar Chart
+        const topFacs = {{ top_facilities | tojson }};
+        const facLabels = topFacs.map(f => f.name.length > 22 ? f.name.substring(0, 20) + '...' : f.name);
+        const facCounts = topFacs.map(f => f.fire_count);
+
+        new Chart(document.getElementById('facilitiesBarChart'), {
+            type: 'bar',
+            data: {
+                labels: facLabels,
+                datasets: [{
+                    label: 'Nearby Fire Anomaly Count',
+                    data: facCounts,
+                    backgroundColor: 'rgba(231, 76, 60, 0.75)',
+                    borderColor: '#e74c3c',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } },
+                    y: { ticks: { color: '#e6edf3', font: { size: 10 } }, grid: { display: false } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // 4. Diurnal Sun/Night Donut
+        const regData = {{ regional | tojson }};
+        new Chart(document.getElementById('diurnalDonut'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Daytime (☀️)', 'Nighttime (🌙)'],
+                datasets: [{
+                    data: [regData.daytime_count, regData.nighttime_count],
+                    backgroundColor: ['#f1c40f', '#388bfd'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

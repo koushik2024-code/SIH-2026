@@ -1,0 +1,567 @@
+{
+  "distribution": {
+    "labels": [
+      "Industrial Fire",
+      "Gas Flare",
+      "Forest Fire",
+      "Agricultural Burning",
+      "Mining Activity",
+      "Other/Unknown"
+    ],
+    "counts": [
+      52,
+      35,
+      105,
+      122,
+      0,
+      36
+    ],
+    "percentages": [
+      14.9,
+      10.0,
+      30.0,
+      34.9,
+      0.0,
+      10.3
+    ],
+    "total_frp": [
+      4205.9,
+      1396.6,
+      2767.4,
+      1211.3,
+      0.0,
+      493.5
+    ],
+    "avg_frp": [
+      80.9,
+      39.9,
+      26.4,
+      9.9,
+      0.0,
+      13.7
+    ],
+    "avg_brightness": [
+      427.6,
+      489.9,
+      338.0,
+      319.1,
+      0.0,
+      338.5
+    ],
+    "colors": [
+      "#e74c3c",
+      "#e67e22",
+      "#27ae60",
+      "#f1c40f",
+      "#7f8c8d",
+      "#95a5a6"
+    ],
+    "table": [
+      {
+        "category": "Industrial Fire",
+        "count": 52,
+        "percentage": 14.9,
+        "total_frp": 4205.9,
+        "avg_frp": 80.9,
+        "avg_brightness": 427.6,
+        "color": "#e74c3c"
+      },
+      {
+        "category": "Gas Flare",
+        "count": 35,
+        "percentage": 10.0,
+        "total_frp": 1396.6,
+        "avg_frp": 39.9,
+        "avg_brightness": 489.9,
+        "color": "#e67e22"
+      },
+      {
+        "category": "Forest Fire",
+        "count": 105,
+        "percentage": 30.0,
+        "total_frp": 2767.4,
+        "avg_frp": 26.4,
+        "avg_brightness": 338.0,
+        "color": "#27ae60"
+      },
+      {
+        "category": "Agricultural Burning",
+        "count": 122,
+        "percentage": 34.9,
+        "total_frp": 1211.3,
+        "avg_frp": 9.9,
+        "avg_brightness": 319.1,
+        "color": "#f1c40f"
+      },
+      {
+        "category": "Mining Activity",
+        "count": 0,
+        "percentage": 0.0,
+        "total_frp": 0.0,
+        "avg_frp": 0.0,
+        "avg_brightness": 0.0,
+        "color": "#7f8c8d"
+      },
+      {
+        "category": "Other/Unknown",
+        "count": 36,
+        "percentage": 10.3,
+        "total_frp": 493.5,
+        "avg_frp": 13.7,
+        "avg_brightness": 338.5,
+        "color": "#95a5a6"
+      }
+    ]
+  },
+  "fire_type_distribution": {
+    "labels": [
+      "Industrial Fire",
+      "Gas Flare",
+      "Forest Fire",
+      "Agricultural Burning",
+      "Mining Activity",
+      "Other/Unknown"
+    ],
+    "counts": [
+      52,
+      35,
+      105,
+      122,
+      0,
+      36
+    ],
+    "percentages": [
+      14.9,
+      10.0,
+      30.0,
+      34.9,
+      0.0,
+      10.3
+    ],
+    "total_frp": [
+      4205.9,
+      1396.6,
+      2767.4,
+      1211.3,
+      0.0,
+      493.5
+    ],
+    "avg_frp": [
+      80.9,
+      39.9,
+      26.4,
+      9.9,
+      0.0,
+      13.7
+    ],
+    "avg_brightness": [
+      427.6,
+      489.9,
+      338.0,
+      319.1,
+      0.0,
+      338.5
+    ],
+    "colors": [
+      "#e74c3c",
+      "#e67e22",
+      "#27ae60",
+      "#f1c40f",
+      "#7f8c8d",
+      "#95a5a6"
+    ],
+    "table": [
+      {
+        "category": "Industrial Fire",
+        "count": 52,
+        "percentage": 14.9,
+        "total_frp": 4205.9,
+        "avg_frp": 80.9,
+        "avg_brightness": 427.6,
+        "color": "#e74c3c"
+      },
+      {
+        "category": "Gas Flare",
+        "count": 35,
+        "percentage": 10.0,
+        "total_frp": 1396.6,
+        "avg_frp": 39.9,
+        "avg_brightness": 489.9,
+        "color": "#e67e22"
+      },
+      {
+        "category": "Forest Fire",
+        "count": 105,
+        "percentage": 30.0,
+        "total_frp": 2767.4,
+        "avg_frp": 26.4,
+        "avg_brightness": 338.0,
+        "color": "#27ae60"
+      },
+      {
+        "category": "Agricultural Burning",
+        "count": 122,
+        "percentage": 34.9,
+        "total_frp": 1211.3,
+        "avg_frp": 9.9,
+        "avg_brightness": 319.1,
+        "color": "#f1c40f"
+      },
+      {
+        "category": "Mining Activity",
+        "count": 0,
+        "percentage": 0.0,
+        "total_frp": 0.0,
+        "avg_frp": 0.0,
+        "avg_brightness": 0.0,
+        "color": "#7f8c8d"
+      },
+      {
+        "category": "Other/Unknown",
+        "count": 36,
+        "percentage": 10.3,
+        "total_frp": 493.5,
+        "avg_frp": 13.7,
+        "avg_brightness": 338.5,
+        "color": "#95a5a6"
+      }
+    ]
+  },
+  "time_series": {
+    "dates": [
+      "2026-09-06",
+      "2026-09-07",
+      "2026-09-08"
+    ],
+    "counts": [
+      38,
+      194,
+      118
+    ],
+    "cumulative_counts": [
+      38,
+      232,
+      350
+    ],
+    "total_frp": [
+      1574.1,
+      5587.7,
+      2912.9
+    ],
+    "avg_frp": [
+      41.4,
+      28.8,
+      24.7
+    ],
+    "industrial_counts": [
+      14,
+      52,
+      21
+    ],
+    "vegetation_counts": [
+      21,
+      122,
+      84
+    ],
+    "hourly_labels": [
+      "00:00",
+      "01:00",
+      "02:00",
+      "03:00",
+      "04:00",
+      "05:00",
+      "06:00",
+      "07:00",
+      "08:00",
+      "09:00",
+      "10:00",
+      "11:00",
+      "12:00",
+      "13:00",
+      "14:00",
+      "15:00",
+      "16:00",
+      "17:00",
+      "18:00",
+      "19:00",
+      "20:00",
+      "21:00",
+      "22:00",
+      "23:00"
+    ],
+    "hourly_counts": [
+      12,
+      15,
+      13,
+      12,
+      18,
+      20,
+      7,
+      16,
+      22,
+      11,
+      10,
+      13,
+      15,
+      20,
+      17,
+      13,
+      22,
+      11,
+      14,
+      21,
+      8,
+      15,
+      13,
+      12
+    ]
+  },
+  "top_facilities": [
+    {
+      "name": "Mangalore Refinery (MRPL)",
+      "facility_type": "Oil Refinery",
+      "fire_count": 11,
+      "count_500m": 6,
+      "count_1km": 5,
+      "count_2km": 0,
+      "count_5km": 0,
+      "min_distance_km": 0.18,
+      "max_frp": 141.1,
+      "total_frp": 670.5,
+      "avg_frp": 61.0,
+      "risk_level": "CRITICAL",
+      "risk_badge_class": "bg-danger"
+    },
+    {
+      "name": "Bombay High Offshore",
+      "facility_type": "Gas Flare",
+      "fire_count": 10,
+      "count_500m": 7,
+      "count_1km": 2,
+      "count_2km": 1,
+      "count_5km": 0,
+      "min_distance_km": 0.13,
+      "max_frp": 144.8,
+      "total_frp": 586.1,
+      "avg_frp": 58.6,
+      "risk_level": "CRITICAL",
+      "risk_badge_class": "bg-danger"
+    },
+    {
+      "name": "Mathura Refinery (IOCL)",
+      "facility_type": "Oil Refinery",
+      "fire_count": 8,
+      "count_500m": 6,
+      "count_1km": 1,
+      "count_2km": 1,
+      "count_5km": 0,
+      "min_distance_km": 0.04,
+      "max_frp": 145.2,
+      "total_frp": 467.4,
+      "avg_frp": 58.4,
+      "risk_level": "CRITICAL",
+      "risk_badge_class": "bg-danger"
+    },
+    {
+      "name": "Dahej LNG Terminal",
+      "facility_type": "Lng Terminal",
+      "fire_count": 7,
+      "count_500m": 4,
+      "count_1km": 3,
+      "count_2km": 0,
+      "count_5km": 0,
+      "min_distance_km": 0.23,
+      "max_frp": 114.2,
+      "total_frp": 416.6,
+      "avg_frp": 59.5,
+      "risk_level": "CRITICAL",
+      "risk_badge_class": "bg-danger"
+    },
+    {
+      "name": "Kochi Refinery (BPCL)",
+      "facility_type": "Oil Refinery",
+      "fire_count": 6,
+      "count_500m": 4,
+      "count_1km": 2,
+      "count_2km": 0,
+      "count_5km": 0,
+      "min_distance_km": 0.07,
+      "max_frp": 127.9,
+      "total_frp": 386.5,
+      "avg_frp": 64.4,
+      "risk_level": "CRITICAL",
+      "risk_badge_class": "bg-danger"
+    },
+    {
+      "name": "Kochi LNG Terminal",
+      "facility_type": "Lng Terminal",
+      "fire_count": 6,
+      "count_500m": 4,
+      "count_1km": 2,
+      "count_2km": 0,
+      "count_5km": 0,
+      "min_distance_km": 0.27,
+      "max_frp": 147.7,
+      "total_frp": 362.5,
+      "avg_frp": 60.4,
+      "risk_level": "CRITICAL",
+      "risk_badge_class": "bg-danger"
+    },
+    {
+      "name": "Hazira Gas Processing",
+      "facility_type": "Gas Flare",
+      "fire_count": 6,
+      "count_500m": 3,
+      "count_1km": 3,
+      "count_2km": 0,
+      "count_5km": 0,
+      "min_distance_km": 0.13,
+      "max_frp": 58.1,
+      "total_frp": 183.4,
+      "avg_frp": 30.6,
+      "risk_level": "CRITICAL",
+      "risk_badge_class": "bg-danger"
+    },
+    {
+      "name": "RIL Dahej Petrochemical",
+      "facility_type": "Petrochemical",
+      "fire_count": 4,
+      "count_500m": 3,
+      "count_1km": 1,
+      "count_2km": 0,
+      "count_5km": 0,
+      "min_distance_km": 0.22,
+      "max_frp": 130.2,
+      "total_frp": 438.3,
+      "avg_frp": 109.6,
+      "risk_level": "CRITICAL",
+      "risk_badge_class": "bg-danger"
+    },
+    {
+      "name": "Talcher Super TPS",
+      "facility_type": "Thermal Power Plant",
+      "fire_count": 4,
+      "count_500m": 2,
+      "count_1km": 1,
+      "count_2km": 1,
+      "count_5km": 0,
+      "min_distance_km": 0.39,
+      "max_frp": 129.4,
+      "total_frp": 407.8,
+      "avg_frp": 102.0,
+      "risk_level": "CRITICAL",
+      "risk_badge_class": "bg-danger"
+    },
+    {
+      "name": "Jamnagar Refinery (Reliance)",
+      "facility_type": "Oil Refinery",
+      "fire_count": 4,
+      "count_500m": 2,
+      "count_1km": 1,
+      "count_2km": 1,
+      "count_5km": 0,
+      "min_distance_km": 0.22,
+      "max_frp": 134.1,
+      "total_frp": 297.0,
+      "avg_frp": 74.2,
+      "risk_level": "CRITICAL",
+      "risk_badge_class": "bg-danger"
+    }
+  ],
+  "regional": {
+    "total_detections": 350,
+    "industrial_fire_count": 87,
+    "industrial_exposure_rate": 24.9,
+    "avg_frp": 28.8,
+    "peak_frp": 147.7,
+    "avg_brightness": 360.0,
+    "peak_brightness": 595.3,
+    "high_confidence_count": 151,
+    "high_confidence_rate": 43.1,
+    "daytime_count": 191,
+    "nighttime_count": 159,
+    "day_percentage": 54.6,
+    "quadrants": [
+      {
+        "region": "North-East Zone",
+        "fire_count": 81,
+        "industrial_count": 11,
+        "avg_frp": 24.5,
+        "dominant_type": "Agricultural Burning",
+        "risk_status": "CRITICAL"
+      },
+      {
+        "region": "North-West Zone",
+        "fire_count": 94,
+        "industrial_count": 0,
+        "avg_frp": 10.1,
+        "dominant_type": "Agricultural Burning",
+        "risk_status": "NORMAL"
+      },
+      {
+        "region": "South-East Zone",
+        "fire_count": 94,
+        "industrial_count": 16,
+        "avg_frp": 31.9,
+        "dominant_type": "Forest Fire",
+        "risk_status": "CRITICAL"
+      },
+      {
+        "region": "South-West Zone",
+        "fire_count": 81,
+        "industrial_count": 60,
+        "avg_frp": 51.2,
+        "dominant_type": "Gas Flare",
+        "risk_status": "CRITICAL"
+      }
+    ]
+  },
+  "regional_summary": {
+    "total_detections": 350,
+    "industrial_fire_count": 87,
+    "industrial_exposure_rate": 24.9,
+    "avg_frp": 28.8,
+    "peak_frp": 147.7,
+    "avg_brightness": 360.0,
+    "peak_brightness": 595.3,
+    "high_confidence_count": 151,
+    "high_confidence_rate": 43.1,
+    "daytime_count": 191,
+    "nighttime_count": 159,
+    "day_percentage": 54.6,
+    "quadrants": [
+      {
+        "region": "North-East Zone",
+        "fire_count": 81,
+        "industrial_count": 11,
+        "avg_frp": 24.5,
+        "dominant_type": "Agricultural Burning",
+        "risk_status": "CRITICAL"
+      },
+      {
+        "region": "North-West Zone",
+        "fire_count": 94,
+        "industrial_count": 0,
+        "avg_frp": 10.1,
+        "dominant_type": "Agricultural Burning",
+        "risk_status": "NORMAL"
+      },
+      {
+        "region": "South-East Zone",
+        "fire_count": 94,
+        "industrial_count": 16,
+        "avg_frp": 31.9,
+        "dominant_type": "Forest Fire",
+        "risk_status": "CRITICAL"
+      },
+      {
+        "region": "South-West Zone",
+        "fire_count": 81,
+        "industrial_count": 60,
+        "avg_frp": 51.2,
+        "dominant_type": "Gas Flare",
+        "risk_status": "CRITICAL"
+      }
+    ]
+  }
+}

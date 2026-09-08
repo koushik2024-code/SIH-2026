@@ -94,7 +94,7 @@ Explain the SIH problem: Industrial facilities generate thermal signatures obser
 | - | Interactive Web Dashboard (Part 1 Preview) | ✅ Complete | Full-featured GIS web application (Flask + Leaflet/Folium + Chart.js) with real-time analytics & filters |
 | 2 | Spatial Analysis & Enrichment | 🔲 Planned | Proximity analysis, hotspot detection, temporal clustering, spatial statistics |
 | 3 | AI/ML Classification Engine | 🔲 Planned | ML models to classify fire types (industrial, forest, agricultural, etc.) |
-| 4 | GIS Visualization & Advanced Dashboard | 🔲 Planned | Production GIS layers, multi-temporal playback, satellite imagery overlays |
+| 4 | GIS Visualization & Advanced Dashboard | ✅ Complete (4.1, 4.2, 4.3 & 4.4 Complete) | Production Folium/Leaflet GIS map with 4 base layers, category sub-layers, multi-ring buffers, temporal HeatMapWithTime slider, interactive dashboard controls, and comprehensive visual analytics panels |
 | 5 | Monitoring, Alerts & Deployment | 🔄 In Progress (5.1 Complete) | Automated 6-hour pipeline, incremental fetch, ML auto-classification, persistent SQLite DB, multi-platform schedulers |
 
 ## 🔄 Detailed Flow of All 5 Parts
@@ -292,55 +292,151 @@ All features from Part 1 + Part 2:
 **Output**: Trained ML model (.pkl), classification results, evaluation metrics.
 
 ---
+### PART 4: GIS Visualization & Web Dashboard 🔄 IN PROGRESS (4.1 Complete)
 
-### PART 4: GIS Visualization & Web Dashboard 🔲 PLANNED
-
-#### 4.1 Interactive Map (Folium/Leaflet.js)
-**Objective**: Build a web-based GIS interface for visualization and analysis.
+#### 4.1 Interactive Map (Folium/Leaflet.js) ✅ COMPLETED
+**Objective**: Build a production-grade web-based GIS interface for real-time visualization and spatial analysis of thermal anomalies and industrial infrastructure.
 
 **Base Map Layers**:
-- OpenStreetMap (default)
-- ESRI Satellite Imagery
-- CartoDB Dark Matter (for heatmap contrast)
-- Terrain/Topographic view
+- 🗺️ **OpenStreetMap** (default): Standard street cartography and urban infrastructure.
+- 🛰️ **ESRI World Imagery**: High-resolution optical satellite imagery for visual confirmation of facility layout, smoke plumes, and flare locations.
+- 🌙 **CartoDB Dark Matter**: High-contrast dark basemap engineered specifically to accentuate glowing thermal hotspot heatmaps and fire markers.
+- 🏔️ **Topographic / Terrain View**: Detailed elevation contours and relief shading to analyze terrain-driven fire behavior and dispersion.
 
-#### 4.2 Data Overlay Layers
-**Fire Detection Layer**:
-- Color-coded markers by fire type classification
-  - 🔴 Red: Industrial Fire
-  - 🟠 Orange: Gas Flare
-  - 🟢 Green: Forest Fire
-  - 🟡 Yellow: Agricultural Burning
-  - ⚫ Gray: Mining Activity
-  - ⚪ White: Unknown
-- Marker size proportional to FRP
-- Popup with detailed info: coordinates, datetime, confidence, classification
+**Interactive GIS Controls**:
+- 🎛️ **Layer Control**: Quick-toggle panel to switch base maps and toggle individual data overlays.
+- ⛶ **Fullscreen Mode**: Mission-critical operations center view.
+- 📏 **Measurement Tool**: Interactive real-time measurement of distances (km/m) and polygon areas.
+- 📍 **Mouse Position HUD**: Live cursor tracking displaying coordinates in `Lat: xx.xxxx | Lon: xx.xxxx`.
+- 🗺️ **MiniMap**: Inset reference map with display toggle.
+- 📊 **Floating Glassmorphic GIS Legend**: Collapsible dark-mode legend detailing fire classifications, FRP indicators, facility markers, and active stats.
+
+**Execution**:
+```bash
+# Generate the interactive GIS map (outputs to output/interactive_map.html, map.html, and docs/map.html)
+python main.py --part 4.1
+
+# Run with simulated fire anomaly detections
+python main.py --part 4.1 --simulate
+```
+
+#### 4.2 Data Overlay Layers ✅ COMPLETED
+**Objective**: Build rich multi-layered geospatial overlays for AI fire classifications, industrial facility infrastructure, multi-ring safety buffers, and dual-mode thermal intensity surfaces.
+
+**Fire Detection Layer (`FeatureGroupSubGroup`)**:
+- Individual toggleable category sub-layers bound to a parent `MarkerCluster`:
+  - 🔴 **Industrial Fire**: Combustion signatures within proximity to refineries, power plants, and chemical sites.
+  - 🟠 **Gas Flare**: Persistent combustion vents at oil/gas extraction and processing complexes.
+  - 🟢 **Forest Fire**: Vegetative wildfires in designated forestry tracts.
+  - 🟡 **Agricultural Burning**: High-frequency seasonal crop residue / stubble burning.
+  - ⚫ **Mining Activity**: Open-pit thermal anomalies and smoldering spoil heaps.
+  - ⚪ **Other/Unknown**: Unclassified thermal hotspots under evaluation.
+- Marker size dynamically scaled by Fire Radiative Power: $r = \min(\max(\text{FRP} / 8, 4), 22)\text{px}$.
+- Interactive popup detail cards: Detection ID, coordinates, FRP (MW), brightness (K), confidence level, UTC timestamp, diurnal period (Day/Night), nearest industrial facility, and proximity distance with high-hazard alerts for fires $\le 2\text{km}$.
 
 **Industrial Facility Layer**:
-- Custom icons by facility type
-- Buffer zones shown as semi-transparent circles
-- Click for facility details
+- Distinct FontAwesome 6 icons categorized by industry type (Refineries, Power plants, Steel works, Mining, Petrochemical, Gas Flares, LNG terminals, Petroleum wells).
+- Interactive popup cards displaying facility category, coordinates, commercial operator, and safety buffers.
 
-**Heatmap Layer**:
-- FRP-weighted heatmap using folium.plugins.HeatMap
-- Temporal heatmap with time slider (HeatMapWithTime)
-- Adjustable radius and blur parameters
+**Multi-Ring Concentric Hazard Buffer Zones**:
+- Semi-transparent radial impact rings centered on industrial infrastructure:
+  - ⭕ **500m**: Immediate Danger Zone (Red, high opacity)
+  - ⭕ **1km**: Critical Impact Zone (Orange)
+  - ⭕ **2km**: Thermal Exposure Zone (Yellow)
+  - ⭕ **5km**: Regional Surveillance Perimeter (Blue)
 
-#### 4.3 Dashboard Controls
-- Layer toggle panel (show/hide layers)
-- Date range filter
-- Fire type filter (checkboxes)
-- Confidence level slider
-- Search by location
-- Legend panel
+**Dual-Mode Thermal Heatmap Layers**:
+- 🌡️ **Static FRP-Weighted Heatmap**: Continuous thermal surface using `folium.plugins.HeatMap` with calibrated multi-spectral color gradient (Blue $\to$ Cyan $\to$ Green $\to$ Yellow $\to$ Red).
+- ⏳ **Multi-Temporal Time-Lapse Slider**: Temporal animation using `folium.plugins.HeatMapWithTime` grouping thermal observations chronologically across satellite pass cycles with Play/Pause controls and speed scrubbing.
 
-#### 4.4 Analytics Panels
-- Fire type distribution pie chart
-- Time series of fire detections
-- Top facilities by nearby fire count
-- Regional summary statistics
+**Execution**:
+```bash
+# Generate the full Part 4.2 Data Overlay map (outputs to output/overlay_map.html, map.html, and docs/map.html)
+python main.py --part 4.2
 
-**Output**: Interactive HTML map files, embeddable web dashboard.
+# Run Part 4.2 with simulated fire anomaly detections
+python main.py --part 4.2 --simulate
+```
+
+#### 4.3 Dashboard Controls ✅ COMPLETED
+**Objective**: Equip the interactive GIS environment and web dashboard with dynamic, real-time controls for precision anomaly filtering, geocoding, and temporal exploration.
+
+**Integrated Control Capabilities**:
+- 🎛️ **Layer Toggle Panel**:
+  - Independent toggling of base cartography (OSM, Satellite, Dark Matter, Topo).
+  - Category-specific sub-layer toggles for each fire classification.
+  - Granular layer visibility controls for industrial infrastructure, concentric hazard buffers, and thermal intensity surfaces.
+- 📅 **Date Range Filter**:
+  - Start Date and End Date calendar pickers with rapid presets (**All Dates**, **Last 24h**, **Last 48h**, **Last 7d**).
+  - Synchronized client-side Leaflet marker pruning (60 FPS, no page reload) on standalone maps and query parameter filtering (`?start_date=&end_date=`) in the web dashboard.
+- ☑️ **Fire Type Filter (Checkboxes)**:
+  - 6 dedicated category filter checkboxes with theme-matched color swatches and live detection count badges.
+  - **Select All** / **Clear All** rapid toggle links for multi-category isolation.
+- 🎯 **Confidence Level Slider**:
+  - Continuous threshold slider (0% to 100%) with real-time HUD readout badge (`≥ 60%`, `High (≥ 80%)`).
+  - Prunes low-confidence observations dynamically across all active clusters.
+- 🔍 **Search by Location & Infrastructure**:
+  - **Nominatim Geocoder**: Integrated search box (`folium.plugins.Geocoder`) for panning and zooming to any global address, city, or coordinate in India.
+  - **Facility Quick-Jump**: Autocomplete search datalist of major refineries, power stations, steel works, and chemical complexes with instant `flyTo()` navigation and animated proximity pulse.
+- 📊 **Glassmorphic Legend HUD**:
+  - Floating, collapsible mission-control legend panel detailing classification hex colors, FRP marker sizing bubbles (<15 MW, 15–50 MW, >50 MW), multi-ring safety buffer distances (500m, 1km, 2km, 5km), and live anomaly counters.
+
+**Execution**:
+```bash
+# Generate the full Part 4.3 Dashboard Controls map (outputs to output/dashboard_map.html, map.html, and docs/map.html)
+python main.py --part 4.3
+
+# Run Part 4.3 with simulated satellite anomaly detections
+python main.py --part 4.3 --simulate
+
+# Launch full web dashboard with interactive sidebar filter controls
+python main.py --part web --port 5000
+```
+
+#### 4.4 Analytics Panels & Comprehensive Visual Intelligence ✅ COMPLETED
+**Objective**: Deliver high-impact decision support through statistical aggregation, visual intelligence dashboards, static publication charts, and REST API endpoints.
+
+**Core Analytics Components**:
+1. **Fire Type Distribution (Pie / Donut & Category Breakdown)**:
+   - Dynamic proportional breakdown across all 6 thermal anomaly classifications (*Industrial Fire*, *Gas Flare*, *Forest Fire*, *Agricultural Burning*, *Mining Activity*, *Other/Unknown*).
+   - Metrics include total detection counts, percentage shares, cumulative Fire Radiative Power (MW), mean FRP per category, and average brightness temperature (K).
+   - Interactive Chart.js cutout doughnut with custom tooltip hover effects and responsive legend.
+
+2. **Time Series of Fire Detections (Temporal Frequency & Energy Evolution)**:
+   - Chronological daily and hourly surveillance histograms.
+   - Dual-axis visual mapping: Primary Y-axis tracks daily detection frequency (bar chart); Secondary Y-axis tracks cumulative thermal energy output (FRP in MW line overlay with spline smoothing).
+   - Categorical stratification tracking industrial vs. vegetative fire trends over observation windows.
+
+3. **Top Facilities Proximity Hazard Leaderboard**:
+   - Automated spatial proximity ranking identifying critical industrial infrastructure facing active thermal exposure within 5km.
+   - Granular hazard ring containment breakdown: counts within `≤ 500m` (Immediate Danger), `500m–1km` (Critical Impact), `1km–2km` (Thermal Exposure), and `2km–5km` (Regional Perimeter).
+   - Dynamic Criticality Tiers (**CRITICAL**, **HIGH**, **MEDIUM**, **LOW**) assigned by proximity severity and anomaly concentration.
+   - Minimum proximity distance (km), peak FRP (MW), and average radiative power.
+
+4. **Regional Surveillance Statistics & Quadrant Risk Matrix**:
+   - Executive surveillance KPIs: Total active thermal events, industrial facility exposure rate (%), mean and peak FRP (MW), and high-confidence verification rate (%).
+   - Diurnal solar distribution tracking daytime (☀️) vs nighttime (🌙) thermal activity.
+   - Spatial quadrant risk partitioning dividing the Indian landmass into North-East, North-West, South-East, and South-West operational surveillance sectors with dominant fire profiles and threat statuses.
+
+**Reporting & Deployment Surfaces**:
+- 🌐 **Flask Web Dashboard**: Accessible at `/analytics` with interactive Chart.js visualizations, responsive dark-mode styling, and live navbar navigation.
+- 🔌 **REST API Endpoints**:
+  - `GET /api/analytics`: Delivers full structured JSON payload with optional filtering (`?fire_type=&start_date=&end_date=&min_confidence=`).
+  - `GET /api/analytics/export`: Triggers server-side static chart rendering and HTML report export.
+- 📄 **Standalone Intelligence Report**: Self-contained HTML report (`output/analytics_dashboard.html`, `analytics.html`, `docs/analytics.html`) containing embedded Chart.js scripts and glassmorphic tables for air-gapped distribution.
+- 📊 **Publication-Quality Matplotlib Figures**: High-resolution static PNG figures generated in `output/` (`fire_type_distribution.png`, `time_series_detections.png`, `top_facilities_fires.png`, `regional_quadrants.png`).
+
+**Execution**:
+```bash
+# Run standalone Part 4.4 Analytics engine (generates HTML report, JSON summary, and static PNGs)
+python main.py --part 4.4
+
+# Run Part 4.4 with simulated satellite anomaly detections
+python main.py --part 4.4 --simulate
+
+# Launch web dashboard and navigate to /analytics in your browser
+python main.py --part web --port 5000
+```
 
 ---
 

@@ -313,7 +313,33 @@
             padding: 8px;
             border-radius: 4px;
             text-align: center;
-            margin-bottom: 15px;
+        .custom-input {
+            background-color: var(--bg-color);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            font-size: 0.8rem;
+        }
+        .custom-input:focus {
+            background-color: var(--bg-color);
+            border-color: #58a6ff;
+            color: var(--text-main);
+            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+        }
+        .control-sublabel {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 2px;
+            display: block;
+        }
+        .btn-xs {
+            padding: 2px 6px;
+            font-size: 0.72rem;
+            border-radius: 4px;
+        }
+        .custom-slider {
+            accent-color: #2ea043;
         }
 
         /* Responsive */
@@ -340,14 +366,20 @@
         <div class="badges-container d-none d-md-flex">
             <span class="badge bg-primary text-light px-3 py-2 rounded-pill"><i class="fas fa-trophy me-1"></i> SIH 2026</span>
             <span class="badge bg-success text-light px-3 py-2 rounded-pill"><i class="fas fa-shield-alt me-1"></i> NTRO</span>
+            <span class="badge bg-secondary text-light px-3 py-2 rounded-pill"><i class="fas fa-sliders-h me-1"></i> Part 4.3 Active</span>
             <span class="badge bg-danger text-light px-3 py-2 rounded-pill d-flex align-items-center">
-                <span class="pulse-dot"></span> Part 1 Active
+                <span class="pulse-dot"></span> Part 4.4 Active
             </span>
         </div>
 
-        <button id="refreshBtn" class="btn btn-outline-danger btn-sm px-3">
-            <i class="fas fa-sync-alt me-2"></i>Refresh Data
-        </button>
+        <div class="d-flex align-items-center gap-2">
+            <a href="/analytics" class="btn btn-outline-info btn-sm px-3">
+                <i class="fas fa-chart-pie me-1"></i> Analytics Dashboard
+            </a>
+            <button id="refreshBtn" class="btn btn-outline-danger btn-sm px-3">
+                <i class="fas fa-sync-alt me-2"></i>Refresh Data
+            </button>
+        </div>
     </header>
 
     <div class="app-container">
@@ -388,20 +420,99 @@
                 <canvas id="fireDonutChart"></canvas>
             </div>
 
-            <div class="section-title">Filters</div>
+            <!-- Section 1: Location & Facility Quick Search -->
+            <div class="section-title d-flex justify-content-between align-items-center">
+                <span>Location Search</span>
+                <i class="fas fa-search-location text-danger"></i>
+            </div>
+            <div class="mb-3">
+                <input type="text" id="sidebarSearch" class="form-control form-control-sm custom-input" 
+                       placeholder="Search facility, city, ID..." value="{{ search_query }}" list="facilityDatalist">
+                <datalist id="facilityDatalist">
+                    {% for fac in facility_names %}
+                    <option value="{{ fac }}">
+                    {% endfor %}
+                </datalist>
+            </div>
+
+            <!-- Section 2: Date Range Filter -->
+            <div class="section-title d-flex justify-content-between align-items-center">
+                <span>Date Range</span>
+                <i class="far fa-calendar-alt text-warning"></i>
+            </div>
+            <div class="date-filter-group mb-3">
+                <div class="row g-2 mb-2">
+                    <div class="col-6">
+                        <label class="control-sublabel">From</label>
+                        <input type="date" id="sidebarDateStart" class="form-control form-control-sm custom-input" value="{{ start_date }}">
+                    </div>
+                    <div class="col-6">
+                        <label class="control-sublabel">To</label>
+                        <input type="date" id="sidebarDateEnd" class="form-control form-control-sm custom-input" value="{{ end_date }}">
+                    </div>
+                </div>
+                <div class="btn-group w-100" role="group">
+                    <button type="button" class="btn btn-outline-secondary btn-xs preset-date-btn" data-preset="all">All</button>
+                    <button type="button" class="btn btn-outline-secondary btn-xs preset-date-btn" data-preset="24h">24h</button>
+                    <button type="button" class="btn btn-outline-secondary btn-xs preset-date-btn" data-preset="48h">48h</button>
+                    <button type="button" class="btn btn-outline-secondary btn-xs preset-date-btn" data-preset="7d">7d</button>
+                </div>
+            </div>
+
+            <!-- Section 3: Confidence Level Slider -->
+            <div class="section-title d-flex justify-content-between align-items-center">
+                <span>Min Confidence</span>
+                <span id="confBadgeDisplay" class="badge bg-dark border border-success text-success" style="font-size: 0.72rem;">
+                    {{ "All (0%)" if min_confidence == '0' or not min_confidence else ("≥ " ~ min_confidence ~ "%") }}
+                </span>
+            </div>
+            <div class="mb-3">
+                <input type="range" id="sidebarConfSlider" class="form-range custom-slider" min="0" max="95" step="5" value="{{ min_confidence or 0 }}">
+                <div class="d-flex justify-content-between text-muted" style="font-size: 0.68rem; margin-top: -3px;">
+                    <span>0%</span>
+                    <span>50% (Nominal)</span>
+                    <span>85% (High)</span>
+                </div>
+            </div>
+
+            <!-- Section 4: Fire Classification Filter Checkboxes -->
+            <div class="section-title d-flex justify-content-between align-items-center">
+                <span>Classification</span>
+                <div style="font-size: 0.75rem;">
+                    <a href="javascript:void(0)" id="selectAllTypesLink" class="text-primary text-decoration-none">All</a>
+                    <span class="text-muted">|</span>
+                    <a href="javascript:void(0)" id="clearAllTypesLink" class="text-primary text-decoration-none">None</a>
+                </div>
+            </div>
             <form id="filterForm">
                 {% for type in all_fire_types %}
                 <div class="form-check filter-item">
                     <input class="form-check-input" type="checkbox" name="fire_type" value="{{ type }}" id="chk_{{ loop.index }}" 
                         {% if type in selected_types %}checked{% endif %}>
-                    <label class="form-check-label d-flex align-items-center" for="chk_{{ loop.index }}">
-                        <span class="color-dot ms-2 me-2" style="background-color: {{ fire_type_colors.get(type, '#ffffff') }};"></span>
-                        {{ type }}
+                    <label class="form-check-label d-flex align-items-center justify-content-between w-100" for="chk_{{ loop.index }}">
+                        <span class="d-flex align-items-center">
+                            <span class="color-dot ms-2 me-2" style="background-color: {{ fire_type_colors.get(type, '#ffffff') }};"></span>
+                            {{ type }}
+                        </span>
+                        <span class="badge bg-dark text-secondary border border-secondary" style="font-size: 0.68rem;">
+                            {{ stats.fire_type_distribution.get(type, 0) }}
+                        </span>
                     </label>
                 </div>
                 {% endfor %}
-                <button type="button" id="applyFiltersBtn" class="btn btn-apply btn-sm">Apply Filters</button>
+                <button type="button" id="applyFiltersBtn" class="btn btn-primary btn-sm w-100 mt-3">
+                    <i class="fas fa-filter me-1"></i> Apply Filters
+                </button>
+                <button type="button" id="resetFiltersBtn" class="btn btn-outline-secondary btn-sm w-100 mt-2">
+                    <i class="fas fa-undo me-1"></i> Reset All Filters
+                </button>
             </form>
+
+            {% if total_filtered is defined and total_unfiltered is defined and total_filtered != total_unfiltered %}
+            <div class="mt-3 p-2 rounded text-center border border-warning" style="background: rgba(210, 153, 34, 0.15); font-size: 0.75rem; color: #e3b341;">
+                <i class="fas fa-filter me-1"></i> Showing <b>{{ total_filtered }}</b> of <b>{{ total_unfiltered }}</b> anomalies
+            </div>
+            {% endif %}
         </aside>
 
         <!-- MAIN CONTENT -->
@@ -524,17 +635,93 @@
             }
         });
 
-        // 4. Handle Filter Application
+        // 4. Handle Confidence Slider Live Badge Update
+        const confSlider = document.getElementById('sidebarConfSlider');
+        const confBadge = document.getElementById('confBadgeDisplay');
+        if (confSlider && confBadge) {
+            confSlider.addEventListener('input', function() {
+                const val = parseInt(this.value, 10);
+                if (val === 0) {
+                    confBadge.innerText = 'All (0%)';
+                    confBadge.className = 'badge bg-dark border border-success text-success';
+                } else if (val >= 80) {
+                    confBadge.innerText = 'High (≥ ' + val + '%)';
+                    confBadge.className = 'badge bg-dark border border-danger text-danger';
+                } else {
+                    confBadge.innerText = '≥ ' + val + '%';
+                    confBadge.className = 'badge bg-dark border border-warning text-warning';
+                }
+            });
+        }
+
+        // 5. Handle Date Preset Buttons
+        const dateStartInput = document.getElementById('sidebarDateStart');
+        const dateEndInput = document.getElementById('sidebarDateEnd');
+        document.querySelectorAll('.preset-date-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const preset = this.getAttribute('data-preset');
+                const now = new Date();
+                if (preset === 'all') {
+                    if (dateStartInput) dateStartInput.value = '';
+                    if (dateEndInput) dateEndInput.value = '';
+                } else {
+                    const days = (preset === '24h') ? 1 : ((preset === '48h') ? 2 : 7);
+                    const past = new Date();
+                    past.setDate(now.getDate() - days);
+                    if (dateEndInput) dateEndInput.value = now.toISOString().split('T')[0];
+                    if (dateStartInput) dateStartInput.value = past.toISOString().split('T')[0];
+                }
+            });
+        });
+
+        // 6. Select All / None Fire Types
+        const selectAllLink = document.getElementById('selectAllTypesLink');
+        const clearAllLink = document.getElementById('clearAllTypesLink');
+        if (selectAllLink) {
+            selectAllLink.addEventListener('click', function() {
+                document.querySelectorAll('input[name="fire_type"]').forEach(cb => cb.checked = true);
+            });
+        }
+        if (clearAllLink) {
+            clearAllLink.addEventListener('click', function() {
+                document.querySelectorAll('input[name="fire_type"]').forEach(cb => cb.checked = false);
+            });
+        }
+
+        // 7. Handle Filter Application
         document.getElementById('applyFiltersBtn').addEventListener('click', function() {
-            const checkboxes = document.querySelectorAll('input[name="fire_type"]:checked');
-            const selected = Array.from(checkboxes).map(cb => encodeURIComponent(cb.value));
-            
             let url = new URL(window.location.href);
             url.search = ''; // clear current params
-            selected.forEach(val => url.searchParams.append('fire_type', decodeURIComponent(val)));
-            
+
+            // Fire Types
+            const checkboxes = document.querySelectorAll('input[name="fire_type"]:checked');
+            checkboxes.forEach(cb => url.searchParams.append('fire_type', cb.value));
+
+            // Date Range
+            const startVal = dateStartInput ? dateStartInput.value.trim() : '';
+            const endVal = dateEndInput ? dateEndInput.value.trim() : '';
+            if (startVal) url.searchParams.append('start_date', startVal);
+            if (endVal) url.searchParams.append('end_date', endVal);
+
+            // Min Confidence
+            const confVal = confSlider ? confSlider.value : '0';
+            if (confVal && confVal !== '0') url.searchParams.append('min_confidence', confVal);
+
+            // Search
+            const searchInput = document.getElementById('sidebarSearch');
+            const searchVal = searchInput ? searchInput.value.trim() : '';
+            if (searchVal) url.searchParams.append('search', searchVal);
+
             window.location.href = url.toString();
         });
+
+        // 8. Handle Reset Button
+        const resetBtn = document.getElementById('resetFiltersBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                window.location.href = window.location.pathname;
+            });
+        }
 
         // 5. Handle Refresh Button
         document.getElementById('refreshBtn').addEventListener('click', function() {
