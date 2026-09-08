@@ -434,7 +434,8 @@ class OverlayManager:
                 if "acq_time" in df_copy.columns:
                     hour_min = i * 600
                     hour_max = (i + 1) * 600
-                    sub = df_copy[(df_copy["acq_time"] >= hour_min) & (df_copy["acq_time"] < hour_max)]
+                    acq_series = pd.to_numeric(df_copy["acq_time"], errors="coerce").fillna(0)
+                    sub = df_copy[(acq_series >= hour_min) & (acq_series < hour_max)]
                 else:
                     sub = df_copy.iloc[i::len(time_slices)]
 
