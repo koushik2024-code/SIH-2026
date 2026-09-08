@@ -1,0 +1,45 @@
+version: '3.8'
+
+# =================================================================
+# INDUSTRIAL FIRE & PERSISTENT THERMAL SOURCE DETECTION (SIH 2026)
+# Local Development Docker Compose Override
+# Part 5.5: Deployment, Containerization & Health Monitoring
+# =================================================================
+
+services:
+  api:
+    environment:
+      - APP_ENV=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ./src:/app/src
+      - ./config:/app/config
+      - ./data:/app/data
+      - ./output:/app/output
+      - ./models:/app/models
+    command: ["uvicorn", "src.api.app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  web:
+    environment:
+      - APP_ENV=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ./src:/app/src
+      - ./config:/app/config
+      - ./data:/app/data
+      - ./output:/app/output
+      - ./models:/app/models
+    command: ["python", "main.py", "--part", "web", "--port", "5000", "--debug"]
+
+  worker:
+    environment:
+      - APP_ENV=development
+      - DEBUG=true
+    volumes:
+      - ./src:/app/src
+      - ./config:/app/config
+      - ./data:/app/data
+      - ./output:/app/output
+      - ./models:/app/models

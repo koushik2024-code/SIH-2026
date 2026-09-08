@@ -38,9 +38,14 @@ def main():
     parser.add_argument(
         "--part",
         type=str,
-        choices=["1", "2", "2.2", "2.3", "2.4", "3", "3.5", "4", "4.1", "4.2", "4.3", "4.4", "5", "web"],
+        choices=["1", "2", "2.2", "2.3", "2.4", "3", "3.5", "4", "4.1", "4.2", "4.3", "4.4", "5", "5.1", "5.2", "5.3", "5.4", "5.5", "api", "reporting", "deployment", "web"],
         default="web",
-        help="Which part to run (1-5, 2.2, 2.3, 2.4, 4.1, 4.2, 4.3, 4.4) or 'web' for dashboard",
+        help="Which part to run (1-5, 5.1-5.5, 'api', 'reporting', 'deployment') or 'web' for dashboard",
+    )
+    parser.add_argument(
+        "--test-alert",
+        action="store_true",
+        help="Trigger immediate diagnostic test alert across all channels (Part 5.2)",
     )
     parser.add_argument(
         "--bbox",
@@ -593,7 +598,7 @@ def main():
             logger.info("=================================================================")
             logger.info("Part 4.4 execution completed successfully.")
 
-        elif args.part == "5":
+        elif args.part in ["5", "5.1"]:
             from src.pipeline_automation import (
                 AutomatedPipeline,
                 PipelineScheduler,
@@ -601,10 +606,10 @@ def main():
 
             logger.info(
                 "Starting Part 5: Monitoring, Alerts & Deployment "
-                "(5.1 Automated Data Pipeline)"
+                "(5.1 Automated Data Pipeline & 5.2 Alert Dispatch)"
             )
 
-            if args.run_once:
+            if args.run_once or args.part == "5.1":
                 logger.info(
                     "Running single incremental pipeline pass "
                     "(--run-once)..."
@@ -619,11 +624,12 @@ def main():
 
                 if result.get("status") == "SUCCESS":
                     logger.info(
-                        "Part 5.1 pipeline execution completed successfully."
+                        "Part 5.1/5.2 pipeline execution completed successfully. "
+                        f"Alerts dispatched: {result.get('alerts_dispatched', 0)}"
                     )
                 else:
                     logger.error(
-                        "Part 5.1 pipeline execution failed: "
+                        "Part 5 pipeline execution failed: "
                         f"{result.get('error')}"
                     )
                     sys.exit(1)
@@ -640,6 +646,131 @@ def main():
                 )
 
                 scheduler.start(run_immediately=True)
+
+        elif args.part == "5.2":
+            import pandas as pd
+            import geopandas as gpd
+            from config import settings
+            from src.monitoring import AlertEngine, get_alert_dispatcher
+            from src.pipeline_automation.database import FireMonitoringDatabase
+            from src.web.demo_data import DemoDataGenerator
+
+            logger.info("===============================================================")
+            logger.info("       STARTING PART 5.2: MULTI-CHANNEL ALERT SYSTEM           ")
+            logger.info("===============================================================")
+
+            db = FireMonitoringDatabase()
+            dispatcher = get_alert_dispatcher()
+            dispatcher.set_database(db)
+            alert_engine = AlertEngine(dispatcher=dispatcher, db=db)
+
+            # 1. Check if diagnostic test alert requested
+            if args.test_alert:
+                logger.info("Dispatching diagnostic test alert across all channels...")
+                test_alert = alert_engine.trigger_test_alert()
+                logger.info(f"Test alert [{test_alert.severity}] '{test_alert.title}' dispatched to: {test_alert.channels_dispatched}")
+                logger.info("Part 5.2 diagnostic test completed successfully.")
+                return
+
+            # 2. Load fire dataset and facilities for evaluation
+            fires_df = db.get_all_fires(limit=1000)
+            if fires_df.empty or args.simulate:
+                logger.info("Evaluating alert triggers using simulated / baseline satellite detections...")
+                demo_gen = DemoDataGenerator()
+                fires_df = demo_gen.generate_fire_data(n_fires=250, days_back=3)
+                facilities_gdf = demo_gen.generate_facilities()
+            else:
+                fac_path = settings.PROCESSED_DATA_DIR / "industrial_facilities.geojson"
+                facilities_gdf = gpd.read_file(fac_path) if fac_path.exists() else None
+
+            # 3. Run trigger evaluation and dispatch
+            alerts = alert_engine.evaluate_and_dispatch(
+                df=fires_df,
+                facilities_gdf=facilities_gdf,
+                historical_df=fires_df,
+                check_cooldown=not args.simulate,
+            )
+
+            # 4. Print Executive Operational Briefing
+            alert_stats = db.get_alert_statistics()
+            logger.info("---------------------------------------------------------------")
+            logger.info("           PART 5.2 INCIDENT DISPATCH SUMMARY                 ")
+            logger.info("---------------------------------------------------------------")
+            logger.info(f"  [+] Active Detections Evaluated:  {len(fires_df)}")
+            logger.info(f"  [+] Dispatched Alert Events:      {len(alerts)}")
+            logger.info(f"  [+] Persistent Total in DB:       {alert_stats['total_alerts']}")
+            logger.info(f"  [+] Critical Active Incidents:    {alert_stats['critical_active_alerts']}")
+            logger.info(f"  [+] Active Channels:              Email (SMTP), SMS (Twilio), Dashboard (SSE), Log, Webhook")
+            for idx, a in enumerate(alerts[:5], 1):
+                logger.info(f"      {idx}. [{a.severity}] {a.title} -> {a.channels_dispatched}")
+            if len(alerts) > 5:
+                logger.info(f"      ... and {len(alerts) - 5} more alert(s)")
+            logger.info("---------------------------------------------------------------")
+            logger.info(f"  [+] Audit Log File:  {settings.ALERT_LOG_PATH}")
+            logger.info(f"  [+] JSON Records:    {settings.ALERT_JSON_PATH}")
+            logger.info("===============================================================")
+            logger.info("Part 5.2 execution completed successfully.")
+
+        elif args.part in ["5.3", "api"]:
+            import uvicorn
+
+            api_port = args.port if args.port != 5000 else 8000
+            logger.info("===============================================================")
+            logger.info("        STARTING PART 5.3: PRODUCTION FASTAPI REST API        ")
+            logger.info("===============================================================")
+            print(f"\n    [+] FastAPI Server:    http://localhost:{api_port}")
+            print(f"    [+] Interactive Docs:  http://localhost:{api_port}/docs")
+            print(f"    [+] ReDoc:             http://localhost:{api_port}/redoc")
+            print(f"    [+] API Fires:         http://localhost:{api_port}/api/fires")
+            print(f"    [+] API Facilities:    http://localhost:{api_port}/api/facilities")
+            print(f"    [+] API Hotspots:      http://localhost:{api_port}/api/hotspots")
+            print(f"    [+] API Stats:         http://localhost:{api_port}/api/stats")
+            print(f"    [+] API Classify:      POST http://localhost:{api_port}/api/classify")
+            print(f"    [+] API Health:        http://localhost:{api_port}/health\n")
+
+            from src.api.app import app
+            uvicorn.run(app, host="0.0.0.0", port=api_port, log_level="info")
+
+        elif args.part in ["5.4", "reporting"]:
+            logger.info("===============================================================")
+            logger.info("   STARTING PART 5.4: HISTORICAL ANALYSIS & REPORTING ENGINE   ")
+            logger.info("===============================================================")
+            from src.web.app import get_data
+            fires_df, facilities_gdf = get_data()
+
+            from src.reporting.report_engine import ReportEngine
+            engine = ReportEngine()
+            analysis = engine.run_full_analysis(fires_df, facilities_gdf)
+            summary = analysis["summary"]
+
+            logger.info("---------------------------------------------------------------")
+            logger.info("               EXECUTIVE REPORTING DOSSIER                    ")
+            logger.info("---------------------------------------------------------------")
+            logger.info(f"  [+] Total Fire Detections:       {summary.get('total_fires_analyzed')}")
+            logger.info(f"  [+] Total Thermal Energy:        {summary.get('total_thermal_energy_mwh')} MWh")
+            logger.info(f"  [+] Monitored Facilities:        {summary.get('monitored_facilities_count')}")
+            logger.info(f"  [+] Extreme / High Risk Assets:  {summary.get('extreme_risk_facilities')} Extreme, {summary.get('high_risk_facilities')} High")
+            logger.info(f"  [+] Monthly Periods Aggregated:  {summary.get('monthly_periods')}")
+            logger.info(f"  [+] Regional Surveillance Zones: {summary.get('regional_zones')}")
+            logger.info("---------------------------------------------------------------")
+            logger.info("               GENERATED REPORT ARTIFACTS                      ")
+            logger.info("---------------------------------------------------------------")
+            for fmt, path in analysis.get("files", {}).items():
+                logger.info(f"  [+] {fmt.upper()}: {path}")
+            logger.info("===============================================================")
+            logger.info("Part 5.4 execution completed successfully.")
+
+        elif args.part in ["5.5", "deployment"]:
+            logger.info("===============================================================")
+            logger.info("   STARTING PART 5.5: DEPLOYMENT PRE-FLIGHT VERIFICATION       ")
+            logger.info("===============================================================")
+            from scripts.deploy import run_preflight
+            success = run_preflight()
+            if success:
+                logger.info("Part 5.5 pre-flight verification completed successfully.")
+            else:
+                logger.error("Part 5.5 pre-flight verification encountered critical errors.")
+                sys.exit(1)
 
         elif args.part == "web":
             from src.web.app import create_app

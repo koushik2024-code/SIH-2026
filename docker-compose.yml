@@ -1,0 +1,120 @@
+version: '3.8'
+
+# =================================================================
+# INDUSTRIAL FIRE & PERSISTENT THERMAL SOURCE DETECTION (SIH 2026)
+# Production Multi-Container Orchestration
+# Part 5.5: Deployment, Containerization & Health Monitoring
+# =================================================================
+
+services:
+  # ---------------------------------------------------------------
+  # 1. FastAPI REST Backend Service (Port 8000)
+  # ---------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sih2026_fire_api
+    environment:
+      - SERVICE_TYPE=api
+      - API_PORT=8000
+      - APP_ENV=production
+      - LOG_LEVEL=INFO
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - "8000:8000"
+    volumes:
+      - fire_data:/app/data
+      - fire_output:/app/output
+      - fire_models:/app/models
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "scripts/healthcheck.py", "--service", "api", "--port", "8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - fire_monitoring_net
+
+  # ---------------------------------------------------------------
+  # 2. Flask Operations Dashboard & Reports Console (Port 5000)
+  # ---------------------------------------------------------------
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sih2026_fire_web
+    environment:
+      - SERVICE_TYPE=web
+      - PORT=5000
+      - WEB_PORT=5000
+      - APP_ENV=production
+      - LOG_LEVEL=INFO
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - "5000:5000"
+    volumes:
+      - fire_data:/app/data
+      - fire_output:/app/output
+      - fire_models:/app/models
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "scripts/healthcheck.py", "--service", "web", "--port", "5000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - fire_monitoring_net
+
+  # ---------------------------------------------------------------
+  # 3. Background Telemetry Ingestion Worker (Part 5.1 Pipeline)
+  # ---------------------------------------------------------------
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sih2026_fire_worker
+    environment:
+      - SERVICE_TYPE=worker
+      - APP_ENV=production
+      - PIPELINE_INTERVAL_HOURS=6.0
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - fire_data:/app/data
+      - fire_output:/app/output
+      - fire_models:/app/models
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - fire_monitoring_net
+
+# -----------------------------------------------------------------
+# Shared Persistent Storage Volumes
+# -----------------------------------------------------------------
+volumes:
+  fire_data:
+    driver: local
+  fire_output:
+    driver: local
+  fire_models:
+    driver: local
+
+# -----------------------------------------------------------------
+# Isolated Bridge Network
+# -----------------------------------------------------------------
+networks:
+  fire_monitoring_net:
+    driver: bridge

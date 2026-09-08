@@ -95,7 +95,7 @@ Explain the SIH problem: Industrial facilities generate thermal signatures obser
 | 2 | Spatial Analysis & Enrichment | 🔲 Planned | Proximity analysis, hotspot detection, temporal clustering, spatial statistics |
 | 3 | AI/ML Classification Engine | 🔲 Planned | ML models to classify fire types (industrial, forest, agricultural, etc.) |
 | 4 | GIS Visualization & Advanced Dashboard | ✅ Complete (4.1, 4.2, 4.3 & 4.4 Complete) | Production Folium/Leaflet GIS map with 4 base layers, category sub-layers, multi-ring buffers, temporal HeatMapWithTime slider, interactive dashboard controls, and comprehensive visual analytics panels |
-| 5 | Monitoring, Alerts & Deployment | 🔄 In Progress (5.1 Complete) | Automated 6-hour pipeline, incremental fetch, ML auto-classification, persistent SQLite DB, multi-platform schedulers |
+| 5 | Monitoring, Alerts & Deployment | ✅ Complete (5.1, 5.2, 5.3, 5.4 & 5.5 Complete) | Automated 6-hour ingestion pipeline, multi-channel alert dispatcher, high-performance FastAPI REST API, longitudinal analytics with PDF/HTML/CSV reporting, and multi-service Docker containerization with deep health monitoring & CI/CD |
 
 ## 🔄 Detailed Flow of All 5 Parts
 
@@ -486,44 +486,465 @@ python main.py --part 5 --interval-hours 6
 python main.py --part web --port 5000
 ```
 
-#### 5.2 Alert System
-**Trigger Conditions**:
-- New industrial fire detected (confidence > 80%)
-- Unusual thermal spike at known facility
-- New fire cluster formation near industrial zone
-- Persistent fire burning for >48 hours
+#### 5.2 Multi-Channel Alert System ✅ COMPLETED
+**Objective**: Detect critical thermal anomalies in real time, evaluate deterministic & statistical hazard trigger conditions, and instantly dispatch structured incident alerts across multiple delivery channels with intelligent cooldown deduplication.
 
-**Alert Channels**:
-- Email notifications (SMTP)
-- SMS alerts (Twilio API)
-- Dashboard notifications (WebSocket)
-- Log file alerts
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                 PART 5.2: MULTI-CHANNEL ALERT SYSTEM ARCHITECTURE            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  [Automated Pipeline (Part 5.1)] ──► Enriched Thermal & Spatial Detections │
+│                                                │                            │
+│                                                ▼                            │
+│                               ┌──────────────────────────────────┐          │
+│                               │     Trigger Condition Engine     │          │
+│                               │  • New Industrial Fire (>80%)    │          │
+│                               │  • Facility Thermal Spike        │          │
+│                               │  • Industrial Cluster Formation  │          │
+│                               │  • Persistent Fire (>48 Hours)   │          │
+│                               └────────────────┬─────────────────┘          │
+│                                                │                            │
+│                                                ▼                            │
+│                               ┌──────────────────────────────────┐          │
+│                               │   Alert Dispatcher & Cooldown    │          │
+│                               │  • Cooldown Check (60 min default)│         │
+│                               │  • Severity Escalation Bypass    │          │
+│                               │  • SQLite Persistent Logging     │          │
+│                               └───────┬───────┬──────────┬───────┘          │
+│                                       │       │          │                  │
+│            ┌──────────────────────────┼───────┴──────────┼───────────────┐  │
+│            ▼                          ▼                  ▼               ▼  │
+│     ┌─────────────┐            ┌─────────────┐    ┌─────────────┐ ┌────────┐│
+│     │    Email    │            │     SMS     │    │  Dashboard  │ │ Log &  ││
+│     │ (SMTP/HTML) │            │  (Twilio)   │    │  (SSE Stream)│ │Webhook││
+│     └─────────────┘            └─────────────┘    └─────────────┘ └────────┘│
+│                                                          │                  │
+│                                                          ▼                  │
+│                                                 Live Toast & HUD Audio      │
+│                                                 /alerts Incident Center     │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
-#### 5.3 REST API (FastAPI)
-**Endpoints**:
+##### 1. Trigger Conditions Evaluated
+1. **New Industrial Fire (`NEW_INDUSTRIAL_FIRE`)**:
+   - Triggers when a detection is classified as `Industrial Fire` with model confidence $> 80\%$, OR when any high-confidence ($> 80\%$) thermal anomaly is detected within $2.0\text{ km}$ of a registered industrial plant.
+   - Severity: `CRITICAL` if within $1\text{ km}$, `HIGH` if within $2\text{ km}$.
+2. **Facility Thermal Spike (`FACILITY_THERMAL_SPIKE`)**:
+   - Detects abnormal heat surges where brightness temperature $\ge 365\text{ K}$ or Fire Radiative Power (FRP) $\ge 50\text{ MW}$, or when current FRP exceeds $2.0\times$ the historical baseline of the facility.
+   - Severity: `CRITICAL` ($\ge 380\text{ K}$ or $\ge 80\text{ MW}$), `HIGH` otherwise.
+3. **Industrial Cluster Formation (`INDUSTRIAL_CLUSTER_FORMATION`)**:
+   - Identifies $\ge 3$ active fire detections co-located within a $3.0\text{ km}$ radius of an industrial zone, representing rapidly spreading or multi-point combustion.
+   - Severity: `CRITICAL` for large clusters ($\ge 5$ points), `HIGH` for smaller clusters.
+4. **Persistent Fire Burning > 48 Hours (`PERSISTENT_FIRE_48H`)**:
+   - Detects long-duration thermal signatures with temporal persistence duration $> 48.0\text{ hours}$ within $5.0\text{ km}$ of a facility, indicating continuous flare anomalies, coal seam fires, or uncontrolled industrial fires.
+   - Severity: `CRITICAL` if active at $< 2\text{ km}$, `HIGH` otherwise.
+5. **System Diagnostic Test Alert (`DIAGNOSTIC_TEST`)**:
+   - Simulates high-priority multi-spectral telemetry against critical infrastructure to test channel connectivity end-to-end.
+
+##### 2. Multi-Channel Alert Delivery
+- **📧 Email Notifications (SMTP & Responsive Dark HTML)**:
+  - Custom HTML template formatted with modern dark aesthetics, severity gradient banners, key metrics (FRP, brightness, confidence, distance), geographic coordinates, and direct links to the GIS Dashboard.
+  - Automatic fallback to file simulation preview (`output/latest_alert_email.html`) when SMTP credentials are not configured.
+- **📱 SMS Alerts (Twilio REST API)**:
+  - Standardized, concise SMS payloads under 160 characters formatted for field emergency teams:
+    `[SIH ALERT] CRITICAL: Industrial Fire Detected. Near: Jamnagar Refinery (0.8km). FRP: 72MW, Conf: 95%. Coords: 22.471,70.058. ID: ALT-A1B2C3D4`
+  - Automated simulation logger when Twilio credentials are not set.
+- **🖥️ Dashboard Notifications (Server-Sent Events / SSE)**:
+  - Non-blocking streaming endpoint (`/api/alerts/stream`) continuously broadcasting real-time alert events to all connected clients.
+  - Triggers floating glassmorphic toast notifications with severity color accents and synthesized Web Audio alert frequencies.
+  - Dedicated **Alert Bell HUD** on the navbar displaying active badge counts.
+- **📜 Log File Alerts & JSON Sink**:
+  - Detailed audit entries appended to `data/alerts.log`.
+  - Structured JSON array persisted to `output/alerts.json` for machine ingestion.
+- **🌐 Outbound Webhooks**:
+  - Standardized JSON POST payload dispatched to external monitoring platforms, Slack, Discord, or Microsoft Teams.
+
+##### 3. Cooldown & Deduplication Logic
+- Prevents alert fatigue by maintaining an in-memory and persistent SQLite record of past alerts per `(facility_name, trigger_type)`.
+- Default cooldown window: **60 minutes** (configurable via `ALERT_COOLDOWN_MINUTES`).
+- **Severity Escalation Bypass**: If a new incoming anomaly escalates in severity (e.g., from `WARNING` or `HIGH` to `CRITICAL`), the cooldown is automatically bypassed to ensure safety-critical alerts are never dropped.
+
+##### 4. Persistent Storage & Schema
+Alerts are stored in the SQLite database (`data/fire_monitoring.db`) with fast indexed lookups:
+```sql
+CREATE TABLE IF NOT EXISTS alerts (
+    alert_id TEXT PRIMARY KEY,
+    timestamp TEXT NOT NULL,
+    trigger_type TEXT NOT NULL,
+    severity TEXT NOT NULL,
+    detection_id TEXT,
+    latitude REAL,
+    longitude REAL,
+    facility_name TEXT,
+    facility_type TEXT,
+    distance_km REAL,
+    frp REAL,
+    brightness REAL,
+    confidence REAL,
+    title TEXT NOT NULL,
+    description TEXT,
+    channels_dispatched TEXT,
+    status TEXT NOT NULL DEFAULT 'ACTIVE',
+    acknowledged_at TEXT,
+    acknowledged_by TEXT
+);
+```
+
+##### 5. Web Interface: Incident Operations Center (`/alerts`)
+- Access the dedicated operations center at `http://localhost:5000/alerts`:
+  - **KPI Cards**: Active alerts, Critical incidents, High-priority anomalies, Total resolved alerts.
+  - **Filter Toolbar**: Instant filtering by severity (`CRITICAL`, `HIGH`, `WARNING`, `INFO`) and lifecycle status (`ACTIVE`, `ACKNOWLEDGED`).
+  - **One-Click Acknowledgment**: Operators can acknowledge active alerts directly from the table.
+  - **Real-Time Live Feed**: Automatically updates via SSE stream without page reload.
+  - **Test Trigger Button**: Dispatches an instant diagnostic test alert across all channels.
+
+##### 6. REST API Endpoints (Alerts)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | /api/fires | Get all classified fires |
-| GET | /api/fires/{id} | Get specific fire details |
-| GET | /api/fires/type/{type} | Filter by fire type |
-| GET | /api/facilities | Get all industrial facilities |
-| GET | /api/hotspots | Get current hotspots |
-| GET | /api/stats | Get summary statistics |
-| POST | /api/classify | Classify new fire data |
+| `GET` | `/alerts` | Incident Operations Center Web UI |
+| `GET` | `/api/alerts` | Retrieve alerts with filtering (`limit`, `severity`, `status`, `trigger_type`) |
+| `GET` | `/api/alerts/stats` | Summary counts of alerts by severity and status |
+| `POST` | `/api/alerts/<alert_id>/ack` | Acknowledge an active alert |
+| `POST` | `/api/alerts/test` | Trigger a live diagnostic test alert across all channels |
+| `GET` | `/api/alerts/stream` | Server-Sent Events (SSE) live stream for browser clients |
 
-#### 5.4 Historical Analysis & Reporting
-- Monthly/quarterly fire reports
-- Trend analysis by region/type
-- Facility risk scoring over time
-- Export to PDF/CSV
+##### 7. Execution Commands
+```bash
+# 1. Run standalone Part 5.2 alert evaluation
+python main.py --part 5.2
 
-#### 5.5 Deployment
-- Docker containerization (Dockerfile + docker-compose)
-- Environment variable configuration
-- Health checks and monitoring
-- CI/CD pipeline (GitHub Actions)
+# 2. Run standalone alert evaluation with simulated multi-spectral telemetry
+python main.py --part 5.2 --simulate
 
-**Output**: Production-ready system with automated monitoring, alerts, API, and Docker deployment.
+# 3. Fire an instant diagnostic test alert across all channels
+python main.py --part 5.2 --test-alert
+
+# 4. Run automated pipeline with integrated alert evaluation
+python main.py --part 5 --run-once
+
+# 5. Launch web application with live alert center
+python main.py --part web --port 5000
+```
+
+
+#### 5.3 Production REST API (FastAPI) ✅ COMPLETED
+**Objective**: Deliver a high-performance, asynchronous production REST API service built on **FastAPI**, **Uvicorn**, and **Pydantic v2**, providing standard JSON endpoints for active fires, industrial facility registry, thermal hotspots, analytics stats, and on-demand machine learning classification inference.
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        PART 5.3: FASTAPI REST ARCHITECTURE                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  [HTTP / Frontends / External Services]                                     │
+│        │                                                                    │
+│        ▼                                                                    │
+│  FastAPI Gateway (Uvicorn ASGI Server)                                      │
+│  • CORS Middleware (*), Interactive Swagger UI (/docs), ReDoc (/redoc)      │
+│  • Pydantic v2 Strict Validation & Serialization                            │
+│        │                                                                    │
+│        ├──► GET  /api/fires               (Paginated detections & filters)  │
+│        ├──► GET  /api/fires/{id}          (Single fire details / 404)       │
+│        ├──► GET  /api/fires/type/{type}   (Filter by classification class)  │
+│        ├──► GET  /api/facilities         (Industrial facility catalog)     │
+│        ├──► GET  /api/hotspots           (Ranked thermal hotspot hubs)     │
+│        ├──► GET  /api/stats              (System & thermal summary stats)  │
+│        ├──► POST /api/classify           (On-demand ML model inference)    │
+│        └──► GET  /api/health             (DB connection & engine status)   │
+│                                                                             │
+│        ▼                                                                    │
+│  APIService Business Layer (src/api/service.py)                             │
+│        ├──► FireMonitoringDatabase (SQLite persistent tables & indexes)     │
+│        ├──► FireClassifier (Trained Random Forest / Heuristic engine)       │
+│        └──► Fallback DemoDataGenerator & GeoJSON facility catalog           │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+##### 1. API Endpoints Reference
+| Method | Endpoint | Query Parameters | Description | Status Code |
+|:---:|:---|:---|:---|:---:|
+| `GET` | `/` | — | API welcome metadata and navigation links | `200` |
+| `GET` | `/health` / `/api/health` | — | Health check, SQLite connection, and ML status | `200` |
+| `GET` | `/docs` | — | Interactive Swagger UI API documentation | `200` |
+| `GET` | `/redoc` | — | ReDoc responsive documentation interface | `200` |
+| `GET` | `/api/fires` | `limit`, `offset`, `fire_type`, `min_confidence`, `is_near_industrial`, `start_date`, `end_date` | Paginated fire detections with multi-criteria filtering | `200` |
+| `GET` | `/api/fires/{detection_id}` | — | Single thermal anomaly by primary detection ID | `200` / `404` |
+| `GET` | `/api/fires/type/{fire_type}` | `limit`, `offset` | Direct filter by classification category | `200` |
+| `GET` | `/api/facilities` | `facility_type`, `limit` | Industrial facility registry (refineries, power plants, mines) | `200` |
+| `GET` | `/api/hotspots` | `min_frp`, `limit` | High-priority thermal hotspots ranked by composite intensity score | `200` |
+| `GET` | `/api/stats` | — | Aggregate metrics (avg brightness, FRP, distribution, day/night) | `200` |
+| `POST` | `/api/classify` | *JSON payload* | On-demand ML classification on single or batch fire observations | `200` / `422` |
+
+##### 2. Sample Request & Response Payloads
+
+###### On-Demand ML Classification (`POST /api/classify`)
+**Request**:
+```json
+{
+  "records": [
+    {
+      "latitude": 22.4707,
+      "longitude": 70.0577,
+      "brightness": 395.0,
+      "frp": 80.0,
+      "confidence": 95.0,
+      "distance_to_nearest_industrial": 0.2,
+      "nearest_facility_type": "petrochemical"
+    }
+  ]
+}
+```
+**Response**:
+```json
+{
+  "total_classified": 1,
+  "results": [
+    {
+      "fire_type": "Industrial Fire",
+      "fire_type_id": 0,
+      "classification_confidence": 0.942,
+      "is_near_industrial": 1,
+      "distance_to_nearest_industrial": 0.2,
+      "nearest_facility_name": "Jamnagar Refinery (Reliance)",
+      "nearest_facility_type": "petrochemical"
+    }
+  ]
+}
+```
+
+###### Thermal Hotspots (`GET /api/hotspots?min_frp=30&limit=2`)
+**Response**:
+```json
+{
+  "total": 2,
+  "data": [
+    {
+      "detection_id": "3e186a86dac28b2d",
+      "latitude": 22.471,
+      "longitude": 70.058,
+      "brightness": 382.4,
+      "frp": 72.5,
+      "confidence": 95,
+      "intensity_score": 87.81,
+      "fire_type": "Industrial Fire",
+      "facility_nearby": "Jamnagar Petrochemical Complex",
+      "distance_km": 0.45,
+      "cluster_id": 1
+    }
+  ]
+}
+```
+
+##### 3. How to Launch the API Server
+```bash
+# 1. Start FastAPI server on default port 8000
+python main.py --part 5.3
+
+# Or using the 'api' alias:
+python main.py --part api
+
+# 2. Specify a custom port
+python main.py --part 5.3 --port 8080
+
+# 3. Access Swagger UI documentation
+# Open browser at: http://localhost:8000/docs
+```
+
+
+#### 5.4 Historical Analysis & Multi-Format Reporting ✅ COMPLETED
+**Objective**: Perform longitudinal spatial-temporal trend modeling, compute dynamic multi-factor facility risk scores over time, and generate publication-grade executive reports in native **PDF** (via ReportLab), **CSV**, and standalone responsive **HTML** dossiers.
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                 PART 5.4: HISTORICAL ANALYSIS & REPORTING ARCHITECTURE       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  [Fire Detections + Facility Registry] (SQLite Persistent Storage / DB)     │
+│                                  │                                          │
+│                                  ▼                                          │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │                HistoricalAnalyzer (src/reporting/analyzer.py)         │  │
+│  │  1. Monthly & Quarterly Aggregations (Counts, FRP energy, MoM/QoQ)    │  │
+│  │  2. Regional & Category Trend Vectors (North, West, East, South)      │  │
+│  │  3. Facility Risk Scoring Engine (Rolling 7d, 30d, 90d window)        │  │
+│  │     R(f) = w1*Fires + w2*(PeakFRP/60) + w3*(5 - dist) + w4*Persistence│  │
+│  └───────────────────────────────┬───────────────────────────────────────┘  │
+│                                  │                                          │
+│         ┌────────────────────────┼────────────────────────┐                 │
+│         ▼                        ▼                        ▼                 │
+│  ┌──────────────┐         ┌──────────────┐         ┌──────────────┐         │
+│  │ PDF Generator│         │ CSV Exporter │         │HTML Dashboard│         │
+│  │ (ReportLab)  │         │ (Pandas/CSV) │         │ (Executive)  │         │
+│  └──────┬───────┘         └──────┬───────┘         └──────┬───────┘         │
+│         │                        │                        │                 │
+│         ▼                        ▼                        ▼                 │
+│  output/reports/*.pdf     output/reports/*.csv     output/reports/*.html    │
+│                                                                             │
+│  [FastAPI Endpoints] ──► /api/reports/monthly, /quarterly, /trends, /export │
+│  [Web Console]       ──► /reports (Interactive incident analytics UI)      │
+│  [CLI Runner]        ──► python main.py --part 5.4                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+##### 1. Longitudinal & Spatial Analytics Engine
+1. **Monthly & Quarterly Aggregations**:
+   - Compiles total thermal anomalies, mean brightness (K), mean FRP (MW), cumulative thermal energy (MWh), day/night satellite ratios, near-industrial fire counts, and Month-over-Month (MoM) / Quarter-over-Quarter (QoQ) velocity percentages.
+2. **Regional Surveillance Quadrants**:
+   - **Northern Agro-Industrial Zone** (Punjab, Haryana, UP, NCR): Tracks seasonal crop residue combustion vs. thermal industrial hubs.
+   - **Western Energy & Petrochemical Corridor** (Gujarat, Maharashtra, Bombay High Offshore): Monitors petrochemical complexes, oil refineries, and continuous flare stacks.
+   - **Central-Eastern Mining & Steel Belt** (Odisha, Jharkhand, Chhattisgarh, MP): Detects coalfield seam fires, smoldering open-cast mines, and blast furnace emissions.
+   - **Southern Coastal Infrastructure Zone** (Karnataka, Kerala, Tamil Nadu, AP): Monitors coastal LNG terminals, refineries, and power plants.
+   - Assigns directional trend vectors: `Rising (▲)`, `Declining (▼)`, or `Stable (▬)`.
+3. **Dynamic Facility Risk Scoring**:
+   - Multi-factor risk formula ($0-100$) evaluating nearby fire frequency ($<5\text{ km}$), peak radiative energy, closest anomaly proximity, and persistence duration:
+     $$R(f) = \min\left(100, 3.5 \cdot \min(N, 10) + 30 \cdot \frac{\text{FRP}_{\text{peak}}}{60} + 4 \cdot \max(0, 5 - d_{\min}) + 5 \cdot \min(D, 3)\right)$$
+   - Risk Tiers:
+     - 🔴 `EXTREME RISK` ($\ge 75$)
+     - 🟠 `HIGH RISK` ($50 - 74$)
+     - 🟡 `MODERATE RISK` ($25 - 49$)
+     - 🟢 `LOW RISK` ($< 25$)
+
+##### 2. Multi-Format Report Generation
+- **📄 Publication-Grade PDF Dossier (`output/reports/fire_historical_report.pdf`)**:
+  - Built with **ReportLab**, featuring official NTRO / SIH 2026 title header, executive summary metrics table, color-coded facility risk leaderboard, monthly longitudinal trend tables, regional surveillance matrix, and security classification footer.
+- **🌐 Standalone Executive HTML Report (`output/reports/fire_historical_report.html`)**:
+  - Responsive dark-themed dossier with glassmorphic KPI tiles, risk score progress bars, dynamic tables, and print-ready CSS (`@media print`) for 1-click browser PDF printing.
+- **📊 Standardized CSV Datasets (`output/reports/*.csv`)**:
+  - `monthly_fire_summary.csv`: Monthly counts, energy, and MoM velocity.
+  - `quarterly_fire_summary.csv`: Quarterly aggregations and QoQ growth rates.
+  - `facility_risk_scores.csv`: Longitudinal risk ranking per industrial asset.
+  - `regional_trends.csv`: Surveillance statistics per geographic corridor.
+
+##### 3. Web Console & REST API Endpoints
+- **Web UI**: Access the Executive Reporting Console at `http://localhost:5000/reports` with interactive tabs, KPI cards, and one-click export downloads.
+- **REST Endpoints**:
+  | Method | Endpoint | Description |
+  |:---:|:---|:---|
+  | `GET` | `/api/reports/monthly` | Monthly aggregated thermal metrics and MoM velocity |
+  | `GET` | `/api/reports/quarterly` | Quarterly aggregated metrics and QoQ growth rates |
+  | `GET` | `/api/reports/trends` | Regional surveillance trend vectors |
+  | `GET` | `/api/reports/facilities/risk` | Facility longitudinal risk scores and tier ratings |
+  | `GET` | `/api/reports/summary` | Macro executive statistics and generated artifact metadata |
+  | `GET` | `/api/reports/export/pdf` | Stream download of publication-grade PDF report |
+  | `GET` | `/api/reports/export/html` | Stream download of standalone executive HTML report |
+
+##### 4. Execution Commands
+```bash
+# 1. Run Part 5.4 Historical Analysis & generate all report artifacts
+python main.py --part 5.4
+
+# Or using the alias:
+python main.py --part reporting
+
+# 2. View generated PDF report
+# Generated at: output/reports/fire_historical_report.pdf
+
+# 3. View Web Reports Console
+python main.py --part web --port 5000
+# Open browser at: http://localhost:5000/reports
+```
+
+
+#### 5.5 Deployment & Operations ✅ COMPLETED
+**Objective**: Deliver a production-grade containerized deployment architecture featuring multi-service Docker Compose orchestration, unprivileged non-root container security, zero-dependency health monitoring probes, deep diagnostic telemetry, centralized configuration validation, and automated GitHub Actions CI/CD workflows.
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                 PART 5.5: PRODUCTION DEPLOYMENT TOPOLOGY                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │                     DOCKER COMPOSE ORCHESTRATION                      │  │
+│  │                                                                       │  │
+│  │  ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────────┐  │  │
+│  │  │  Service: api   │   │  Service: web   │   │   Service: worker   │  │  │
+│  │  │ (FastAPI/Uvicorn│   │ (Flask/Folium/UI│   │ (Telemetry Pipeline)│  │  │
+│  │  │   Port: 8000)   │   │   Port: 5000)   │   │ (6h Scheduled Cycle)│  │  │
+│  │  └────────┬────────┘   └────────┬────────┘   └──────────┬──────────┘  │  │
+│  │           │                     │                       │             │  │
+│  │           ▼                     ▼                       ▼             │  │
+│  │  ┌─────────────────────────────────────────────────────────────────┐  │  │
+│  │  │  Shared Persistent Volumes: fire_data, fire_output, fire_models  │  │  │
+│  │  └─────────────────────────────────────────────────────────────────┘  │  │
+│  └───────────────────────────────────┬───────────────────────────────────┘  │
+│                                      │                                      │
+│         ┌────────────────────────────┼────────────────────────────┐         │
+│         ▼                            ▼                            ▼         │
+│  ┌──────────────┐             ┌──────────────┐             ┌──────────────┐ │
+│  │Health Probes │             │Central Config│             │CI/CD Pipeline│ │
+│  │Liveness/Deep │             │src/core/     │             │GitHub Actions│ │
+│  │Diagnostics   │             │config.py     │             │ci_cd.yml     │ │
+│  └──────────────┘             └──────────────┘             └──────────────┘ │
+│                                                                             │
+│  [CLI Preflight Runner] ──► python main.py --part 5.5                       │
+│  [Docker Healthcheck]   ──► python scripts/healthcheck.py --service api     │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+##### 1. Production Containerization (`Dockerfile` & `docker-compose.yml`)
+- **Hardened Multi-Purpose `Dockerfile`**:
+  - Based on `python:3.10-slim` with compiled C-extensions (`gcc`, `g++`, `libsqlite3-dev`).
+  - Unprivileged non-root execution (`appuser`, UID `10001`) adhering to CIS Docker Benchmarks.
+  - Pre-created volume directories (`/app/data`, `/app/output/reports`, `/app/models`) with guaranteed write permissions.
+  - Built-in `HEALTHCHECK` directive invoking `python scripts/healthcheck.py --service ${SERVICE_TYPE:-api}`.
+  - Dynamic service startup supporting `SERVICE_TYPE=api`, `SERVICE_TYPE=web`, or `SERVICE_TYPE=worker`.
+- **Multi-Container Topology (`docker-compose.yml`)**:
+  - `api`: High-performance FastAPI REST server running on `http://localhost:8000`.
+  - `web`: Flask GIS operations center and executive reporting dashboard on `http://localhost:5000`.
+  - `worker`: Automated background daemon executing satellite ingestion every 6 hours.
+  - Isolated bridge network `fire_monitoring_net` with named local volumes for zero data loss upon container recreation.
+- **Developer Experience (`docker-compose.dev.yml`)**:
+  - Hot-reloading live mount overrides for `./src` and `./config`.
+
+##### 2. Centralized Configuration Management (`src/core/config.py`)
+- Strongly-typed `AppConfig` manager with automatic `.env` ingestion.
+- Pre-flight diagnostic engine (`validate_environment()`) verifying directory writability, SQLite database accessibility, ML model presence, and port collision avoidance.
+
+##### 3. System Health & Deep Diagnostics (`src/monitoring/health.py`)
+- **Probes**:
+  - `get_liveness()`: Ultra-low overhead ping for orchestrator liveness checks.
+  - `get_readiness()`: Confirms database responsiveness and file storage availability.
+  - `get_deep_diagnostics()`: Comprehensive system audit analyzing:
+    - **Database**: SQLite schema quick-check integrity, total detections, registered facilities, and alert table sizes.
+    - **Storage**: Free disk space (`shutil.disk_usage`) and runtime directory write tests.
+    - **ML Classifier**: Machine learning model file presence and memory allocation status.
+    - **Telemetry Recency**: Timestamp and row count of latest satellite ingestion cycle.
+    - **Alert Channels**: Active notification channel status (console, SSE stream, email, SMS, webhook).
+- **Standalone Probe Script (`scripts/healthcheck.py`)**: Zero external dependencies (uses standard library `urllib`), suitable for container and Kubernetes probes.
+- **REST Endpoints**:
+  | Method | Endpoint | Description |
+  |:---:|:---|:---|
+  | `GET` | `/health` | Standard readiness probe (HTTP 200 / 503) |
+  | `GET` | `/health/deep` | Deep diagnostic system report with database, storage & ML metrics |
+  | `GET` | `/api/health/deep` | API-prefixed deep diagnostic endpoint |
+
+##### 4. Automated CI/CD Pipeline (`.github/workflows/ci_cd.yml`)
+- Multi-stage GitHub Actions workflow triggered on push and pull requests:
+  1. `lint-and-validate`: Syntax checks, Python code compilation, and Docker Compose YAML validation.
+  2. `test-suite`: Executes complete test suite (64 tests across all modules).
+  3. `docker-build-verify`: Builds the production Docker image and executes an in-container direct health check.
+  4. `deployment-readiness`: Executes pre-flight verification to confirm production readiness.
+
+##### 5. Execution Commands
+```bash
+# 1. Run Part 5.5 Deployment Pre-Flight Check
+python main.py --part 5.5
+# Or using the alias:
+python main.py --part deployment
+
+# 2. Run standalone system healthcheck probe
+python scripts/healthcheck.py --service system
+
+# 3. Launch with Docker Compose (Production)
+docker compose up -d
+
+# 4. Launch with Docker Compose (Development Hot-Reload)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+# 5. Query deep diagnostic health via API
+curl -s http://localhost:8000/api/health/deep
+curl -s http://localhost:5000/health
+```
 
 ---
 
@@ -617,14 +1038,48 @@ SIH-2026/
 │   │   ├── demo_data.py             # Realistic thermal & facility synthesizer
 │   │   ├── map_generator.py         # Folium/Leaflet map rendering engine
 │   │   └── templates/
-│   │       └── dashboard.html       # Responsive dark-theme dashboard UI
-│   ├── spatial_analysis/            # Part 2 (Next Step)
-│   ├── ml_classifier/               # Part 3 (Next Step)
-│   ├── visualization/               # Part 4 (Next Step)
-│   └── monitoring/                  # Part 5 (Next Step)
+│   │       ├── dashboard.html       # Responsive dark-theme dashboard UI
+│   │       └── alerts.html          # Incident Operations Center UI
+│   ├── spatial_analysis/            # Part 2
+│   ├── ml_classifier/               # Part 3
+│   ├── visualization/               # Part 4
+│   ├── pipeline_automation/         # Part 5.1 Automated Pipeline & SQLite DB
+│   │   ├── __init__.py
+│   │   ├── incremental_fetcher.py   # State tracking & FIRMS delta fetcher
+│   │   ├── automated_pipeline.py    # Multi-step pipeline execution engine
+│   │   ├── database.py              # Persistent SQLite storage & audit logging
+│   │   └── scheduler.py             # Daemon & OS-level task scheduler
+│   ├── core/                        # Part 5.5 Centralized Settings & Validation
+│   │   ├── __init__.py
+│   │   └── config.py                # AppConfig and pre-flight validation
+│   ├── monitoring/                  # Part 5.2 Multi-Channel Alerts & Part 5.5 Health
+│   │   ├── __init__.py
+│   │   ├── models.py                # AlertEvent, AlertSeverity, TriggerType
+│   │   ├── trigger_engine.py        # 4 Trigger conditions + diagnostic test
+│   │   ├── dispatcher.py            # Cooldown suppression & dispatch orchestrator
+│   │   ├── alert_engine.py          # Unified AlertEngine coordinator
+│   │   ├── health.py                # SystemHealthManager (liveness, readiness, deep diagnostics)
+│   │   └── channels/                # Email, SMS, Dashboard (SSE), Log, Webhook
+│   ├── api/                         # Part 5.3 Production REST API (FastAPI)
+│   │   ├── __init__.py              # Package exports
+│   │   ├── app.py                   # FastAPI app factory & CORS
+│   │   ├── routes.py                # APIRouter with all 10+ endpoints
+│   │   ├── models.py                # Pydantic v2 schemas
+│   │   └── service.py               # APIService business logic layer
+│   └── reporting/                   # Part 5.4 Historical Analysis & Multi-Format Reporting
+│       ├── __init__.py              # Package exports
+│       ├── analyzer.py              # Monthly/quarterly aggregation & facility risk scoring
+│       ├── csv_exporter.py          # Multi-dataset CSV exporter
+│       ├── pdf_generator.py         # Publication-grade PDF generator (ReportLab)
+│       ├── html_generator.py        # Executive standalone HTML dossier
+│       └── report_engine.py         # Unified analytical coordinator
+├── Dockerfile                       # Multi-service non-root production Docker image
+├── docker-compose.yml               # Production multi-container orchestration
+├── docker-compose.dev.yml           # Development live hot-reload override
+├── .dockerignore                    # Build context exclusions
 ├── models/                          # Trained ML models
-├── output/                          # Generated maps & reports
-└── tests/                           # Unit tests
+├── output/                          # Generated maps, emails & reports
+└── tests/                           # Unit test suites (64 tests)
 ```
 
 ## 📊 Data Sources
