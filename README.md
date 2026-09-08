@@ -95,7 +95,7 @@ Explain the SIH problem: Industrial facilities generate thermal signatures obser
 | 2 | Spatial Analysis & Enrichment | 🔲 Planned | Proximity analysis, hotspot detection, temporal clustering, spatial statistics |
 | 3 | AI/ML Classification Engine | 🔲 Planned | ML models to classify fire types (industrial, forest, agricultural, etc.) |
 | 4 | GIS Visualization & Advanced Dashboard | 🔲 Planned | Production GIS layers, multi-temporal playback, satellite imagery overlays |
-| 5 | Monitoring, Alerts & Deployment | 🔲 Planned | Automated pipeline, alert system (SMS/Email), REST API, Docker deployment |
+| 5 | Monitoring, Alerts & Deployment | 🔄 In Progress (5.1 Complete) | Automated 6-hour pipeline, incremental fetch, ML auto-classification, persistent SQLite DB, multi-platform schedulers |
 
 ## 🔄 Detailed Flow of All 5 Parts
 
@@ -344,17 +344,51 @@ All features from Part 1 + Part 2:
 
 ---
 
-### PART 5: Monitoring, Alerts & Deployment 🔲 PLANNED
+### PART 5: Monitoring, Alerts & Deployment 🔄 IN PROGRESS
 
-#### 5.1 Automated Data Pipeline
-**Objective**: Schedule automated data collection and classification.
+#### 5.1 Automated Data Pipeline ✅ COMPLETED
+**Objective**: Schedule automated data collection, incremental anomaly fetching, ML auto-classification, persistent SQLite database updates, and live dashboard map refresh.
 
-**Process Flow**:
-1. Cron Job / Task Scheduler: Run pipeline every 6 hours
-2. Incremental Data Fetch: Only fetch new detections since last run
-3. Auto-Classification: Run new data through trained ML model
-4. Database Update: Append results to persistent storage
-5. Dashboard Refresh: Update map with latest data
+**Architecture & Process Flow**:
+1. **Cron Job / Task Scheduler**:
+   - Python in-process daemon: `python main.py --part 5 --interval-hours 6`
+   - Windows Task Scheduler: `scripts/setup_scheduled_task.bat` or `scripts/setup_scheduled_task.ps1`
+   - Linux / macOS Crontab: `scripts/setup_cron.sh` (`0 */6 * * *`)
+   - Cloud CI/CD: `.github/workflows/pipeline_scheduler.yml` runs every 6 hours and auto-updates GitHub Pages!
+2. **Incremental Data Fetch**:
+   - Uses deterministic SHA-256 signatures (`detection_id`) per detection.
+   - Compares incoming detections against `data/fire_monitoring.db` and state checkpoint `data/pipeline_state.json`.
+   - Filters out previously seen detections; only processes new thermal events.
+   - Includes automatic simulation fallback for offline testing or demo mode (`--simulate`).
+3. **Auto-Classification Engine**:
+   - Pre-trained / self-bootstrapping Random Forest classifier (`src/pipeline_automation/classifier.py`).
+   - Feature vector: `[brightness, FRP, ratio, distance_to_industry, is_near_industrial, hour, day, month, is_daytime, cluster_id]`.
+   - Classifies detections into: Industrial Fire (0), Gas Flare (1), Forest Fire (2), Agricultural Burning (3), Mining Activity (4), Other/Unknown (5) with calibrated confidence probabilities.
+4. **Persistent Storage Update**:
+   - Stores all records in SQLite database `data/fire_monitoring.db` (WAL mode enabled, indexed by coordinates, date, and fire type).
+   - Records execution metrics in `pipeline_runs` table.
+   - Exports synchronized `data/processed/enriched_fire_data.csv` and `data/processed/latest_detections.geojson`.
+5. **Dashboard & Map Refresh**:
+   - Regenerates Folium HTML maps: `map.html` (root) and `docs/map.html` (GitHub Pages).
+   - Exports aggregate statistics to `data/processed/latest_stats.json`.
+   - Updates live Flask dashboard cache and exposes endpoints:
+     - `GET /api/pipeline/status`: Inspect pipeline health and SQLite stats.
+     - `POST /api/pipeline/run`: Trigger manual incremental pass on demand.
+
+**Execution Commands**:
+```bash
+# 1. Run a single incremental batch (manual / test)
+python main.py --part 5 --run-once
+
+# 2. Run with incremental simulation feed (test / demonstration)
+python main.py --part 5 --run-once --simulate
+
+# 3. Run recurring 6-hour scheduler daemon
+python main.py --part 5 --interval-hours 6
+
+# 4. View live updated web dashboard
+python main.py --part web --port 5000
+```
 
 #### 5.2 Alert System
 **Trigger Conditions**:

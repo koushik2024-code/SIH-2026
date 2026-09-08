@@ -11,5 +11,7 @@ data/cache/*
 *.geojson
 output/*.html
 !src/web/templates/*.html
-.vscode/
 venv/
+*.db
+*.sqlite3
+data/*.db
