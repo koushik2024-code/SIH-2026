@@ -367,17 +367,27 @@
             <span class="badge bg-primary text-light px-3 py-2 rounded-pill"><i class="fas fa-trophy me-1"></i> SIH 2026</span>
             <span class="badge bg-success text-light px-3 py-2 rounded-pill"><i class="fas fa-shield-alt me-1"></i> NTRO</span>
             <span class="badge bg-secondary text-light px-3 py-2 rounded-pill"><i class="fas fa-sliders-h me-1"></i> Part 4.3 Active</span>
+            <span class="badge bg-secondary text-light px-3 py-2 rounded-pill"><i class="fas fa-chart-line me-1"></i> Part 4.4 Active</span>
             <span class="badge bg-danger text-light px-3 py-2 rounded-pill d-flex align-items-center">
-                <span class="pulse-dot"></span> Part 4.4 Active
+                <span class="pulse-dot"></span> Part 5.2 Alerts Active
             </span>
         </div>
 
         <div class="d-flex align-items-center gap-2">
-            <a href="/analytics" class="btn btn-outline-info btn-sm px-3">
-                <i class="fas fa-chart-pie me-1"></i> Analytics Dashboard
+            <a href="/alerts" class="btn btn-outline-danger btn-sm px-3 position-relative" title="Part 5.2 Incident Operations Center">
+                <i class="fas fa-bell me-1"></i> Alerts
+                <span class="badge rounded-pill bg-danger ms-1" id="navAlertBadge">
+                    {{ alert_stats.get('critical_active_alerts', 0) if alert_stats else 0 }}
+                </span>
             </a>
-            <button id="refreshBtn" class="btn btn-outline-danger btn-sm px-3">
-                <i class="fas fa-sync-alt me-2"></i>Refresh Data
+            <a href="/reports" class="btn btn-outline-primary btn-sm px-3" title="Part 5.4 Historical Analytics & Reports">
+                <i class="fas fa-file-invoice me-1"></i> Reports
+            </a>
+            <a href="/analytics" class="btn btn-outline-info btn-sm px-3">
+                <i class="fas fa-chart-pie me-1"></i> Analytics
+            </a>
+            <button id="refreshBtn" class="btn btn-outline-secondary btn-sm px-3">
+                <i class="fas fa-sync-alt me-2"></i>Refresh
             </button>
         </div>
     </header>
@@ -746,6 +756,51 @@
                     window.location.reload();
                 });
         });
+
+        // Part 5.2 Real-Time SSE Alert Streaming
+        (function initDashboardAlertsSSE() {
+            if (!window.EventSource) return;
+            const alertSource = new EventSource('/api/alerts/stream');
+            alertSource.addEventListener('alert', function(e) {
+                try {
+                    const alertData = JSON.parse(e.data);
+                    // Update badge
+                    const badge = document.getElementById('navAlertBadge');
+                    if (badge) {
+                        const cur = parseInt(badge.innerText || '0') || 0;
+                        badge.innerText = cur + 1;
+                        badge.classList.add('bg-danger');
+                    }
+                    // Audio notification
+                    try {
+                        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.frequency.value = alertData.severity === 'CRITICAL' ? 880 : 587;
+                        gain.gain.value = 0.08;
+                        osc.start();
+                        osc.stop(ctx.currentTime + 0.25);
+                    } catch (audioErr) {}
+
+                    // Toast popup
+                    const toast = document.createElement('div');
+                    toast.style.cssText = 'position:fixed; bottom:20px; right:20px; z-index:9999; background:#182234; border:1px solid ' + (alertData.severity === 'CRITICAL' ? '#ef4444' : '#f97316') + '; border-radius:10px; padding:16px 20px; box-shadow:0 10px 30px rgba(0,0,0,0.6); max-width:380px; color:#fff; animation:fadeIn 0.3s ease;';
+                    toast.innerHTML = '<div style="display:flex; gap:12px; align-items:flex-start;">' +
+                        '<div style="color:' + (alertData.severity === 'CRITICAL' ? '#ef4444' : '#f97316') + '; font-size:22px;"><i class="fas fa-exclamation-triangle"></i></div>' +
+                        '<div><div style="font-size:11px; font-weight:700; text-transform:uppercase; color:#94a3b8;">' + alertData.severity + ' ALERT</div>' +
+                        '<div style="font-weight:700; font-size:14px; margin:2px 0;">' + alertData.title + '</div>' +
+                        '<div style="font-size:12px; color:#cbd5e1;">Near ' + alertData.facility_name + ' (' + (alertData.distance_km ? alertData.distance_km.toFixed(1) : 0) + 'km)</div>' +
+                        '<a href="/alerts" style="display:inline-block; margin-top:8px; font-size:12px; font-weight:600; color:#38bdf8; text-decoration:none;">View in Operations Center &rarr;</a>' +
+                        '</div></div>';
+                    document.body.appendChild(toast);
+                    setTimeout(() => { toast.remove(); }, 8000);
+                } catch (err) {
+                    console.error('Error handling SSE alert:', err);
+                }
+            });
+        })();
     </script>
 </body>
 </html>
