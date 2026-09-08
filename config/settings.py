@@ -56,6 +56,30 @@ LAND_COVER_TYPES = {
     9: 'Unknown'
 }
 
+# Alert System Settings (Part 5.2)
+ALERT_LOG_PATH = DATA_DIR / "alerts.log"
+ALERT_JSON_PATH = OUTPUT_DIR / "alerts.json"
+ALERT_COOLDOWN_MINUTES = float(os.getenv("ALERT_COOLDOWN_MINUTES", "60.0"))
+ALERT_SIMULATION_MODE = os.getenv("ALERT_SIMULATION_MODE", "true").lower() in ["true", "1", "yes"]
+
+# Email / SMTP Configuration
+ALERT_EMAIL_ENABLED = os.getenv("ALERT_EMAIL_ENABLED", "false").lower() in ["true", "1", "yes"]
+SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
+SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+SMTP_USER = os.getenv("SMTP_USER", "")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
+ALERT_RECIPIENT_EMAILS = [e.strip() for e in os.getenv("ALERT_RECIPIENT_EMAILS", "").split(",") if e.strip()]
+
+# SMS / Twilio Configuration
+ALERT_SMS_ENABLED = os.getenv("ALERT_SMS_ENABLED", "false").lower() in ["true", "1", "yes"]
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
+TWILIO_FROM_NUMBER = os.getenv("TWILIO_FROM_NUMBER", "")
+ALERT_PHONE_NUMBERS = [p.strip() for p in os.getenv("ALERT_PHONE_NUMBERS", "").split(",") if p.strip()]
+
+# Webhook Configuration (Slack, Discord, MS Teams, Telegram)
+ALERT_WEBHOOK_URL = os.getenv("ALERT_WEBHOOK_URL", "")
+
 # Logging Configuration
 logging.basicConfig(
     level=logging.INFO,
@@ -65,3 +89,4 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger("IndustrialFireDetection")
+
