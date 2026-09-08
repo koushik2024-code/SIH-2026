@@ -3,7 +3,8 @@ import json
 import sqlite3
 import logging
 from pathlib import Path
-from datetime import datetime
+from contextlib import contextmanager
+from datetime import datetime, timezone
 from typing import Optional, Set, Dict, Any, List
 import pandas as pd
 import geopandas as gpd
@@ -24,13 +25,17 @@ class FireMonitoringDatabase:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.init_db()
 
-    def _get_connection(self) -> sqlite3.Connection:
-        """Create a sqlite3 connection with WAL mode enabled."""
+    @contextmanager
+    def _get_connection(self):
+        """Create a sqlite3 connection with WAL mode enabled, guaranteeing closure on exit."""
         conn = sqlite3.connect(str(self.db_path), timeout=30.0)
         conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA journal_mode=WAL;")
-        conn.execute("PRAGMA synchronous=NORMAL;")
-        return conn
+        try:
+            conn.execute("PRAGMA journal_mode=WAL;")
+            conn.execute("PRAGMA synchronous=NORMAL;")
+            yield conn
+        finally:
+            conn.close()
 
     def init_db(self):
         """Initialize database schema with tables and indexes."""
@@ -91,12 +96,42 @@ class FireMonitoringDatabase:
             );
             """)
 
+            # 4. Multi-Channel Alerts Table (Part 5.2)
+            cursor.execute("""
+            CREATE TABLE IF NOT EXISTS alerts (
+                alert_id TEXT PRIMARY KEY,
+                timestamp TEXT NOT NULL,
+                trigger_type TEXT NOT NULL,
+                severity TEXT NOT NULL,
+                detection_id TEXT,
+                latitude REAL,
+                longitude REAL,
+                facility_name TEXT,
+                facility_type TEXT,
+                distance_km REAL,
+                frp REAL,
+                brightness REAL,
+                confidence REAL,
+                title TEXT NOT NULL,
+                description TEXT NOT NULL,
+                channels_dispatched TEXT,
+                status TEXT DEFAULT 'ACTIVE',
+                acknowledged_at TEXT,
+                acknowledged_by TEXT
+            );
+            """)
+
             # Create Indexes for fast querying & spatial slicing
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_fires_coords ON fire_detections(latitude, longitude);")
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_fires_date ON fire_detections(acq_date);")
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_fires_type ON fire_detections(fire_type);")
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_fires_near_ind ON fire_detections(is_near_industrial);")
             cursor.execute("CREATE INDEX IF NOT EXISTS idx_runs_time ON pipeline_runs(timestamp);")
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_alerts_time ON alerts(timestamp);")
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_alerts_severity ON alerts(severity);")
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_alerts_trigger ON alerts(trigger_type);")
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts(status);")
+            cursor.execute("CREATE INDEX IF NOT EXISTS idx_alerts_fac ON alerts(facility_name);")
 
             conn.commit()
             logger.debug(f"Database initialized at {self.db_path}")
@@ -205,6 +240,63 @@ class FireMonitoringDatabase:
                 df["confidence"] = df["confidence_level"]
         return df
 
+    def get_fire_by_id(self, detection_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieve a specific fire detection record by detection_id."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM fire_detections WHERE detection_id = ?", (str(detection_id),))
+            row = cursor.fetchone()
+            if not row:
+                return None
+            item = dict(row)
+            if "distance_to_industry_km" in item and "distance_to_nearest_industrial" not in item:
+                item["distance_to_nearest_industrial"] = item["distance_to_industry_km"]
+            if "confidence_level" in item and "confidence" not in item:
+                item["confidence"] = item["confidence_level"]
+            return item
+
+    def get_facilities(self, facility_type: Optional[str] = None, limit: int = 100) -> List[Dict[str, Any]]:
+        """Retrieve registered industrial facilities from SQLite."""
+        query = "SELECT * FROM industrial_facilities WHERE 1=1"
+        params = []
+        if facility_type:
+            query += " AND LOWER(facility_type) = ?"
+            params.append(str(facility_type).lower())
+        query += " ORDER BY name ASC LIMIT ?"
+        params.append(limit)
+
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, params)
+            return [dict(row) for row in cursor.fetchall()]
+
+    def insert_facilities(self, facilities: List[Dict[str, Any]]) -> int:
+        """Insert or replace industrial facilities in the database."""
+        if not facilities:
+            return 0
+        now_str = datetime.now(timezone.utc).isoformat()
+        records = []
+        for f in facilities:
+            fac_id = str(f.get("facility_id") or f.get("id") or f.get("name", ""))
+            records.append((
+                fac_id,
+                str(f.get("name", "Unknown Facility")),
+                str(f.get("facility_type") or f.get("type", "industrial")),
+                float(f.get("latitude") if f.get("latitude") is not None else f.get("lat", 0.0)),
+                float(f.get("longitude") if f.get("longitude") is not None else f.get("lon", 0.0)),
+                str(f.get("source", "OSM")),
+                now_str
+            ))
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.executemany("""
+            INSERT OR REPLACE INTO industrial_facilities (
+                facility_id, name, facility_type, latitude, longitude, source, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?);
+            """, records)
+            conn.commit()
+            return cursor.rowcount
+
     def get_statistics(self) -> Dict[str, Any]:
         """Compute aggregate statistics from persistent SQLite storage."""
         with self._get_connection() as conn:
@@ -275,3 +367,165 @@ class FireMonitoringDatabase:
             logger.info(f"Exported GeoJSON to {geojson_target}")
         except Exception as e:
             logger.warning(f"GeoJSON export skipped or failed: {e}")
+
+    # =========================================================================
+    # Part 5.2: Alert System Database Management Methods
+    # =========================================================================
+
+    def insert_alert(self, alert_data: Dict[str, Any]) -> bool:
+        """
+        Insert a generated alert into the persistent SQLite database.
+        Returns True if inserted successfully, False if skipped/failed.
+        """
+        alert_id = str(alert_data.get("alert_id", ""))
+        if not alert_id:
+            return False
+
+        now_iso = alert_data.get("timestamp") or datetime.now(timezone.utc).isoformat()
+        channels = alert_data.get("channels_dispatched", [])
+        channels_str = json.dumps(channels) if isinstance(channels, (list, tuple)) else str(channels)
+
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+            INSERT OR IGNORE INTO alerts (
+                alert_id, timestamp, trigger_type, severity, detection_id,
+                latitude, longitude, facility_name, facility_type, distance_km,
+                frp, brightness, confidence, title, description,
+                channels_dispatched, status, acknowledged_at, acknowledged_by
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            """, (
+                alert_id,
+                now_iso,
+                str(alert_data.get("trigger_type", "UNKNOWN")),
+                str(alert_data.get("severity", "WARNING")).upper(),
+                str(alert_data.get("detection_id", "")),
+                float(alert_data.get("latitude", 0.0)) if alert_data.get("latitude") is not None else None,
+                float(alert_data.get("longitude", 0.0)) if alert_data.get("longitude") is not None else None,
+                str(alert_data.get("facility_name", "none")),
+                str(alert_data.get("facility_type", "none")),
+                float(alert_data.get("distance_km", -1.0)) if alert_data.get("distance_km") is not None else None,
+                float(alert_data.get("frp", 0.0)) if alert_data.get("frp") is not None else None,
+                float(alert_data.get("brightness", 0.0)) if alert_data.get("brightness") is not None else None,
+                float(alert_data.get("confidence", 0.0)) if alert_data.get("confidence") is not None else None,
+                str(alert_data.get("title", "Thermal Alert")),
+                str(alert_data.get("description", "")),
+                channels_str,
+                str(alert_data.get("status", "ACTIVE")).upper(),
+                alert_data.get("acknowledged_at"),
+                alert_data.get("acknowledged_by")
+            ))
+            conn.commit()
+            inserted = (cursor.rowcount > 0)
+
+        if inserted:
+            logger.info(f"Alert recorded in SQLite: [{alert_data.get('severity')}] {alert_data.get('title')} ({alert_id})")
+        return inserted
+
+    def get_alerts(
+        self,
+        limit: int = 50,
+        severity: Optional[str] = None,
+        status: Optional[str] = None,
+        trigger_type: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """Retrieve recent alerts with optional filtering."""
+        query = "SELECT * FROM alerts WHERE 1=1"
+        params = []
+
+        if severity:
+            query += " AND UPPER(severity) = ?"
+            params.append(str(severity).upper())
+        if status:
+            query += " AND UPPER(status) = ?"
+            params.append(str(status).upper())
+        if trigger_type:
+            query += " AND trigger_type = ?"
+            params.append(str(trigger_type))
+
+        query += " ORDER BY timestamp DESC LIMIT ?"
+        params.append(limit)
+
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, params)
+            rows = cursor.fetchall()
+            alerts = []
+            for r in rows:
+                item = dict(r)
+                if item.get("channels_dispatched"):
+                    try:
+                        item["channels_dispatched"] = json.loads(item["channels_dispatched"])
+                    except Exception:
+                        pass
+                alerts.append(item)
+            return alerts
+
+    def acknowledge_alert(self, alert_id: str, acknowledged_by: str = "operator") -> bool:
+        """Mark an alert as ACKNOWLEDGED."""
+        now_iso = datetime.now(timezone.utc).isoformat()
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+            UPDATE alerts
+            SET status = 'ACKNOWLEDGED', acknowledged_at = ?, acknowledged_by = ?
+            WHERE alert_id = ?
+            """, (now_iso, acknowledged_by, alert_id))
+            conn.commit()
+            return cursor.rowcount > 0
+
+    def has_recent_alert(self, facility_name: str, trigger_type: str, cooldown_minutes: float = 60.0) -> bool:
+        """Check if an alert for the facility and trigger type was already issued within cooldown window."""
+        if not facility_name or facility_name.lower() in ["none", "unknown", ""]:
+            return False
+
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+            SELECT timestamp FROM alerts
+            WHERE facility_name = ? AND trigger_type = ?
+            ORDER BY timestamp DESC LIMIT 1
+            """, (facility_name, trigger_type))
+            row = cursor.fetchone()
+            if not row:
+                return False
+
+            try:
+                ts_str = row["timestamp"]
+                if ts_str.endswith("Z"):
+                    ts_str = ts_str[:-1] + "+00:00"
+                last_dt = datetime.fromisoformat(ts_str)
+                if last_dt.tzinfo is None:
+                    last_dt = last_dt.replace(tzinfo=timezone.utc)
+                elapsed_min = (datetime.now(timezone.utc) - last_dt).total_seconds() / 60.0
+                return elapsed_min < cooldown_minutes
+            except Exception:
+                return False
+
+    def get_alert_statistics(self) -> Dict[str, Any]:
+        """Aggregate summary counts of alerts by severity and status."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) as total FROM alerts")
+            total = cursor.fetchone()["total"] or 0
+
+            cursor.execute("SELECT COUNT(*) as active FROM alerts WHERE status = 'ACTIVE'")
+            active = cursor.fetchone()["active"] or 0
+
+            cursor.execute("SELECT severity, COUNT(*) as cnt FROM alerts GROUP BY severity")
+            by_severity = {row["severity"]: row["cnt"] for row in cursor.fetchall()}
+
+            cursor.execute("SELECT trigger_type, COUNT(*) as cnt FROM alerts GROUP BY trigger_type")
+            by_trigger = {row["trigger_type"]: row["cnt"] for row in cursor.fetchall()}
+
+            cursor.execute("SELECT COUNT(*) as critical_active FROM alerts WHERE status = 'ACTIVE' AND severity = 'CRITICAL'")
+            critical_active = cursor.fetchone()["critical_active"] or 0
+
+        return {
+            "total_alerts": total,
+            "active_alerts": active,
+            "critical_active_alerts": critical_active,
+            "by_severity": by_severity,
+            "by_trigger": by_trigger,
+        }
+

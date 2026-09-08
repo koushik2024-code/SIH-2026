@@ -14,17 +14,19 @@ from src.pipeline_automation.classifier import FireClassifier
 from src.pipeline_automation.incremental_fetcher import IncrementalDataFetcher
 from src.web.map_generator import MapGenerator
 from src.web.demo_data import DemoDataGenerator
+from src.monitoring import AlertEngine
 
 logger = logging.getLogger(__name__)
 
 class AutomatedPipeline:
     """
-    Executes the 5.1 Automated Data Pipeline:
-    1. Incremental anomaly fetch
-    2. Feature engineering & spatial joins
-    3. Machine learning auto-classification
-    4. Persistent database update (SQLite)
-    5. Dashboard & map refresh
+    Executes the Part 5 Automated Monitoring & Data Pipeline:
+    1. Incremental anomaly fetch (5.1)
+    2. Feature engineering & spatial joins (5.1)
+    3. Machine learning auto-classification (5.1)
+    4. Persistent database update (SQLite) (5.1)
+    5. Multi-channel alert dispatch (Part 5.2)
+    6. Dashboard & map refresh (5.1)
     """
 
     def __init__(self, db_path: Optional[Path] = None, model_path: Optional[Path] = None):
@@ -35,6 +37,8 @@ class AutomatedPipeline:
         self.engineer = FeatureEngineer()
         self.map_generator = MapGenerator()
         self.demo_gen = DemoDataGenerator()
+        self.alert_engine = AlertEngine(db=self.db)
+
 
     def _get_or_load_facilities(self) -> gpd.GeoDataFrame:
         """Load industrial facilities from geojson cache, or generate baseline."""
@@ -109,21 +113,37 @@ class AutomatedPipeline:
             latest_dt = str(classified_df["datetime"].max()) if "datetime" in classified_df.columns else None
             self.fetcher.save_state(inserted_count, latest_dt)
 
+            # 4.5. Multi-Channel Alert Evaluation & Dispatch (Part 5.2)
+            logger.info("Step 4.5/5: Evaluating Alert System trigger conditions & dispatching notifications...")
+            try:
+                hist_df = self.db.get_all_fires(limit=500)
+                dispatched_alerts = self.alert_engine.evaluate_and_dispatch(
+                    df=classified_df,
+                    facilities_gdf=facilities_gdf,
+                    historical_df=hist_df,
+                    check_cooldown=True
+                )
+            except Exception as alert_err:
+                logger.error(f"Alert evaluation encountered non-fatal error: {alert_err}")
+                dispatched_alerts = []
+
             # 5. Dashboard Refresh
             logger.info("Step 5/5: Refreshing live dashboard and regenerating geospatial maps...")
             self.refresh_dashboard_maps(facilities_gdf)
 
             duration = round(time.time() - start_time, 2)
-            self.db.log_pipeline_run("SUCCESS", total_fetched, inserted_count, duration, "Incremental run completed")
+            self.db.log_pipeline_run("SUCCESS", total_fetched, inserted_count, duration, f"Incremental run completed with {len(dispatched_alerts)} alert(s)")
 
             stats = self.db.get_statistics()
-            logger.info(f"Pipeline cycle completed successfully in {duration}s! New records: {inserted_count}")
+            logger.info(f"Pipeline cycle completed successfully in {duration}s! New records: {inserted_count}, Alerts: {len(dispatched_alerts)}")
             logger.info(f"Current database total: {stats['total_fires']} thermal sources.")
 
             return {
                 "status": "SUCCESS",
                 "records_fetched": total_fetched,
                 "records_new": inserted_count,
+                "alerts_dispatched": len(dispatched_alerts),
+                "alerts": [a.to_dict() for a in dispatched_alerts],
                 "duration_seconds": duration,
                 "stats": stats
             }
