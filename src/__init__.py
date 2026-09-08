@@ -1,26 +1,35 @@
 """
-Pipeline Automation Package (Part 5.1)
+Monitoring & Alert System (Part 5.2)
 =====================================
-Automated data collection, incremental anomaly fetching, ML auto-classification,
-persistent SQLite storage, dashboard refreshing, and multi-platform task scheduling.
+Multi-channel alert dispatch (Email/SMTP, SMS/Twilio, Dashboard SSE/WebSockets,
+Audit Logs, Webhooks) and trigger condition evaluation for industrial fire monitoring.
 """
 
-from src.pipeline_automation.database import FireMonitoringDatabase
-from src.pipeline_automation.classifier import FireClassifier
-from src.pipeline_automation.incremental_fetcher import IncrementalDataFetcher
-from src.pipeline_automation.automated_pipeline import AutomatedPipeline
-from src.pipeline_automation.scheduler import PipelineScheduler
-from src.monitoring import AlertEngine, AlertDispatcher, TriggerConditionEngine, AlertEvent
+from src.monitoring.models import AlertSeverity, TriggerType, AlertEvent
+from src.monitoring.trigger_engine import TriggerConditionEngine
+from src.monitoring.dispatcher import AlertDispatcher, get_alert_dispatcher
+from src.monitoring.alert_engine import AlertEngine
+from src.monitoring.channels import (
+    BaseAlertChannel,
+    EmailAlertChannel,
+    SMSAlertChannel,
+    DashboardAlertChannel,
+    LogAlertChannel,
+    WebhookAlertChannel,
+)
 
 __all__ = [
-    "FireMonitoringDatabase",
-    "FireClassifier",
-    "IncrementalDataFetcher",
-    "AutomatedPipeline",
-    "PipelineScheduler",
-    "AlertEngine",
-    "AlertDispatcher",
-    "TriggerConditionEngine",
+    "AlertSeverity",
+    "TriggerType",
     "AlertEvent",
+    "TriggerConditionEngine",
+    "AlertDispatcher",
+    "get_alert_dispatcher",
+    "AlertEngine",
+    "BaseAlertChannel",
+    "EmailAlertChannel",
+    "SMSAlertChannel",
+    "DashboardAlertChannel",
+    "LogAlertChannel",
+    "WebhookAlertChannel",
 ]
-
