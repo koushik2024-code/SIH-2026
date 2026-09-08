@@ -4,7 +4,7 @@ import json
 import logging
 import pandas as pd
 from typing import Optional, List, Any, Dict
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Response
 
 # Ensure project root is in path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from src.web.demo_data import DemoDataGenerator
 from src.web.map_generator import MapGenerator
 from src.visualization.analytics_panels import AnalyticsEngine
+from src.monitoring import get_alert_dispatcher, AlertEngine, AlertSeverity
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,9 @@ _facilities_gdf = None
 _map_gen = MapGenerator()
 _demo_gen = DemoDataGenerator()
 _analytics_engine = AnalyticsEngine()
+_alert_dispatcher = get_alert_dispatcher()
+_alert_engine = AlertEngine(dispatcher=_alert_dispatcher)
+
 
 def get_data():
     """Get fire and facility data, prioritizing persistent SQLite database."""
@@ -171,6 +175,24 @@ def create_app():
 
         # Get all available fire types for filter checkboxes
         all_fire_types = list(MapGenerator.FIRE_TYPE_COLORS.keys())
+
+        # Retrieve alert statistics and recent alerts for dashboard HUD
+        alert_stats = {"total_alerts": 0, "active_alerts": 0, "critical_active_alerts": 0}
+        recent_alerts = []
+        try:
+            from src.pipeline_automation.database import FireMonitoringDatabase
+            db = FireMonitoringDatabase()
+            _alert_dispatcher.set_database(db)
+            alert_stats = db.get_alert_statistics()
+            recent_alerts = db.get_alerts(limit=10)
+        except Exception as e:
+            logger.debug(f"Could not load alert stats from DB: {e}")
+            recent_alerts = _alert_dispatcher.dashboard_channel.get_recent_alerts(limit=10)
+            alert_stats = {
+                "total_alerts": len(recent_alerts),
+                "active_alerts": len([a for a in recent_alerts if a.get("status") == "ACTIVE"]),
+                "critical_active_alerts": len([a for a in recent_alerts if a.get("status") == "ACTIVE" and a.get("severity") == "CRITICAL"]),
+            }
         
         return render_template('dashboard.html',
                              map_html=map_html,
@@ -184,7 +206,9 @@ def create_app():
                              search_query=search_query,
                              facility_names=facility_names,
                              total_unfiltered=len(fire_df),
-                             total_filtered=len(filtered_fires))
+                             total_filtered=len(filtered_fires),
+                             alert_stats=alert_stats,
+                             recent_alerts=recent_alerts)
     
     @app.route('/map')
     def render_map():
@@ -388,7 +412,151 @@ def create_app():
             return jsonify(result)
         except Exception as e:
             return jsonify({"status": "failed", "error": str(e)}), 500
-    
+
+    # =========================================================================
+    # Part 5.2: Multi-Channel Alert System Web & API Routes
+    # =========================================================================
+
+    @app.route('/alerts')
+    def alerts_center():
+        """Render dedicated Alert Incident Management & Operations Center UI."""
+        status_filter = request.args.get('status')
+        severity_filter = request.args.get('severity')
+        
+        alerts_list = []
+        stats = {"total_alerts": 0, "active_alerts": 0, "critical_active_alerts": 0, "by_severity": {}, "by_trigger": {}}
+
+        try:
+            from src.pipeline_automation.database import FireMonitoringDatabase
+            db = FireMonitoringDatabase()
+            _alert_dispatcher.set_database(db)
+            alerts_list = db.get_alerts(limit=100, severity=severity_filter, status=status_filter)
+            stats = db.get_alert_statistics()
+        except Exception as e:
+            logger.debug(f"Could not load alerts from DB ({e}); using in-memory channel.")
+            alerts_list = _alert_dispatcher.dashboard_channel.get_recent_alerts(limit=50)
+
+        return render_template(
+            'alerts.html',
+            alerts=alerts_list,
+            stats=stats,
+            current_status=status_filter or 'ALL',
+            current_severity=severity_filter or 'ALL',
+        )
+
+    @app.route('/api/alerts')
+    def api_alerts():
+        """Return JSON list of alerts with optional filtering."""
+        limit = int(request.args.get('limit', 50))
+        severity = request.args.get('severity')
+        status = request.args.get('status')
+        trigger_type = request.args.get('trigger_type')
+
+        try:
+            from src.pipeline_automation.database import FireMonitoringDatabase
+            db = FireMonitoringDatabase()
+            _alert_dispatcher.set_database(db)
+            alerts = db.get_alerts(limit=limit, severity=severity, status=status, trigger_type=trigger_type)
+            return jsonify(alerts)
+        except Exception as e:
+            logger.warning(f"Falling back to in-memory alerts ({e})")
+            raw_alerts = _alert_dispatcher.dashboard_channel.get_recent_alerts(limit=limit)
+            if severity:
+                raw_alerts = [a for a in raw_alerts if a.get("severity", "").upper() == severity.upper()]
+            if status:
+                raw_alerts = [a for a in raw_alerts if a.get("status", "").upper() == status.upper()]
+            return jsonify(raw_alerts)
+
+    @app.route('/api/alerts/stats')
+    def api_alert_stats():
+        """Return aggregate summary metrics of alerts."""
+        try:
+            from src.pipeline_automation.database import FireMonitoringDatabase
+            db = FireMonitoringDatabase()
+            _alert_dispatcher.set_database(db)
+            stats = db.get_alert_statistics()
+            return jsonify(stats)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    @app.route('/api/alerts/<alert_id>/ack', methods=['POST'])
+    def api_acknowledge_alert(alert_id: str):
+        """Acknowledge an active alert by alert_id."""
+        user = "operator"
+        if request.is_json and request.json:
+            user = request.json.get("user", "operator")
+        try:
+            from src.pipeline_automation.database import FireMonitoringDatabase
+            db = FireMonitoringDatabase()
+            success = db.acknowledge_alert(alert_id, acknowledged_by=user)
+            return jsonify({"status": "success" if success else "not_found", "alert_id": alert_id})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+
+    @app.route('/api/alerts/test', methods=['POST', 'GET'])
+    def api_trigger_test_alert():
+        """Trigger an immediate simulated test alert across all channels."""
+        try:
+            from src.pipeline_automation.database import FireMonitoringDatabase
+            db = FireMonitoringDatabase()
+            _alert_dispatcher.set_database(db)
+            test_alert = _alert_engine.trigger_test_alert()
+            return jsonify({
+                "status": "dispatched",
+                "alert": test_alert.to_dict(),
+                "channels": test_alert.channels_dispatched
+            })
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+
+    @app.route('/api/alerts/stream')
+    def api_alerts_stream():
+        """
+        Server-Sent Events (SSE) real-time streaming endpoint.
+        Pushes new thermal anomaly alerts directly to client browsers.
+        """
+        return Response(
+            _alert_dispatcher.dashboard_channel.sse_event_stream(),
+            mimetype="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no"
+            }
+        )
+
+    @app.route('/reports')
+    def reports_console():
+        """Historical Fire Analytics & Executive Reporting Console (Part 5.4)."""
+        fires_df, facilities_gdf = get_data()
+        from src.reporting.report_engine import ReportEngine
+        engine = ReportEngine()
+        analysis = engine.run_full_analysis(fires_df, facilities_gdf)
+        return render_template(
+            "reports.html",
+            summary=analysis["summary"],
+            monthly_data=analysis["monthly_data"],
+            quarterly_data=analysis["quarterly_data"],
+            facility_risks=analysis["facility_risks"],
+            regional_trends=analysis["regional_trends"]
+        )
+
+    @app.route('/health')
+    def web_health():
+        """Health and readiness probe endpoint (Part 5.5)."""
+        from src.monitoring.health import SystemHealthManager
+        manager = SystemHealthManager()
+        readiness = manager.get_readiness()
+        code = 200 if readiness.get("status") == "ready" else 503
+        return jsonify(readiness), code
+
+    @app.route('/api/health/deep')
+    def web_deep_health():
+        """Deep diagnostic health inspection endpoint (Part 5.5)."""
+        from src.monitoring.health import SystemHealthManager
+        manager = SystemHealthManager()
+        return jsonify(manager.get_deep_diagnostics())
+
     return app
 
 if __name__ == '__main__':
