@@ -5,12 +5,13 @@ Applies a priority-ordered rule hierarchy to assign fire type labels
 based on spatial proximity to industrial facilities, land cover class,
 and temporal persistence characteristics.
 
-Label Priority:
-    1. Gas Flare / Industrial Heat  (persistent + near facility)
-    2. Industrial Fire              (near facility, non-persistent)
-    3. Forest Fire                  (forest land cover)
-    4. Agricultural Burning         (agricultural land cover)
-    5. Unknown/Other                (everything else)
+6-Class Taxonomy:
+    Class 0: Industrial Fire   — fire at/near industrial facility
+    Class 1: Gas Flare         — persistent combustion at oil/gas sites
+    Class 2: Forest Fire       — wildfire in forest areas
+    Class 3: Agricultural Burning — crop residue / stubble burning
+    Class 4: Mining Activity   — thermal from mining operations
+    Class 5: Other/Unknown     — unclassified thermal anomaly
 """
 
 import numpy as np
@@ -24,12 +25,24 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Label constants
 # ---------------------------------------------------------------------------
-LABEL_GAS_FLARE = "Gas Flare"
-LABEL_INDUSTRIAL_HEAT = "Industrial Heat"
 LABEL_INDUSTRIAL_FIRE = "Industrial Fire"
+LABEL_GAS_FLARE = "Gas Flare"
 LABEL_FOREST_FIRE = "Forest Fire"
 LABEL_AGRICULTURAL_BURNING = "Agricultural Burning"
-LABEL_UNKNOWN = "Unknown/Other"
+LABEL_MINING_ACTIVITY = "Mining Activity"
+LABEL_UNKNOWN = "Other/Unknown"
+
+# Class ID mapping (matches the specification exactly)
+CLASS_ID_MAP = {
+    LABEL_INDUSTRIAL_FIRE: 0,
+    LABEL_GAS_FLARE: 1,
+    LABEL_FOREST_FIRE: 2,
+    LABEL_AGRICULTURAL_BURNING: 3,
+    LABEL_MINING_ACTIVITY: 4,
+    LABEL_UNKNOWN: 5,
+}
+
+CLASS_NAME_MAP = {v: k for k, v in CLASS_ID_MAP.items()}
 
 # Land-cover codes from config/settings.py
 LC_INDUSTRIAL = 2
@@ -43,15 +56,23 @@ class SemiAutoLabeler:
 
     The labeler consumes columns produced by earlier pipeline stages
     (Part 1 preprocessing + Part 2 analysis) and assigns a categorical
-    ``fire_label`` column plus a ``label_confidence`` score (0-1).
+    ``fire_label`` column, a ``label_confidence`` score (0-1), and
+    a ``fire_class_id`` integer column.
     """
 
     def __init__(self, proximity_threshold_km: float = 1.0):
         self.proximity_threshold_km = proximity_threshold_km
         self._label_distribution: dict = {}
+
+        # Facility-type keywords for gas flare sources
         self._flare_keywords = frozenset([
             "gas_flare", "flare", "gas", "lng_terminal", "petroleum_well",
             "oil_refinery", "petrochemical",
+        ])
+
+        # Facility-type keywords for mining operations
+        self._mining_keywords = frozenset([
+            "mining", "mine", "quarry",
         ])
 
     # ------------------------------------------------------------------
@@ -72,8 +93,8 @@ class SemiAutoLabeler:
         Returns
         -------
         DataFrame
-            Copy of fires_df with ``fire_label`` and
-            ``label_confidence`` columns appended.
+            Copy of fires_df with ``fire_label``, ``fire_class_id``,
+            and ``label_confidence`` columns appended.
         """
         if fires_df.empty:
             logger.warning("Empty fire DataFrame -- nothing to label.")
@@ -100,37 +121,50 @@ class SemiAutoLabeler:
                 df["nearest_facility_type"] = "none"
 
         # ----------------------------------------------------------
-        # Rule 1 -- Gas Flare / Industrial Heat (persistent + near)
+        # Rule 1 -- Gas Flare (persistent + near flare-type facility)
         # ----------------------------------------------------------
         near_mask = (
             df["distance_to_nearest_industrial"] <= self.proximity_threshold_km
         )
         persistent_mask = self._classify_persistent_thermal(df)
-        gas_keywords = self._flare_keywords
-        flare_type_mask = df["nearest_facility_type"].astype(str).str.lower().apply(
-            lambda t: any(kw in t for kw in gas_keywords)
+
+        fac_type_lower = df["nearest_facility_type"].astype(str).str.lower()
+
+        flare_type_mask = fac_type_lower.apply(
+            lambda t: any(kw in t for kw in self._flare_keywords)
+        )
+        mining_type_mask = fac_type_lower.apply(
+            lambda t: any(kw in t for kw in self._mining_keywords)
         )
 
-        # Gas Flare: persistent + near + flare-type facility
         gas_flare_mask = near_mask & persistent_mask & flare_type_mask
         df.loc[gas_flare_mask, "fire_label"] = LABEL_GAS_FLARE
         df.loc[gas_flare_mask, "label_confidence"] = 0.90
 
-        # Industrial Heat: persistent + near + non-flare facility
-        industrial_heat_mask = near_mask & persistent_mask & ~flare_type_mask
-        df.loc[industrial_heat_mask, "fire_label"] = LABEL_INDUSTRIAL_HEAT
-        df.loc[industrial_heat_mask, "label_confidence"] = 0.85
-
         # ----------------------------------------------------------
-        # Rule 2 -- Industrial Fire (near facility, non-persistent)
+        # Rule 2 -- Mining Activity (near mining facility)
         # ----------------------------------------------------------
         unlabeled = df["fire_label"] == LABEL_UNKNOWN
-        industrial_fire_mask = unlabeled & near_mask & ~persistent_mask
+        mining_mask = unlabeled & near_mask & mining_type_mask
+        df.loc[mining_mask, "fire_label"] = LABEL_MINING_ACTIVITY
+        df.loc[mining_mask, "label_confidence"] = 0.82
+
+        # ----------------------------------------------------------
+        # Rule 3 -- Industrial Fire (near non-flare, non-mining facility)
+        # ----------------------------------------------------------
+        unlabeled = df["fire_label"] == LABEL_UNKNOWN
+        industrial_fire_mask = unlabeled & near_mask & ~flare_type_mask & ~mining_type_mask
         df.loc[industrial_fire_mask, "fire_label"] = LABEL_INDUSTRIAL_FIRE
         df.loc[industrial_fire_mask, "label_confidence"] = 0.80
 
+        # Also: persistent + near + non-flare, non-mining -> Industrial Fire
+        unlabeled = df["fire_label"] == LABEL_UNKNOWN
+        persistent_industrial_mask = unlabeled & near_mask & persistent_mask & ~flare_type_mask & ~mining_type_mask
+        df.loc[persistent_industrial_mask, "fire_label"] = LABEL_INDUSTRIAL_FIRE
+        df.loc[persistent_industrial_mask, "label_confidence"] = 0.85
+
         # ----------------------------------------------------------
-        # Rule 3 -- Forest Fire (land_cover == 4)
+        # Rule 4 -- Forest Fire (land_cover == 4)
         # ----------------------------------------------------------
         unlabeled = df["fire_label"] == LABEL_UNKNOWN
         if "land_cover" in df.columns:
@@ -139,7 +173,7 @@ class SemiAutoLabeler:
             df.loc[forest_mask, "label_confidence"] = 0.75
 
         # ----------------------------------------------------------
-        # Rule 4 -- Agricultural Burning (land_cover == 3)
+        # Rule 5 -- Agricultural Burning (land_cover == 3)
         # ----------------------------------------------------------
         unlabeled = df["fire_label"] == LABEL_UNKNOWN
         if "land_cover" in df.columns:
@@ -148,10 +182,13 @@ class SemiAutoLabeler:
             df.loc[agri_mask, "label_confidence"] = 0.70
 
         # ----------------------------------------------------------
-        # Rule 5 -- Unknown / Other  (already the default)
+        # Rule 6 -- Other/Unknown (default)
         # ----------------------------------------------------------
         unlabeled = df["fire_label"] == LABEL_UNKNOWN
         df.loc[unlabeled, "label_confidence"] = 0.30
+
+        # Assign class IDs
+        df["fire_class_id"] = df["fire_label"].map(CLASS_ID_MAP).fillna(5).astype(int)
 
         # Store distribution for reporting
         self._label_distribution = df["fire_label"].value_counts().to_dict()

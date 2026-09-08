@@ -33,7 +33,7 @@ def main():
     logger = logging.getLogger(__name__)
     
     parser = argparse.ArgumentParser(description="Industrial Fire Detection System CLI")
-    parser.add_argument("--part", type=str, choices=['1', '2', '2.2', '2.3', '2.4', '3', '4', '5', 'web'], default='web',
+    parser.add_argument("--part", type=str, choices=['1', '2', '2.2', '2.3', '2.4', '3', '3.5', '4', '5', 'web'], default='web',
                         help="Which part to run (1-5, 2.2, 2.3, 2.4) or 'web' for dashboard")
     parser.add_argument("--bbox", type=str, help="Bounding box as W,S,E,N", default=None)
     parser.add_argument("--days", type=int, help="Number of days of data to fetch", default=2)
@@ -270,6 +270,37 @@ def main():
                 sys.exit(1)
             
             logger.info("Part 3 execution completed successfully.")
+        elif args.part == '3.5':
+            from src.classification.classify_pipeline import ClassificationPipeline
+            
+            logger.info("Starting Part 3.5: Model Training & Evaluation Pipeline")
+            
+            pipeline = ClassificationPipeline(
+                test_size=0.2,
+                cv_folds=5,
+                n_iter=50,
+                search_method="random",
+            )
+            results = pipeline.run_training_pipeline()
+            
+            if not results:
+                logger.error("Model training pipeline failed.")
+                sys.exit(1)
+            
+            logger.info("Part 3.5 execution completed successfully.")
+        elif args.part == '4':
+            from src.classification.classify_pipeline import ClassificationPipeline
+            
+            logger.info("Starting Part 4: Inference Pipeline")
+            
+            pipeline = ClassificationPipeline()
+            classified_df = pipeline.run_inference_pipeline()
+            
+            if classified_df.empty:
+                logger.error("Inference pipeline failed.")
+                sys.exit(1)
+            
+            logger.info("Part 4 execution completed successfully.")
         elif args.part == 'web':
             from src.web.app import create_app
             logger.info(f"Starting Web Dashboard on http://localhost:{args.port}")
