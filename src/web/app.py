@@ -135,6 +135,7 @@ def create_app():
     app.config['SECRET_KEY'] = 'sih-2026-industrial-fire-detection'
     
     @app.route('/')
+    @app.route('/index.html')
     def index():
         """Main dashboard page with interactive controls."""
         fire_df, facilities_gdf = get_data()
@@ -213,6 +214,7 @@ def create_app():
                              recent_alerts=recent_alerts)
     
     @app.route('/map')
+    @app.route('/map.html')
     def render_map():
         """Render standalone Folium map with optional query filters."""
         fire_df, facilities_gdf = get_data()
@@ -237,6 +239,7 @@ def create_app():
         return _map_gen.create_dashboard_map(filtered_fires, facilities_gdf, selected_types)
     
     @app.route('/analytics')
+    @app.route('/analytics.html')
     def analytics():
         """Render comprehensive spatial intelligence and fire analytics panel."""
         fire_df, facilities_gdf = get_data()
@@ -420,6 +423,7 @@ def create_app():
     # =========================================================================
 
     @app.route('/alerts')
+    @app.route('/alerts.html')
     def alerts_center():
         """Render dedicated Alert Incident Management & Operations Center UI."""
         status_filter = request.args.get('status')
@@ -528,6 +532,7 @@ def create_app():
         )
 
     @app.route('/reports')
+    @app.route('/reports.html')
     def reports_console():
         """Historical Fire Analytics & Executive Reporting Console (Part 5.4)."""
         fires_df, facilities_gdf = get_data()

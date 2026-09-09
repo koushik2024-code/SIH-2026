@@ -1,64 +1,91 @@
 import os
 import sys
 import json
+import shutil
 import jinja2
 
-# Ensure src/web in path
-sys.path.insert(0, os.path.join(os.path.abspath("."), "src", "web"))
-sys.path.insert(0, os.path.abspath("."))
+# Ensure project root & src/web are in sys.path
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, os.path.join(BASE_DIR, "src", "web"))
+sys.path.insert(0, BASE_DIR)
 
-from demo_data import DemoDataGenerator
-from map_generator import MapGenerator
+from src.web.app import get_data, _analytics_engine
+from src.web.map_generator import MapGenerator
+from src.reporting.report_engine import ReportEngine
+from src.pipeline_automation.database import FireMonitoringDatabase
+
+
+def adapt_links_for_static(html: str) -> str:
+    """Transform server-side absolute routes into static relative filenames for GitHub Pages & static hosting."""
+    replacements = [
+        ('href="/"', 'href="index.html"'),
+        ("href='/'", "href='index.html'"),
+        ('href="/analytics"', 'href="analytics.html"'),
+        ('href="/alerts"', 'href="alerts.html"'),
+        ('href="/reports"', 'href="reports.html"'),
+        ('href="/map"', 'href="map.html"'),
+        ('href="/static/css/theme.css"', 'href="static/css/theme.css"'),
+        ('src="/static/css/theme.css"', 'src="static/css/theme.css"'),
+        ('mapFrame.src = "/map"', 'mapFrame.src = "map.html"'),
+        ('mapFrame.src = "/map" + window.location.search;', 'mapFrame.src = "map.html";'),
+        ('href="map.html"', 'href="map.html"'),
+    ]
+    for old, new in replacements:
+        html = html.replace(old, new)
+    return html
+
 
 def build():
-    print("Generating demo data for static deployment...")
-    gen = DemoDataGenerator()
-    facs_gdf = gen.generate_facilities()
-    fire_df = gen.generate_fire_data(500, 3)
+    print("=" * 60)
+    print("Building Static Deployment Suite for GitHub Pages & Local Hosting")
+    print("=" * 60)
+
+    # 1. Setup asset directories
+    os.makedirs(os.path.join(BASE_DIR, "static", "css"), exist_ok=True)
+    os.makedirs(os.path.join(BASE_DIR, "docs", "static", "css"), exist_ok=True)
     
-    # Format fire dataframe
+    theme_src = os.path.join(BASE_DIR, "src", "web", "static", "css", "theme.css")
+    if os.path.exists(theme_src):
+        shutil.copy(theme_src, os.path.join(BASE_DIR, "static", "css", "theme.css"))
+        shutil.copy(theme_src, os.path.join(BASE_DIR, "docs", "static", "css", "theme.css"))
+        print("[+] Synced theme.css to static/ and docs/static/")
+
+    # 2. Setup Jinja environment
+    template_dir = os.path.join(BASE_DIR, "src", "web", "templates")
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
+    env.filters['tojson'] = lambda val: json.dumps(val)
+
+    # 3. Fetch comprehensive pipeline data
+    print("[+] Loading fire detections, infrastructure, and alert history...")
+    fire_df, facs_gdf = get_data()
+
+    # Format fires data for JSON embedding
     df_copy = fire_df.copy()
     if 'datetime' in df_copy.columns:
         df_copy['datetime'] = df_copy['datetime'].astype(str)
     fires_list = df_copy.to_dict(orient='records')
-    
-    # Format facilities dataframe
+
+    # Format facilities data for JSON embedding
     fac_copy = facs_gdf.copy()
     if 'geometry' in fac_copy.columns:
         fac_copy = fac_copy.drop(columns=['geometry'])
     facs_list = fac_copy.to_dict(orient='records')
-    
+
     map_gen = MapGenerator()
     stats = map_gen.get_fire_statistics(fire_df)
     all_fire_types = list(MapGenerator.FIRE_TYPE_COLORS.keys())
-    
-    # Copy theme.css for static hosting
-    import shutil
-    os.makedirs("static/css", exist_ok=True)
-    os.makedirs("docs/static/css", exist_ok=True)
-    shutil.copy("src/web/static/css/theme.css", "static/css/theme.css")
-    shutil.copy("src/web/static/css/theme.css", "docs/static/css/theme.css")
-    
-    # Load template
-    template_path = os.path.join("src", "web", "templates", "dashboard.html")
-    with open(template_path, "r", encoding="utf-8") as f:
-        template_content = f.read()
-    
-    env = jinja2.Environment()
-    # Add tojson filter simulation
-    env.filters['tojson'] = lambda val: json.dumps(val)
-    template = env.from_string(template_content)
 
-    alert_stats = {"critical_active_alerts": 12, "total_alerts": 48}
-    recent_alerts = [{
-        "alert_id": "ALT-935401CC",
-        "title": "Severe Thermal Flare Hazard",
-        "severity": "CRITICAL",
-        "facility_name": "Jamnagar Petrochemical Complex",
-        "timestamp": "2026-09-09 18:30"
-    }]
-    
-    rendered = template.render(
+    # Fetch alerts from database
+    db = FireMonitoringDatabase()
+    alerts_list = db.get_alerts(limit=100)
+    alert_stats = db.get_alert_statistics()
+
+    # -------------------------------------------------------------
+    # 4. Build Page 1: Dashboard (index.html & docs/index.html)
+    # -------------------------------------------------------------
+    print("[+] Rendering Dashboard (index.html)...")
+    t_dash = env.get_template("dashboard.html")
+    dash_html = t_dash.render(
         fires_data=fires_list,
         facilities_data=facs_list,
         stats=stats,
@@ -67,33 +94,84 @@ def build():
         fire_type_colors=MapGenerator.FIRE_TYPE_COLORS,
         map_html="",
         alert_stats=alert_stats,
-        recent_alerts=recent_alerts,
-        crit_count=12,
+        recent_alerts=alerts_list[:10],
+        crit_count=alert_stats.get("critical_active_alerts", 0),
         search_query="",
         start_date="",
         end_date="",
         min_confidence=0,
     )
-    
-    # Write to root index.html
-    root_rendered = rendered.replace(
-        '<link rel="stylesheet" href="/static/css/theme.css">',
-        '<link rel="stylesheet" href="static/css/theme.css">\n    <link rel="stylesheet" href="/static/css/theme.css">'
+    dash_static = adapt_links_for_static(dash_html)
+    with open(os.path.join(BASE_DIR, "index.html"), "w", encoding="utf-8") as f:
+        f.write(dash_static)
+    with open(os.path.join(BASE_DIR, "docs", "index.html"), "w", encoding="utf-8") as f:
+        f.write(dash_static)
+    print("    -> Wrote index.html and docs/index.html")
+
+    # -------------------------------------------------------------
+    # 5. Build Page 2: Alerts Incident Center (alerts.html & docs/alerts.html)
+    # -------------------------------------------------------------
+    print("[+] Rendering Alerts Incident Center (alerts.html)...")
+    t_alerts = env.get_template("alerts.html")
+    alerts_html = t_alerts.render(
+        alerts=alerts_list,
+        stats=alert_stats,
+        current_status="ALL",
+        current_severity="ALL",
     )
-    with open("index.html", "w", encoding="utf-8") as f:
-        f.write(root_rendered)
-    print("Written index.html")
-    
-    # Write to docs/index.html
-    docs_rendered = rendered.replace(
-        '<link rel="stylesheet" href="/static/css/theme.css">',
-        '<link rel="stylesheet" href="static/css/theme.css">\n    <link rel="stylesheet" href="../src/web/static/css/theme.css">'
+    alerts_static = adapt_links_for_static(alerts_html)
+    with open(os.path.join(BASE_DIR, "alerts.html"), "w", encoding="utf-8") as f:
+        f.write(alerts_static)
+    with open(os.path.join(BASE_DIR, "docs", "alerts.html"), "w", encoding="utf-8") as f:
+        f.write(alerts_static)
+    print("    -> Wrote alerts.html and docs/alerts.html")
+
+    # -------------------------------------------------------------
+    # 6. Build Page 3: Reports & Longitudinal Dossier (reports.html & docs/reports.html)
+    # -------------------------------------------------------------
+    print("[+] Rendering Executive Reports Dossier (reports.html)...")
+    rep_engine = ReportEngine()
+    analysis = rep_engine.run_full_analysis(fire_df, facs_gdf)
+    t_reports = env.get_template("reports.html")
+    reports_html = t_reports.render(
+        summary=analysis["summary"],
+        monthly_data=analysis["monthly_data"],
+        quarterly_data=analysis["quarterly_data"],
+        facility_risks=analysis["facility_risks"],
+        regional_trends=analysis["regional_trends"],
     )
-    os.makedirs("docs", exist_ok=True)
-    with open(os.path.join("docs", "index.html"), "w", encoding="utf-8") as f:
-        f.write(docs_rendered)
-    print("Written docs/index.html")
-    print("Static build successful!")
+    reports_static = adapt_links_for_static(reports_html)
+    with open(os.path.join(BASE_DIR, "reports.html"), "w", encoding="utf-8") as f:
+        f.write(reports_static)
+    with open(os.path.join(BASE_DIR, "docs", "reports.html"), "w", encoding="utf-8") as f:
+        f.write(reports_static)
+    print("    -> Wrote reports.html and docs/reports.html")
+
+    # -------------------------------------------------------------
+    # 7. Build Page 4: Spatial Analytics Panel (analytics.html & docs/analytics.html)
+    # -------------------------------------------------------------
+    print("[+] Rendering Spatial Analytics (analytics.html)...")
+    analytics_data = _analytics_engine.generate_full_analytics(fire_df, facs_gdf)
+    t_analytics = env.get_template("analytics.html")
+    analytics_html = t_analytics.render(
+        **analytics_data,
+        start_date="",
+        end_date="",
+        min_confidence=0,
+        search_query="",
+        total_fires=len(fire_df),
+    )
+    analytics_static = adapt_links_for_static(analytics_html)
+    with open(os.path.join(BASE_DIR, "analytics.html"), "w", encoding="utf-8") as f:
+        f.write(analytics_static)
+    with open(os.path.join(BASE_DIR, "docs", "analytics.html"), "w", encoding="utf-8") as f:
+        f.write(analytics_static)
+    print("    -> Wrote analytics.html and docs/analytics.html")
+
+    print("=" * 60)
+    print("All 4 production pages built successfully for both root and docs/!")
+    print("=" * 60)
+
 
 if __name__ == "__main__":
     build()

@@ -608,6 +608,30 @@
             list.insertBefore(card, list.firstChild);
         }
 
+        // Setup real-time Server-Sent Events (SSE) stream
+        function setupAlertStream() {
+            try {
+                if (typeof EventSource !== "undefined" && window.location.protocol.startsWith('http')) {
+                    const evtSource = new EventSource('/api/alerts/stream');
+                    evtSource.onmessage = function(event) {
+                        try {
+                            const alert = JSON.parse(event.data);
+                            showToast(alert);
+                            prependAlertCard(alert);
+                            updateKpiCounters();
+                        } catch (e) {
+                            console.error("SSE parse error", e);
+                        }
+                    };
+                    evtSource.onerror = function() {
+                        // Reconnection handled automatically by browser EventSource
+                    };
+                }
+            } catch (e) {
+                console.warn("Real-time alert streaming unavailable in static/offline mode:", e);
+            }
+        }
+
         // Initialize on load
         window.addEventListener('DOMContentLoaded', setupAlertStream);
     </script>

@@ -18,7 +18,6 @@
     
     <!-- Master Unified Theme CSS -->
     <link rel="stylesheet" href="static/css/theme.css">
-    <link rel="stylesheet" href="/static/css/theme.css">
     <link rel="stylesheet" href="src/web/static/css/theme.css">
 
     <style>
@@ -361,7 +360,7 @@
 
     <!-- MASTER UNIFIED TOP NAVBAR -->
     <header class="master-navbar">
-        <a href="/" class="brand-wrapper">
+        <a href="index.html" class="brand-wrapper">
             <div class="brand-icon-box">
                 <i class="fas fa-fire-flame-curved"></i>
             </div>
@@ -373,20 +372,20 @@
 
         <!-- Master Navigation Pill Tabs -->
         <nav class="nav-pills-group d-none d-md-flex">
-            <a href="/" class="nav-pill-link active">
+            <a href="index.html" class="nav-pill-link active">
                 <i class="fas fa-map-location-dot"></i> GIS Surveillance
             </a>
-            <a href="/analytics" class="nav-pill-link">
+            <a href="analytics.html" class="nav-pill-link">
                 <i class="fas fa-chart-pie"></i> Analytics
             </a>
-            <a href="/alerts" class="nav-pill-link">
+            <a href="alerts.html" class="nav-pill-link">
                 <i class="fas fa-bell"></i> Alerts
                 
                 <span class="nav-counter-pill bg-danger text-light" id="navAlertBadge">
-                    12
+                    5
                 </span>
             </a>
-            <a href="/reports" class="nav-pill-link">
+            <a href="reports.html" class="nav-pill-link">
                 <i class="fas fa-file-invoice"></i> Reports
             </a>
         </nav>
@@ -433,7 +432,7 @@
                     <div class="hud-chip-icon text-info"><i class="fas fa-satellite-dish"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Thermal Detections</span>
-                        <span class="hud-chip-value counter" id="hudThermalCount" data-target="500">500</span>
+                        <span class="hud-chip-value counter" id="hudThermalCount" data-target="1517">1517</span>
                     </div>
                 </div>
 
@@ -442,7 +441,7 @@
                     <div class="hud-chip-icon text-danger"><i class="fas fa-industry"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Industrial Threats</span>
-                        <span class="hud-chip-value text-danger counter" id="hudIndustrialCount" data-target="125">125</span>
+                        <span class="hud-chip-value text-danger counter" id="hudIndustrialCount" data-target="18">18</span>
                     </div>
                 </div>
 
@@ -451,7 +450,7 @@
                     <div class="hud-chip-icon text-warning"><i class="fas fa-fire"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Avg Fire Power</span>
-                        <span class="hud-chip-value text-warning">29.9 MW</span>
+                        <span class="hud-chip-value text-warning">14.5 MW</span>
                     </div>
                 </div>
 
@@ -460,7 +459,7 @@
                     <div class="hud-chip-icon text-caution"><i class="fas fa-cloud-sun"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Diurnal Split</span>
-                        <span class="hud-chip-value">276☀️ / 224🌙</span>
+                        <span class="hud-chip-value">747☀️ / 770🌙</span>
                     </div>
                 </div>
 
@@ -469,7 +468,7 @@
                     <div class="hud-chip-icon text-success"><i class="fas fa-shield-check"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Confidence Verified</span>
-                        <span class="hud-chip-value text-success">226 Verified (%)</span>
+                        <span class="hud-chip-value text-success">126 Verified (%)</span>
                     </div>
                 </div>
             </div>
@@ -551,7 +550,7 @@
             mapFrame.src = "map.html";
         } else {
             // Always stream from same-origin /map endpoint for zero cross-origin sandboxing & instant loads
-            mapFrame.src = "/map" + window.location.search;
+            mapFrame.src = "map.html" + window.location.search;
         }
 
         // Auto-adapt navigation links on static hosts (GitHub Pages)
@@ -750,7 +749,7 @@
 
         // Pop toast on load if there's a recent active alert
         
-        const initialAlert = {"alert_id": "ALT-935401CC", "title": "Severe Thermal Flare Hazard", "severity": "CRITICAL", "facility_name": "Jamnagar Petrochemical Complex", "timestamp": "2026-09-09 18:30"};
+        const initialAlert = {"alert_id": "ALT-C35FC645", "timestamp": "2026-09-09T16:51:14.512507+00:00", "trigger_type": "DIAGNOSTIC_TEST", "severity": "CRITICAL", "detection_id": "TEST-SIM-001", "latitude": 22.4707, "longitude": 70.0577, "facility_name": "Jamnagar Petrochemical Complex", "facility_type": "Refinery & Petrochemicals", "distance_km": 0.45, "frp": 72.5, "brightness": 378.2, "confidence": 95.0, "title": "CRITICAL TEST: Simulated Industrial Fire & Thermal Anomaly", "description": "SYSTEM DIAGNOSTIC ALERT: Multi-spectral sensors detected simulated extreme thermal anomaly (FRP 72.5 MW, 378.2 K) 0.45 km from Jamnagar Petrochemical Complex. All operational response channels (Email, SMS, Dashboard, Log, Webhook) tested successfully.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACKNOWLEDGED", "acknowledged_at": "2026-09-09T16:51:14.579474+00:00", "acknowledged_by": "test_agent"};
         if (initialAlert) {
             setTimeout(() => {
                 showAlertToast(initialAlert);

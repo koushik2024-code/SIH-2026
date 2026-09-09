@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Historical Fire Analytics & Executive Reports | PYRO·VISION</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- PYRO·VISION Unified Theme -->
+    <link rel="stylesheet" href="static/css/theme.css">
+
+    <style>
+        .page-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px 20px 48px;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* Hero Banner */
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .hero h2 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .export-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Card Panels */
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 28px;
+            overflow-x: auto;
+            box-shadow: var(--shadow-sm);
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .panel-header h3 {
+            font-size: 17px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+        }
+
+        /* Progress Bar */
+        .progress-bar-bg {
+            width: 90px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .type-pill {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Regional Grid */
+        .reg-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .reg-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 18px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .reg-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+        .reg-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .reg-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: #ffffff;
+        }
+        .reg-states {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+        }
+        .reg-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        /* Tab Content visibility */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- Unified Master Navigation Bar -->
+    <header class="master-navbar">
+        <a href="index.html" class="brand-wrapper">
+            <div class="brand-icon-box" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(99, 102, 241, 0.3));">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div>
+                <div class="brand-text">
+                    PYRO<span>·VISION</span>
+                </div>
+                <div class="brand-sub">EXECUTIVE REPORTS & INTEL</div>
+            </div>
+        </a>
+
+        <!-- Master View Switcher -->
+        <nav class="nav-pills-group d-none d-md-flex">
+            <a href="index.html" class="nav-pill-link">
+                <i class="fa-solid fa-earth-americas"></i> GIS Map
+            </a>
+            <a href="analytics.html" class="nav-pill-link">
+                <i class="fa-solid fa-chart-column"></i> Analytics
+            </a>
+            <a href="alerts.html" class="nav-pill-link">
+                <i class="fa-solid fa-bell"></i> Alerts
+            </a>
+            <a href="reports.html" class="nav-pill-link active">
+                <i class="fa-solid fa-file-invoice"></i> Reports
+            </a>
+        </nav>
+
+        <!-- Right Quick Controls -->
+        <div class="d-flex align-items-center gap-3">
+            <div class="live-telemetry-badge">
+                <span class="pulse-radar-dot"></span>
+                <span>Part 5.4 Longitudinal</span>
+            </div>
+            <a href="/api/reports/export/pdf" class="btn-action-custom btn-action-primary" target="_blank">
+                <i class="fa-solid fa-file-pdf"></i> Export PDF
+            </a>
+        </div>
+    </header>
+
+    <div class="page-container">
+        <!-- Hero Header -->
+        <div class="hero">
+            <div>
+                <h2>Historical Fire Surveillance & Facility Risk Dossier</h2>
+                <p>Multi-temporal trends, facility proximity risk scoring, and longitudinal satellite anomaly archives.</p>
+            </div>
+            <div class="export-actions">
+                <a href="/api/reports/export/pdf" class="btn-action-custom btn-action-primary" target="_blank">
+                    <i class="fa-solid fa-file-pdf"></i> Download PDF Report
+                </a>
+                <a href="/api/reports/export/html" class="btn-action-custom" target="_blank">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Standalone HTML
+                </a>
+                <button class="btn-action-custom" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i> Print Dossier
+                </button>
+            </div>
+        </div>
+
+        <!-- Macro KPIs -->
+        <div class="kpi-grid">
+            <div class="kpi-card info">
+                <div class="kpi-icon"><i class="fa-solid fa-fire"></i></div>
+                <div class="kpi-content">
+                    <div class="kpi-val text-info">1517</div>
+                    <div class="kpi-lbl">Total Detections</div>
+                </div>
+            </div>
+            <div class="kpi-card warning">
+                <div class="kpi-icon"><i class="fa-solid fa-bolt"></i></div>
+                <div class="kpi-content">
+                    <div class="kpi-val text-warning">22,048.3</div>
+                    <div class="kpi-lbl">Total Energy (MW)</div>
+                </div>
+            </div>
+            <div class="kpi-card success">
+                <div class="kpi-icon"><i class="fa-solid fa-industry"></i></div>
+                <div class="kpi-content">
+                    <div class="kpi-val text-success">24</div>
+                    <div class="kpi-lbl">Monitored Facilities</div>
+                </div>
+            </div>
+            <div class="kpi-card critical">
+                <div class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="kpi-content">
+                    <div class="kpi-val text-danger">7</div>
+                    <div class="kpi-lbl">High / Extreme Risk</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('facilities')">
+                <i class="fa-solid fa-shield-halved"></i> Facility Risk Matrix
+            </button>
+            <button class="tab-btn" onclick="switchTab('monthly')">
+                <i class="fa-solid fa-calendar-days"></i> Monthly Longitudinal
+            </button>
+            <button class="tab-btn" onclick="switchTab('quarterly')">
+                <i class="fa-solid fa-chart-pie"></i> Quarterly Breakdown
+            </button>
+            <button class="tab-btn" onclick="switchTab('regional')">
+                <i class="fa-solid fa-map-location-dot"></i> Regional Quadrants
+            </button>
+        </div>
+
+        <!-- Tab 1: Facility Risk Matrix -->
+        <div id="tab-facilities" class="tab-content active">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fa-solid fa-ranking-star" style="color: var(--accent);"></i> Monitored Industrial Facilities Risk Leaderboard</h3>
+                    <div style="font-size: 12px; color: var(--text-secondary);">Dynamic Risk Index evaluated over rolling multi-temporal window</div>
+                </div>
+                <table class="cyber-table">
+                    <thead>
+                        <tr>
+                            <th>Facility Name</th>
+                            <th>Asset Type</th>
+                            <th class="text-center">Nearby Fires (&lt;5km)</th>
+                            <th class="text-center">Peak FRP</th>
+                            <th class="text-center">Closest Detection</th>
+                            <th>Dynamic Risk Score</th>
+                            <th class="text-center">Risk Tier</th>
+                            <th>Trajectory</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Talcher Super TPS</td>
+                            <td><span class="type-pill">thermal_power_plant</span></td>
+                            <td class="text-center text-danger fw-bold">45</td>
+                            <td class="text-center text-warning">127.4 MW</td>
+                            <td class="text-center">1.83 km</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 82.7%; background: #e74c3c;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">82.7</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #e74c3c22; color: #e74c3c; border: 1px solid #e74c3c55;">
+                                    EXTREME RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Escalating (▲)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Talcher Coalfield</td>
+                            <td><span class="type-pill">mining</span></td>
+                            <td class="text-center text-danger fw-bold">13</td>
+                            <td class="text-center text-warning">127.4 MW</td>
+                            <td class="text-center">2.15 km</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 81.4%; background: #e74c3c;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">81.4</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #e74c3c22; color: #e74c3c; border: 1px solid #e74c3c55;">
+                                    EXTREME RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Escalating (▲)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Korba Coalfield</td>
+                            <td><span class="type-pill">mining</span></td>
+                            <td class="text-center text-danger fw-bold">3</td>
+                            <td class="text-center text-warning">77.3 MW</td>
+                            <td class="text-center">1.75 km</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 58.5%; background: #e67e22;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">58.5</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #e67e2222; color: #e67e22; border: 1px solid #e67e2255;">
+                                    HIGH RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Stable (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">SAIL Bhilai Steel Plant</td>
+                            <td><span class="type-pill">steel_plant</span></td>
+                            <td class="text-center text-danger fw-bold">11</td>
+                            <td class="text-center text-warning">9.9 MW</td>
+                            <td class="text-center">1.66 km</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 58.3%; background: #e67e22;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">58.3</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #e67e2222; color: #e67e22; border: 1px solid #e67e2255;">
+                                    HIGH RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Escalating (▲)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Korba STPP</td>
+                            <td><span class="type-pill">thermal_power_plant</span></td>
+                            <td class="text-center text-danger fw-bold">2</td>
+                            <td class="text-center text-warning">69.7 MW</td>
+                            <td class="text-center">1.33 km</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 56.7%; background: #e67e22;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">56.7</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #e67e2222; color: #e67e22; border: 1px solid #e67e2255;">
+                                    HIGH RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Stable (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Hazira Gas Processing</td>
+                            <td><span class="type-pill">gas_flare</span></td>
+                            <td class="text-center text-danger fw-bold">7</td>
+                            <td class="text-center text-warning">10.6 MW</td>
+                            <td class="text-center">0.53 km</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 52.7%; background: #e67e22;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">52.7</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #e67e2222; color: #e67e22; border: 1px solid #e67e2255;">
+                                    HIGH RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Escalating (▲)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Jamnagar Refinery (Reliance)</td>
+                            <td><span class="type-pill">oil_refinery</span></td>
+                            <td class="text-center text-danger fw-bold">2</td>
+                            <td class="text-center text-warning">105.2 MW</td>
+                            <td class="text-center">2.53 km</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 51.9%; background: #e67e22;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">51.9</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #e67e2222; color: #e67e22; border: 1px solid #e67e2255;">
+                                    HIGH RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Stable (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Jharia Coalfield</td>
+                            <td><span class="type-pill">mining</span></td>
+                            <td class="text-center text-danger fw-bold">6</td>
+                            <td class="text-center text-warning">3.1 MW</td>
+                            <td class="text-center">1.46 km</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 41.7%; background: #f1c40f;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">41.7</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #f1c40f22; color: #f1c40f; border: 1px solid #f1c40f55;">
+                                    MODERATE RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Escalating (▲)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Vindhyachal STPP</td>
+                            <td><span class="type-pill">thermal_power_plant</span></td>
+                            <td class="text-center text-danger fw-bold">1</td>
+                            <td class="text-center text-warning">91.5 MW</td>
+                            <td class="text-center">4.76 km</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 39.5%; background: #f1c40f;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">39.5</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #f1c40f22; color: #f1c40f; border: 1px solid #f1c40f55;">
+                                    MODERATE RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">De-escalating (▼)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Tata Steel Jamshedpur</td>
+                            <td><span class="type-pill">steel_plant</span></td>
+                            <td class="text-center text-danger fw-bold">3</td>
+                            <td class="text-center text-warning">2.5 MW</td>
+                            <td class="text-center">0.48 km</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 34.8%; background: #f1c40f;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">34.8</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #f1c40f22; color: #f1c40f; border: 1px solid #f1c40f55;">
+                                    MODERATE RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Stable (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">JSW Steel Vijayanagar</td>
+                            <td><span class="type-pill">steel_plant</span></td>
+                            <td class="text-center text-danger fw-bold">5</td>
+                            <td class="text-center text-warning">3.3 MW</td>
+                            <td class="text-center">4.77 km</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 25.1%; background: #f1c40f;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">25.1</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #f1c40f22; color: #f1c40f; border: 1px solid #f1c40f55;">
+                                    MODERATE RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Escalating (▲)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Bombay High Offshore</td>
+                            <td><span class="type-pill">gas_flare</span></td>
+                            <td class="text-center text-danger fw-bold">1</td>
+                            <td class="text-center text-warning">3.8 MW</td>
+                            <td class="text-center">1.62 km</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 23.9%; background: #27ae60;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">23.9</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #27ae6022; color: #27ae60; border: 1px solid #27ae6055;">
+                                    LOW RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">De-escalating (▼)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Mathura Refinery (IOCL)</td>
+                            <td><span class="type-pill">oil_refinery</span></td>
+                            <td class="text-center text-danger fw-bold">0</td>
+                            <td class="text-center text-warning">0.0 MW</td>
+                            <td class="text-center">—</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 5.0%; background: #27ae60;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">5.0</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #27ae6022; color: #27ae60; border: 1px solid #27ae6055;">
+                                    LOW RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Nominal (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Mangalore Refinery (MRPL)</td>
+                            <td><span class="type-pill">oil_refinery</span></td>
+                            <td class="text-center text-danger fw-bold">0</td>
+                            <td class="text-center text-warning">0.0 MW</td>
+                            <td class="text-center">—</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 5.0%; background: #27ae60;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">5.0</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #27ae6022; color: #27ae60; border: 1px solid #27ae6055;">
+                                    LOW RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Nominal (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Kochi Refinery (BPCL)</td>
+                            <td><span class="type-pill">oil_refinery</span></td>
+                            <td class="text-center text-danger fw-bold">0</td>
+                            <td class="text-center text-warning">0.0 MW</td>
+                            <td class="text-center">—</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 5.0%; background: #27ae60;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">5.0</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #27ae6022; color: #27ae60; border: 1px solid #27ae6055;">
+                                    LOW RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Nominal (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Haldia Refinery (IOCL)</td>
+                            <td><span class="type-pill">oil_refinery</span></td>
+                            <td class="text-center text-danger fw-bold">0</td>
+                            <td class="text-center text-warning">0.0 MW</td>
+                            <td class="text-center">—</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 5.0%; background: #27ae60;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">5.0</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #27ae6022; color: #27ae60; border: 1px solid #27ae6055;">
+                                    LOW RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Nominal (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Mundra Thermal Power</td>
+                            <td><span class="type-pill">thermal_power_plant</span></td>
+                            <td class="text-center text-danger fw-bold">0</td>
+                            <td class="text-center text-warning">0.0 MW</td>
+                            <td class="text-center">—</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 5.0%; background: #27ae60;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">5.0</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #27ae6022; color: #27ae60; border: 1px solid #27ae6055;">
+                                    LOW RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Nominal (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Sipat STPP</td>
+                            <td><span class="type-pill">thermal_power_plant</span></td>
+                            <td class="text-center text-danger fw-bold">0</td>
+                            <td class="text-center text-warning">0.0 MW</td>
+                            <td class="text-center">—</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 5.0%; background: #27ae60;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">5.0</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #27ae6022; color: #27ae60; border: 1px solid #27ae6055;">
+                                    LOW RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Nominal (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">SAIL Rourkela Steel</td>
+                            <td><span class="type-pill">steel_plant</span></td>
+                            <td class="text-center text-danger fw-bold">0</td>
+                            <td class="text-center text-warning">0.0 MW</td>
+                            <td class="text-center">—</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 5.0%; background: #27ae60;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">5.0</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #27ae6022; color: #27ae60; border: 1px solid #27ae6055;">
+                                    LOW RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Nominal (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Singrauli Coalfield</td>
+                            <td><span class="type-pill">mining</span></td>
+                            <td class="text-center text-danger fw-bold">0</td>
+                            <td class="text-center text-warning">0.0 MW</td>
+                            <td class="text-center">—</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 5.0%; background: #27ae60;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">5.0</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #27ae6022; color: #27ae60; border: 1px solid #27ae6055;">
+                                    LOW RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Nominal (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">GAIL Pata Petrochemical</td>
+                            <td><span class="type-pill">petrochemical</span></td>
+                            <td class="text-center text-danger fw-bold">0</td>
+                            <td class="text-center text-warning">0.0 MW</td>
+                            <td class="text-center">—</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 5.0%; background: #27ae60;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">5.0</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #27ae6022; color: #27ae60; border: 1px solid #27ae6055;">
+                                    LOW RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Nominal (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">RIL Dahej Petrochemical</td>
+                            <td><span class="type-pill">petrochemical</span></td>
+                            <td class="text-center text-danger fw-bold">0</td>
+                            <td class="text-center text-warning">0.0 MW</td>
+                            <td class="text-center">—</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 5.0%; background: #27ae60;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">5.0</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #27ae6022; color: #27ae60; border: 1px solid #27ae6055;">
+                                    LOW RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Nominal (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Dahej LNG Terminal</td>
+                            <td><span class="type-pill">lng_terminal</span></td>
+                            <td class="text-center text-danger fw-bold">0</td>
+                            <td class="text-center text-warning">0.0 MW</td>
+                            <td class="text-center">—</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 5.0%; background: #27ae60;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">5.0</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #27ae6022; color: #27ae60; border: 1px solid #27ae6055;">
+                                    LOW RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Nominal (▬)</td>
+                        </tr>
+                        
+                        <tr>
+                            <td style="font-weight: 600; color: #ffffff;">Kochi LNG Terminal</td>
+                            <td><span class="type-pill">lng_terminal</span></td>
+                            <td class="text-center text-danger fw-bold">0</td>
+                            <td class="text-center text-warning">0.0 MW</td>
+                            <td class="text-center">—</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: 5.0%; background: #27ae60;"></div>
+                                    </div>
+                                    <span style="font-weight: 700;">5.0</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge" style="background: #27ae6022; color: #27ae60; border: 1px solid #27ae6055;">
+                                    LOW RISK
+                                </span>
+                            </td>
+                            <td style="color: var(--text-secondary);">Nominal (▬)</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 2: Monthly Trends -->
+        <div id="tab-monthly" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent);"></i> Monthly Fire Detections & Velocity</h3>
+                </div>
+                <table class="cyber-table">
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th class="text-center">Total Fires</th>
+                            <th class="text-center">Avg Brightness</th>
+                            <th class="text-center">Avg FRP</th>
+                            <th class="text-center">Total Energy</th>
+                            <th class="text-center">Near Industrial</th>
+                            <th class="text-center">Day / Night Ratio</th>
+                            <th class="text-center">MoM Velocity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td style="font-weight: 700; color: var(--accent);">2026-09</td>
+                            <td class="text-center"><b>1517</b></td>
+                            <td class="text-center">56.56 K</td>
+                            <td class="text-center text-warning">14.53 MW</td>
+                            <td class="text-center">22,048.3 MWh</td>
+                            <td class="text-center text-danger fw-bold">18</td>
+                            <td class="text-center">747 / 770</td>
+                            <td class="text-center" style="font-weight: 700; color: var(--text-secondary);">
+                                Baseline
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 3: Quarterly Breakdown -->
+        <div id="tab-quarterly" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fa-solid fa-chart-column" style="color: var(--accent);"></i> Quarterly Thermal Surveillance Breakdown</h3>
+                </div>
+                <table class="cyber-table">
+                    <thead>
+                        <tr>
+                            <th>Quarter</th>
+                            <th class="text-center">Total Fires</th>
+                            <th class="text-center">Avg Brightness</th>
+                            <th class="text-center">Avg FRP</th>
+                            <th class="text-center">Thermal Energy</th>
+                            <th class="text-center">Industrial Fires</th>
+                            <th class="text-center">QoQ Growth</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td style="font-weight: 700; color: #a78bfa;">2026-Q3</td>
+                            <td class="text-center"><b>1517</b></td>
+                            <td class="text-center">56.56 K</td>
+                            <td class="text-center text-warning">14.53 MW</td>
+                            <td class="text-center">22,048.3 MWh</td>
+                            <td class="text-center text-danger fw-bold">18</td>
+                            <td class="text-center" style="font-weight: 700; color: var(--text-secondary);">
+                                Baseline
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 4: Regional Quadrants -->
+        <div id="tab-regional" class="tab-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fa-solid fa-compass" style="color: var(--accent);"></i> Regional Surveillance Sectors</h3>
+                </div>
+                <div class="reg-grid">
+                    
+                    <div class="reg-card">
+                        <div class="reg-header">
+                            <div class="reg-title">Northern Agro-Industrial Zone</div>
+                            <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent);">Stable (▬)</span>
+                        </div>
+                        <div class="reg-states">Punjab, Haryana, UP, NCR</div>
+                        <div class="reg-stats">
+                            <div>Total Detections: <b style="color: #ffffff;">179</b></div>
+                            <div>Industrial Fires: <b style="color: var(--danger);">0</b></div>
+                            <div>Gas Flares: <b style="color: var(--warning);">0</b></div>
+                            <div>Avg FRP: <b style="color: var(--text-primary);">5.69 MW</b></div>
+                        </div>
+                    </div>
+                    
+                    <div class="reg-card">
+                        <div class="reg-header">
+                            <div class="reg-title">Western Energy & Petrochemical Corridor</div>
+                            <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent);">Stable (▬)</span>
+                        </div>
+                        <div class="reg-states">Gujarat, Maharashtra, Offshore Bombay High</div>
+                        <div class="reg-stats">
+                            <div>Total Detections: <b style="color: #ffffff;">139</b></div>
+                            <div>Industrial Fires: <b style="color: var(--danger);">8</b></div>
+                            <div>Gas Flares: <b style="color: var(--warning);">0</b></div>
+                            <div>Avg FRP: <b style="color: var(--text-primary);">56.57 MW</b></div>
+                        </div>
+                    </div>
+                    
+                    <div class="reg-card">
+                        <div class="reg-header">
+                            <div class="reg-title">Central-Eastern Mining & Steel Belt</div>
+                            <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent);">Stable (▬)</span>
+                        </div>
+                        <div class="reg-states">Odisha, Jharkhand, Chhattisgarh, MP</div>
+                        <div class="reg-stats">
+                            <div>Total Detections: <b style="color: #ffffff;">712</b></div>
+                            <div>Industrial Fires: <b style="color: var(--danger);">19</b></div>
+                            <div>Gas Flares: <b style="color: var(--warning);">0</b></div>
+                            <div>Avg FRP: <b style="color: var(--text-primary);">10.84 MW</b></div>
+                        </div>
+                    </div>
+                    
+                    <div class="reg-card">
+                        <div class="reg-header">
+                            <div class="reg-title">Southern Coastal Infrastructure Zone</div>
+                            <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent);">Stable (▬)</span>
+                        </div>
+                        <div class="reg-states">Karnataka, Kerala, Tamil Nadu, Andhra Pradesh</div>
+                        <div class="reg-stats">
+                            <div>Total Detections: <b style="color: #ffffff;">568</b></div>
+                            <div>Industrial Fires: <b style="color: var(--danger);">0</b></div>
+                            <div>Gas Flares: <b style="color: var(--warning);">0</b></div>
+                            <div>Avg FRP: <b style="color: var(--text-primary);">14.99 MW</b></div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            const targetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+            if (targetBtn) targetBtn.classList.add('active');
+
+            const targetContent = document.getElementById('tab-' + tabId);
+            if (targetContent) targetContent.classList.add('active');
+        }
+    </script>
+</body>
+</html>
