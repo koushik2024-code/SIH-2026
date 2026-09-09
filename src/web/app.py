@@ -4,7 +4,7 @@ import json
 import logging
 import pandas as pd
 from typing import Optional, List, Any, Dict
-from flask import Flask, render_template, request, jsonify, Response
+from flask import Flask, render_template, request, jsonify, Response, send_file
 
 # Ensure project root is in path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -80,9 +80,11 @@ def filter_fire_dataframe(
 
     # 2. Date range filter
     if start_date and str(start_date).strip() and "acq_date" in filtered.columns:
-        filtered = filtered[filtered["acq_date"].astype(str) >= str(start_date).strip()]
+        s_val = str(start_date).strip()[:10]
+        filtered = filtered[filtered["acq_date"].astype(str).str[:10] >= s_val]
     if end_date and str(end_date).strip() and "acq_date" in filtered.columns:
-        filtered = filtered[filtered["acq_date"].astype(str) <= str(end_date).strip()]
+        e_val = str(end_date).strip()[:10]
+        filtered = filtered[filtered["acq_date"].astype(str).str[:10] <= e_val]
 
     # 3. Confidence threshold filter
     if min_confidence is not None and str(min_confidence).strip() and "confidence" in filtered.columns:
@@ -157,8 +159,8 @@ def create_app():
             search=search_query,
         )
         
-        # Generate map
-        map_html = _map_gen.create_dashboard_map(filtered_fires, facilities_gdf, selected_types)
+        # Dashboard iframe streams from /map endpoint asynchronously for instant page load
+        map_html = ""
         
         # Get statistics (reflecting filtered view or baseline)
         stats = _map_gen.get_fire_statistics(filtered_fires if not filtered_fires.empty else fire_df)
@@ -540,6 +542,36 @@ def create_app():
             facility_risks=analysis["facility_risks"],
             regional_trends=analysis["regional_trends"]
         )
+
+    @app.route('/api/reports/export/pdf')
+    def export_pdf_report():
+        """Export executive historical PDF report."""
+        fires_df, facilities_gdf = get_data()
+        from src.reporting.report_engine import ReportEngine
+        engine = ReportEngine()
+        analysis = engine.run_full_analysis(fires_df, facilities_gdf)
+        pdf_path = analysis["files"]["pdf"]
+        return send_file(pdf_path, as_attachment=True, download_name="fire_historical_report.pdf", mimetype="application/pdf")
+
+    @app.route('/api/reports/export/html')
+    def export_html_report():
+        """Export standalone executive HTML report."""
+        fires_df, facilities_gdf = get_data()
+        from src.reporting.report_engine import ReportEngine
+        engine = ReportEngine()
+        analysis = engine.run_full_analysis(fires_df, facilities_gdf)
+        html_path = analysis["files"]["html"]
+        return send_file(html_path, as_attachment=False, mimetype="text/html")
+
+    @app.route('/api/reports/export/csv')
+    def export_csv_report():
+        """Export monthly summary CSV report."""
+        fires_df, facilities_gdf = get_data()
+        from src.reporting.report_engine import ReportEngine
+        engine = ReportEngine()
+        analysis = engine.run_full_analysis(fires_df, facilities_gdf)
+        csv_path = analysis["files"]["csv_monthly"]
+        return send_file(csv_path, as_attachment=True, download_name="monthly_fire_summary.csv", mimetype="text/csv")
 
     @app.route('/health')
     def web_health():

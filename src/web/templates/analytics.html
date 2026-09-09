@@ -3,234 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 Fire Analytics & Spatial Intelligence | SIH 2026</title>
+    <title>📊 Fire Spatial Intelligence & Analytics | PYRO·VISION</title>
     
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     
-    <!-- Bootstrap 5 CSS (Dark Mode Base) -->
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- PYRO·VISION Unified Theme -->
+    <link rel="stylesheet" href="/static/css/theme.css">
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        :root {
-            --bg-color: #0d1117;
-            --sidebar-bg: #161b22;
-            --card-bg: #161b22;
-            --card-border: #30363d;
-            --accent-primary: #e74c3c;
-            --text-main: #e6edf3;
-            --text-secondary: #8b949e;
-            --blue-accent: #58a6ff;
-            --green-accent: #2ea043;
-            --yellow-accent: #f1c40f;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-        }
-
-        /* Top Navbar */
-        .top-navbar {
-            background-color: var(--sidebar-bg);
-            border-bottom: 1px solid var(--card-border);
-            padding: 12px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .navbar-brand-custom {
-            font-weight: 700;
-            font-size: 1.25rem;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Analytics Cards */
-        .analytics-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.35);
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .analytics-card:hover {
-            border-color: #58a6ff;
-            box-shadow: 0 6px 20px rgba(88, 166, 255, 0.12);
-        }
-
-        .card-header-flex {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--card-border);
-            padding-bottom: 12px;
-            margin-bottom: 16px;
-        }
-
-        .card-title-flex {
-            font-size: 1.05rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 0;
-        }
-
-        /* KPI Cards */
-        .kpi-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 10px;
-            padding: 16px;
-            text-align: center;
-            transition: transform 0.2s;
-        }
-        .kpi-card:hover {
-            transform: translateY(-2px);
-        }
-        .kpi-val {
-            font-size: 1.85rem;
-            font-weight: 800;
-            margin-bottom: 4px;
-            letter-spacing: -0.5px;
-        }
-        .kpi-lbl {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        /* Custom Table */
-        .table-analytics {
+        .page-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px 20px 48px;
             width: 100%;
-            color: var(--text-main);
-            font-size: 0.85rem;
-            border-collapse: collapse;
-        }
-        .table-analytics th {
-            background-color: #21262d;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            padding: 10px 12px;
-            border-bottom: 2px solid var(--card-border);
-        }
-        .table-analytics td {
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--card-border);
-            vertical-align: middle;
-        }
-        .table-analytics tr:hover {
-            background-color: rgba(255,255,255,0.02);
+            flex: 1;
         }
 
-        .badge-pill-custom {
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.72rem;
+        .header-action-pill {
+            font-size: 0.75rem;
             font-weight: 700;
-            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Top Navigation Bar -->
-    <header class="top-navbar">
-        <div class="navbar-brand-custom">
-            📊 Fire Spatial Intelligence & Analytics
-        </div>
+    <!-- Unified Master Command Navigation Bar -->
+    <header class="master-navbar">
+        <a href="/" class="brand-wrapper">
+            <div class="brand-icon-box">
+                <i class="fa-solid fa-fire-flame-curved"></i>
+            </div>
+            <div>
+                <div class="brand-text">
+                    PYRO<span>·VISION</span>
+                </div>
+                <div class="brand-sub">SIH 2026 / NTRO INTEL</div>
+            </div>
+        </a>
 
-        <div class="d-none d-md-flex align-items-center gap-2">
-            <span class="badge bg-primary text-light px-3 py-2 rounded-pill"><i class="fas fa-trophy me-1"></i> SIH 2026</span>
-            <span class="badge bg-success text-light px-3 py-2 rounded-pill"><i class="fas fa-shield-alt me-1"></i> NTRO</span>
-            <span class="badge bg-danger text-light px-3 py-2 rounded-pill"><i class="fas fa-chart-bar me-1"></i> Part 4.4 Active</span>
-        </div>
-
-        <div class="d-flex gap-2">
-            <a href="/" class="btn btn-outline-danger btn-sm px-3">
-                <i class="fas fa-map me-1"></i> GIS Map View
+        <!-- Master View Switcher -->
+        <nav class="nav-pills-group d-none d-md-flex">
+            <a href="/" class="nav-pill-link">
+                <i class="fa-solid fa-earth-americas"></i> GIS Map
             </a>
-            <a href="/api/analytics" target="_blank" class="btn btn-outline-secondary btn-sm px-3">
-                <i class="fas fa-code me-1"></i> Raw JSON API
+            <a href="/analytics" class="nav-pill-link active">
+                <i class="fa-solid fa-chart-column"></i> Analytics
+            </a>
+            <a href="/alerts" class="nav-pill-link">
+                <i class="fa-solid fa-bell"></i> Alerts
+            </a>
+            <a href="/reports" class="nav-pill-link">
+                <i class="fa-solid fa-file-invoice"></i> Reports
+            </a>
+        </nav>
+
+        <!-- Right Status Telemetry & Actions -->
+        <div class="d-flex align-items-center gap-3">
+            <div class="live-telemetry-badge">
+                <span class="pulse-radar-dot"></span>
+                <span>Part 4.4 Active</span>
+            </div>
+            <a href="/api/analytics" target="_blank" class="btn-action-custom d-none d-sm-inline-flex">
+                <i class="fa-solid fa-code"></i> JSON API
+            </a>
+            <a href="/" class="btn-action-custom btn-action-danger">
+                <i class="fa-solid fa-map-location-dot"></i> Live GIS
             </a>
         </div>
     </header>
 
-    <div class="container py-4">
+    <main class="page-container">
+        <!-- Sub-Header Title Bar -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom" style="border-color: var(--border-color) !important;">
+            <div>
+                <h1 class="h4 fw-bold mb-1 d-flex align-items-center gap-2">
+                    <span style="color: var(--accent);">📊</span> Fire Spatial Intelligence & Analytics
+                </h1>
+                <p class="text-secondary small mb-0">Multi-satellite thermal anomaly distribution, industrial proximity hazard ranking, and temporal velocity metrics.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0">
+                <span class="badge bg-dark border border-secondary text-secondary header-action-pill">
+                    <i class="fa-solid fa-satellite me-1"></i> VIIRS & MODIS
+                </span>
+                <span class="badge header-action-pill" style="background: rgba(56, 189, 248, 0.15); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3);">
+                    <i class="fa-solid fa-shield-halved me-1"></i> NTRO Verified
+                </span>
+            </div>
+        </div>
+
         <!-- 4 Top KPI Cards -->
-        <div class="row g-3 mb-4">
-            <div class="col-lg-3 col-sm-6">
-                <div class="kpi-card" style="border-left: 4px solid var(--blue-accent);">
-                    <div class="kpi-val text-primary">{{ regional.total_detections }}</div>
+        <div class="kpi-grid">
+            <div class="kpi-card info">
+                <div class="kpi-icon">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-val text-info">{{ regional.total_detections }}</div>
                     <div class="kpi-lbl">Total Fire Detections</div>
                 </div>
             </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="kpi-card" style="border-left: 4px solid var(--accent-primary);">
-                    <div class="kpi-val text-danger">{{ regional.industrial_fire_count }} <span style="font-size: 1rem;">({{ regional.industrial_exposure_rate }}%)</span></div>
+
+            <div class="kpi-card critical">
+                <div class="kpi-icon">
+                    <i class="fa-solid fa-industry"></i>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-val text-danger">
+                        {{ regional.industrial_fire_count }} <span style="font-size: 1rem; font-weight: 600; color: var(--text-secondary);">({{ regional.industrial_exposure_rate }}%)</span>
+                    </div>
                     <div class="kpi-lbl">Industrial Asset Exposure</div>
                 </div>
             </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="kpi-card" style="border-left: 4px solid var(--yellow-accent);">
-                    <div class="kpi-val text-warning">{{ regional.avg_frp }} <span style="font-size: 0.9rem;">MW</span></div>
+
+            <div class="kpi-card warning">
+                <div class="kpi-icon">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div class="kpi-content">
+                    <div class="kpi-val text-warning">
+                        {{ regional.avg_frp }} <span style="font-size: 0.95rem; font-weight: 600;">MW</span>
+                    </div>
                     <div class="kpi-lbl">Mean Radiative Power (Peak: {{ regional.peak_frp }} MW)</div>
                 </div>
             </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="kpi-card" style="border-left: 4px solid var(--green-accent);">
+
+            <div class="kpi-card success">
+                <div class="kpi-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="kpi-content">
                     <div class="kpi-val text-success">{{ regional.high_confidence_rate }}%</div>
-                    <div class="kpi-lbl">High-Confidence Verified</div>
+                    <div class="kpi-lbl">High-Confidence Detections</div>
                 </div>
             </div>
         </div>
 
-        <!-- ROW 1: Distribution Donut & Category Metrics Table -->
-        <div class="row g-4 mb-2">
+        <!-- ROW 1: Distribution Donut & Category Breakdown Table -->
+        <div class="row g-4 mb-4">
             <div class="col-lg-5">
-                <div class="analytics-card h-100">
-                    <div class="card-header-flex">
-                        <h5 class="card-title-flex"><i class="fas fa-chart-pie text-danger"></i> Fire Type Distribution</h5>
-                        <span class="badge bg-secondary">Part 4.4.1</span>
+                <div class="cyber-card h-100">
+                    <div class="cyber-card-header">
+                        <h2 class="cyber-card-title">
+                            <i class="fa-solid fa-chart-pie text-danger"></i> Fire Type Distribution
+                        </h2>
+                        <span class="badge-pill-custom badge-info-soft">Part 4.4.1</span>
                     </div>
-                    <div style="height: 270px; position: relative;">
+                    <div style="height: 280px; position: relative;">
                         <canvas id="fireTypeDonut"></canvas>
                     </div>
                 </div>
             </div>
             <div class="col-lg-7">
-                <div class="analytics-card h-100">
-                    <div class="card-header-flex">
-                        <h5 class="card-title-flex"><i class="fas fa-table text-primary"></i> Category Metrics Breakdown</h5>
-                        <span class="badge bg-secondary">Quantitative Breakdown</span>
+                <div class="cyber-card h-100">
+                    <div class="cyber-card-header">
+                        <h2 class="cyber-card-title">
+                            <i class="fa-solid fa-table-list text-primary"></i> Category Metrics Breakdown
+                        </h2>
+                        <span class="badge-pill-custom badge-info-soft">Quantitative Analysis</span>
                     </div>
                     <div class="table-responsive">
-                        <table class="table-analytics">
+                        <table class="cyber-table">
                             <thead>
                                 <tr>
                                     <th>Classification</th>
@@ -244,12 +192,14 @@
                                 {% for item in distribution.table %}
                                 <tr>
                                     <td>
-                                        <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background-color:{{ item.color }}; margin-right:8px;"></span>
-                                        <strong>{{ item.category }}</strong>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background-color:{{ item.color }};"></span>
+                                            <strong>{{ item.category }}</strong>
+                                        </div>
                                     </td>
-                                    <td class="text-center">{{ item.count }}</td>
+                                    <td class="text-center fw-bold">{{ item.count }}</td>
                                     <td class="text-center">{{ item.percentage }}%</td>
-                                    <td class="text-center">{{ item.avg_frp }} MW</td>
+                                    <td class="text-center text-warning">{{ item.avg_frp }} MW</td>
                                     <td class="text-center">{{ item.avg_brightness }} K</td>
                                 </tr>
                                 {% endfor %}
@@ -261,28 +211,34 @@
         </div>
 
         <!-- ROW 2: Time Series Analysis -->
-        <div class="row mb-2">
+        <div class="row mb-4">
             <div class="col-12">
-                <div class="analytics-card">
-                    <div class="card-header-flex">
-                        <h5 class="card-title-flex"><i class="fas fa-chart-line text-warning"></i> Time Series of Fire Detections & Radiative Energy</h5>
-                        <span class="badge bg-secondary">Part 4.4.2</span>
+                <div class="cyber-card">
+                    <div class="cyber-card-header">
+                        <div>
+                            <h2 class="cyber-card-title">
+                                <i class="fa-solid fa-chart-line text-warning"></i> Time Series of Fire Detections & Radiative Energy
+                            </h2>
+                            <p class="text-secondary small mb-0 mt-1">Chronological surveillance displaying daily fire detection volume against aggregate Fire Radiative Power (MW).</p>
+                        </div>
+                        <span class="badge-pill-custom badge-info-soft">Part 4.4.2</span>
                     </div>
-                    <p class="text-secondary small mb-3">Chronological surveillance displaying daily fire detection volume against aggregate Fire Radiative Power (MW).</p>
-                    <div style="height: 320px; position: relative;">
+                    <div style="height: 330px; position: relative;">
                         <canvas id="timeSeriesChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ROW 3: Top Facilities Leaderboard (Horizontal Bar + Criticality Table) -->
-        <div class="row g-4 mb-2">
+        <!-- ROW 3: Top Impacted Facilities & Proximity Hazard Leaderboard -->
+        <div class="row g-4 mb-4">
             <div class="col-lg-6">
-                <div class="analytics-card h-100">
-                    <div class="card-header-flex">
-                        <h5 class="card-title-flex"><i class="fas fa-industry text-danger"></i> Top Impacted Facilities</h5>
-                        <span class="badge bg-secondary">Part 4.4.3 Chart</span>
+                <div class="cyber-card h-100">
+                    <div class="cyber-card-header">
+                        <h2 class="cyber-card-title">
+                            <i class="fa-solid fa-industry text-danger"></i> Top Impacted Facilities
+                        </h2>
+                        <span class="badge-pill-custom badge-info-soft">Part 4.4.3 Chart</span>
                     </div>
                     <div style="height: 300px; position: relative;">
                         <canvas id="facilitiesBarChart"></canvas>
@@ -290,13 +246,15 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="analytics-card h-100">
-                    <div class="card-header-flex">
-                        <h5 class="card-title-flex"><i class="fas fa-exclamation-triangle text-danger"></i> Proximity Hazard Leaderboard</h5>
-                        <span class="badge bg-secondary">Part 4.4.3 Table</span>
+                <div class="cyber-card h-100">
+                    <div class="cyber-card-header">
+                        <h2 class="cyber-card-title">
+                            <i class="fa-solid fa-triangle-exclamation text-danger"></i> Proximity Hazard Leaderboard
+                        </h2>
+                        <span class="badge-pill-custom badge-info-soft">Part 4.4.3 Table</span>
                     </div>
                     <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                        <table class="table-analytics">
+                        <table class="cyber-table">
                             <thead>
                                 <tr>
                                     <th>Facility</th>
@@ -321,7 +279,7 @@
                                     </td>
                                 </tr>
                                 {% else %}
-                                <tr><td colspan="4" class="text-center text-secondary">No facilities within proximity threshold.</td></tr>
+                                <tr><td colspan="4" class="text-center text-secondary py-4">No facilities within proximity threshold.</td></tr>
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -331,15 +289,17 @@
         </div>
 
         <!-- ROW 4: Regional Summary Statistics & Diurnal Split -->
-        <div class="row g-4 mb-4">
+        <div class="row g-4">
             <div class="col-lg-8">
-                <div class="analytics-card h-100">
-                    <div class="card-header-flex">
-                        <h5 class="card-title-flex"><i class="fas fa-compass text-success"></i> Regional Surveillance Risk Matrix</h5>
-                        <span class="badge bg-secondary">Part 4.4.4</span>
+                <div class="cyber-card h-100">
+                    <div class="cyber-card-header">
+                        <h2 class="cyber-card-title">
+                            <i class="fa-solid fa-compass text-success"></i> Regional Surveillance Risk Matrix
+                        </h2>
+                        <span class="badge-pill-custom badge-info-soft">Part 4.4.4</span>
                     </div>
                     <div class="table-responsive">
-                        <table class="table-analytics">
+                        <table class="cyber-table">
                             <thead>
                                 <tr>
                                     <th>Surveillance Zone</th>
@@ -358,12 +318,12 @@
                                     <td class="text-center text-danger fw-bold">{{ q.industrial_count }}</td>
                                     <td class="text-center">{{ q.avg_frp }} MW</td>
                                     <td class="text-center">{{ q.dominant_type }}</td>
-                                    <td class="text-center fw-bold" style="color: {{ '#cf222e' if q.risk_status == 'CRITICAL' else '#3fb950' }};">
+                                    <td class="text-center fw-bold" style="color: {{ '#ef4444' if q.risk_status == 'CRITICAL' else '#10b981' }};">
                                         {{ q.risk_status }}
                                     </td>
                                 </tr>
                                 {% else %}
-                                <tr><td colspan="6" class="text-center text-secondary">Regional spatial zones not calculated.</td></tr>
+                                <tr><td colspan="6" class="text-center text-secondary py-4">Regional spatial zones not calculated.</td></tr>
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -371,31 +331,36 @@
                 </div>
             </div>
             <div class="col-lg-4">
-                <div class="analytics-card h-100">
-                    <div class="card-header-flex">
-                        <h5 class="card-title-flex"><i class="fas fa-sun text-warning"></i> Diurnal Sun/Night Split</h5>
-                        <span class="badge bg-secondary">Diurnal Ratio</span>
+                <div class="cyber-card h-100">
+                    <div class="cyber-card-header">
+                        <h2 class="cyber-card-title">
+                            <i class="fa-solid fa-sun text-warning"></i> Diurnal Sun/Night Split
+                        </h2>
+                        <span class="badge-pill-custom badge-info-soft">Diurnal Ratio</span>
                     </div>
                     <div style="height: 180px; position: relative;">
                         <canvas id="diurnalDonut"></canvas>
                     </div>
-                    <div class="d-flex justify-content-around mt-3 text-center">
+                    <div class="d-flex justify-content-around mt-3 text-center pt-2 border-top" style="border-color: var(--border-color) !important;">
                         <div>
-                            <div class="fw-bold text-warning">{{ regional.daytime_count }}</div>
+                            <div class="fw-bold text-warning fs-5">{{ regional.daytime_count }}</div>
                             <small class="text-secondary">☀️ Daytime ({{ regional.day_percentage }}%)</small>
                         </div>
                         <div>
-                            <div class="fw-bold text-info">{{ regional.nighttime_count }}</div>
+                            <div class="fw-bold text-info fs-5">{{ regional.nighttime_count }}</div>
                             <small class="text-secondary">🌙 Nighttime ({{ (100.0 - regional.day_percentage)|round(1) }}%)</small>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <!-- Chart.js Render Scripts -->
     <script>
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+
         // 1. Fire Type Donut Chart
         const distData = {{ distribution | tojson }};
         new Chart(document.getElementById('fireTypeDonut'), {
@@ -406,19 +371,24 @@
                     data: distData.counts,
                     backgroundColor: distData.colors,
                     borderWidth: 0,
-                    hoverOffset: 6
+                    hoverOffset: 8
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '68%',
+                cutout: '70%',
                 plugins: {
-                    legend: { position: 'right', labels: { color: '#e6edf3', font: { size: 11 } } },
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#f8fafc', font: { size: 12, weight: '500' }, padding: 14 }
+                    },
                     tooltip: {
-                        backgroundColor: 'rgba(22, 27, 34, 0.95)',
-                        borderColor: '#30363d',
-                        borderWidth: 1
+                        backgroundColor: 'rgba(14, 21, 36, 0.95)',
+                        borderColor: '#223048',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8
                     }
                 }
             }
@@ -434,8 +404,9 @@
                     {
                         label: 'Detection Frequency',
                         data: tsData.counts,
-                        backgroundColor: 'rgba(88, 166, 255, 0.65)',
-                        borderColor: '#58a6ff',
+                        backgroundColor: 'rgba(56, 189, 248, 0.65)',
+                        borderColor: '#38bdf8',
+                        borderRadius: 4,
                         borderWidth: 1,
                         yAxisID: 'y'
                     },
@@ -443,11 +414,12 @@
                         label: 'Total FRP (MW)',
                         data: tsData.total_frp,
                         type: 'line',
-                        borderColor: '#e74c3c',
-                        backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.15)',
                         borderWidth: 2.5,
-                        tension: 0.3,
+                        tension: 0.35,
                         pointRadius: 4,
+                        pointBackgroundColor: '#ef4444',
                         yAxisID: 'y1'
                     }
                 ]
@@ -457,26 +429,35 @@
                 maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
                 scales: {
-                    x: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } },
+                    x: {
+                        ticks: { color: '#94a3b8' },
+                        grid: { color: 'rgba(34, 48, 72, 0.5)' }
+                    },
                     y: {
                         type: 'linear',
                         display: true,
                         position: 'left',
-                        ticks: { color: '#58a6ff' },
-                        title: { display: true, text: 'Detection Count', color: '#58a6ff' },
-                        grid: { color: '#21262d' }
+                        ticks: { color: '#38bdf8' },
+                        title: { display: true, text: 'Detection Count', color: '#38bdf8' },
+                        grid: { color: 'rgba(34, 48, 72, 0.5)' }
                     },
                     y1: {
                         type: 'linear',
                         display: true,
                         position: 'right',
-                        ticks: { color: '#e74c3c' },
-                        title: { display: true, text: 'Total FRP (MW)', color: '#e74c3c' },
+                        ticks: { color: '#ef4444' },
+                        title: { display: true, text: 'Total FRP (MW)', color: '#ef4444' },
                         grid: { drawOnChartArea: false }
                     }
                 },
                 plugins: {
-                    legend: { labels: { color: '#e6edf3' } }
+                    legend: { labels: { color: '#f8fafc', font: { weight: '600' } } },
+                    tooltip: {
+                        backgroundColor: 'rgba(14, 21, 36, 0.95)',
+                        borderColor: '#223048',
+                        borderWidth: 1,
+                        padding: 12
+                    }
                 }
             }
         });
@@ -493,8 +474,9 @@
                 datasets: [{
                     label: 'Nearby Fire Anomaly Count',
                     data: facCounts,
-                    backgroundColor: 'rgba(231, 76, 60, 0.75)',
-                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(239, 68, 68, 0.75)',
+                    borderColor: '#ef4444',
+                    borderRadius: 4,
                     borderWidth: 1
                 }]
             },
@@ -503,11 +485,23 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    x: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } },
-                    y: { ticks: { color: '#e6edf3', font: { size: 10 } }, grid: { display: false } }
+                    x: {
+                        ticks: { color: '#94a3b8' },
+                        grid: { color: 'rgba(34, 48, 72, 0.5)' }
+                    },
+                    y: {
+                        ticks: { color: '#f8fafc', font: { size: 11, weight: '500' } },
+                        grid: { display: false }
+                    }
                 },
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(14, 21, 36, 0.95)',
+                        borderColor: '#223048',
+                        borderWidth: 1,
+                        padding: 10
+                    }
                 }
             }
         });
@@ -520,16 +514,22 @@
                 labels: ['Daytime (☀️)', 'Nighttime (🌙)'],
                 datasets: [{
                     data: [regData.daytime_count, regData.nighttime_count],
-                    backgroundColor: ['#f1c40f', '#388bfd'],
+                    backgroundColor: ['#f59e0b', '#0284c7'],
                     borderWidth: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '65%',
+                cutout: '68%',
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(14, 21, 36, 0.95)',
+                        borderColor: '#223048',
+                        borderWidth: 1,
+                        padding: 10
+                    }
                 }
             }
         });

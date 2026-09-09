@@ -45,7 +45,7 @@ class MapGenerator:
             selected_types=selected_types,
             enable_controls=enable_controls,
         )
-        return m._repr_html_()
+        return m.get_root().render()
     
     def get_fire_statistics(self, fire_df: pd.DataFrame) -> dict:
         """Calculate summary statistics from fire data."""

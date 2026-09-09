@@ -3,102 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 Historical Fire Analytics & Executive Reports | SIH 2026</title>
+    <title>📊 Historical Fire Analytics & Executive Reports | PYRO·VISION</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- PYRO·VISION Unified Theme -->
+    <link rel="stylesheet" href="/static/css/theme.css">
+
     <style>
-        :root {
-            --bg-base: #090d16;
-            --bg-surface: #111827;
-            --bg-card: #182234;
-            --border-color: #243248;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --danger: #ef4444;
-            --warning: #f97316;
-            --caution: #eab308;
-            --success: #10b981;
-            --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.25);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-base);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Navbar */
-        .navbar {
-            background: rgba(17, 24, 39, 0.85);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 14px 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: var(--text-primary);
-        }
-        .brand-icon {
-            width: 38px;
-            height: 38px;
-            background: linear-gradient(135deg, #38bdf8, #6366f1);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
-        }
-        .brand-text h1 { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
-        .brand-text p { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
-
-        .nav-links { display: flex; align-items: center; gap: 12px; }
-        .nav-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border: 1px solid transparent;
-        }
-        .nav-btn-subtle {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-secondary);
-            border-color: var(--border-color);
-        }
-        .nav-btn-subtle:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
-        .nav-btn-primary {
-            background: linear-gradient(135deg, #38bdf8, #6366f1);
-            color: #ffffff;
-            border-color: rgba(56, 189, 248, 0.4);
-        }
-        .nav-btn-primary:hover { opacity: 0.9; }
-
-        /* Main Container */
-        .container {
-            max-width: 1350px;
+        .page-container {
+            max-width: 1440px;
             margin: 0 auto;
-            padding: 28px 24px;
+            padding: 24px 20px 48px;
             width: 100%;
             flex: 1;
         }
@@ -112,60 +34,20 @@
             flex-wrap: wrap;
             gap: 16px;
         }
-        .hero h2 { font-size: 24px; font-weight: 800; }
-        .hero p { color: var(--text-secondary); font-size: 14px; margin-top: 4px; }
-        .export-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
-        /* KPI Cards */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 16px;
-            margin-bottom: 28px;
+        .hero h2 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
         }
-        .kpi-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        .kpi-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        .kpi-info h3 { font-size: 26px; font-weight: 800; line-height: 1.1; }
-        .kpi-info p { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-top: 4px; }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 8px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 24px;
-        }
-        .tab-btn {
-            padding: 10px 20px;
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid transparent;
+        .hero p {
             color: var(--text-secondary);
             font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            margin-top: 4px;
         }
-        .tab-btn:hover { color: var(--text-primary); }
-        .tab-btn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
+        .export-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         /* Card Panels */
@@ -173,28 +55,56 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 20px;
+            padding: 24px;
             margin-bottom: 28px;
             overflow-x: auto;
+            box-shadow: var(--shadow-sm);
         }
         .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        .panel-header h3 { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .panel-header h3 {
+            font-size: 17px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+        }
 
-        /* Tables */
-        table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-        th { background: rgba(255, 255, 255, 0.03); color: var(--text-secondary); padding: 12px 14px; font-weight: 600; border-bottom: 1px solid var(--border-color); }
-        td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); }
-        tr:hover td { background: rgba(255, 255, 255, 0.02); }
-
-        .progress-bar-bg { width: 90px; height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; border-radius: 3px; }
-        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .type-pill { background: rgba(255, 255, 255, 0.06); padding: 3px 8px; border-radius: 4px; font-size: 11px; color: var(--text-secondary); }
+        /* Progress Bar */
+        .progress-bar-bg {
+            width: 90px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .type-pill {
+            background: rgba(255, 255, 255, 0.06);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
 
         /* Regional Grid */
         .reg-grid {
@@ -206,12 +116,35 @@
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            padding: 16px;
+            padding: 18px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
         }
-        .reg-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-        .reg-title { font-weight: 700; font-size: 14px; color: #ffffff; }
-        .reg-states { font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; }
-        .reg-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; }
+        .reg-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+        .reg-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .reg-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: #ffffff;
+        }
+        .reg-states {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+        }
+        .reg-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 12px;
+        }
 
         /* Tab Content visibility */
         .tab-content { display: none; }
@@ -219,23 +152,50 @@
     </style>
 </head>
 <body>
-    <!-- Top Navbar -->
-    <header class="navbar">
-        <a href="/" class="brand">
-            <div class="brand-icon"><i class="fa-solid fa-chart-line"></i></div>
-            <div class="brand-text">
-                <h1>Executive Intelligence & Reports</h1>
-                <p>SIH 2026 / NTRO | Part 5.4 Longitudinal Analytics</p>
+
+    <!-- Unified Master Navigation Bar -->
+    <header class="master-navbar">
+        <a href="/" class="brand-wrapper">
+            <div class="brand-icon-box" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(99, 102, 241, 0.3));">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div>
+                <div class="brand-text">
+                    PYRO<span>·VISION</span>
+                </div>
+                <div class="brand-sub">EXECUTIVE REPORTS & INTEL</div>
             </div>
         </a>
-        <div class="nav-links">
-            <a href="/" class="nav-btn nav-btn-subtle"><i class="fa-solid fa-earth-americas"></i> GIS Map</a>
-            <a href="/alerts" class="nav-btn nav-btn-subtle"><i class="fa-solid fa-bell"></i> Alerts Center</a>
-            <a href="/reports" class="nav-btn nav-btn-primary"><i class="fa-solid fa-file-invoice"></i> Reports Console</a>
+
+        <!-- Master View Switcher -->
+        <nav class="nav-pills-group d-none d-md-flex">
+            <a href="/" class="nav-pill-link">
+                <i class="fa-solid fa-earth-americas"></i> GIS Map
+            </a>
+            <a href="/analytics" class="nav-pill-link">
+                <i class="fa-solid fa-chart-column"></i> Analytics
+            </a>
+            <a href="/alerts" class="nav-pill-link">
+                <i class="fa-solid fa-bell"></i> Alerts
+            </a>
+            <a href="/reports" class="nav-pill-link active">
+                <i class="fa-solid fa-file-invoice"></i> Reports
+            </a>
+        </nav>
+
+        <!-- Right Quick Controls -->
+        <div class="d-flex align-items-center gap-3">
+            <div class="live-telemetry-badge">
+                <span class="pulse-radar-dot"></span>
+                <span>Part 5.4 Longitudinal</span>
+            </div>
+            <a href="/api/reports/export/pdf" class="btn-action-custom btn-action-primary" target="_blank">
+                <i class="fa-solid fa-file-pdf"></i> Export PDF
+            </a>
         </div>
     </header>
 
-    <div class="container">
+    <div class="page-container">
         <!-- Hero Header -->
         <div class="hero">
             <div>
@@ -243,13 +203,13 @@
                 <p>Multi-temporal trends, facility proximity risk scoring, and longitudinal satellite anomaly archives.</p>
             </div>
             <div class="export-actions">
-                <a href="/api/reports/export/pdf" class="nav-btn nav-btn-primary" target="_blank">
+                <a href="/api/reports/export/pdf" class="btn-action-custom btn-action-primary" target="_blank">
                     <i class="fa-solid fa-file-pdf"></i> Download PDF Report
                 </a>
-                <a href="/api/reports/export/html" class="nav-btn nav-btn-subtle" target="_blank">
+                <a href="/api/reports/export/html" class="btn-action-custom" target="_blank">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i> Standalone HTML
                 </a>
-                <button class="nav-btn nav-btn-subtle" onclick="window.print()">
+                <button class="btn-action-custom" onclick="window.print()">
                     <i class="fa-solid fa-print"></i> Print Dossier
                 </button>
             </div>
@@ -257,42 +217,50 @@
 
         <!-- Macro KPIs -->
         <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background: rgba(56, 189, 248, 0.15); color: var(--accent);"><i class="fa-solid fa-fire"></i></div>
-                <div class="kpi-info">
-                    <h3>{{ summary.total_fires_analyzed }}</h3>
-                    <p>Total Detections</p>
+            <div class="kpi-card info">
+                <div class="kpi-icon"><i class="fa-solid fa-fire"></i></div>
+                <div class="kpi-content">
+                    <div class="kpi-val text-info">{{ summary.total_fires_analyzed }}</div>
+                    <div class="kpi-lbl">Total Detections</div>
                 </div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background: rgba(249, 115, 22, 0.15); color: var(--warning);"><i class="fa-solid fa-bolt"></i></div>
-                <div class="kpi-info">
-                    <h3 style="color: var(--warning);">{{ "{:,.1f}".format(summary.total_thermal_energy_mwh) }}</h3>
-                    <p>Total Energy (MW)</p>
+            <div class="kpi-card warning">
+                <div class="kpi-icon"><i class="fa-solid fa-bolt"></i></div>
+                <div class="kpi-content">
+                    <div class="kpi-val text-warning">{{ "{:,.1f}".format(summary.total_thermal_energy_mwh) }}</div>
+                    <div class="kpi-lbl">Total Energy (MW)</div>
                 </div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--success);"><i class="fa-solid fa-industry"></i></div>
-                <div class="kpi-info">
-                    <h3>{{ summary.monitored_facilities_count }}</h3>
-                    <p>Monitored Facilities</p>
+            <div class="kpi-card success">
+                <div class="kpi-icon"><i class="fa-solid fa-industry"></i></div>
+                <div class="kpi-content">
+                    <div class="kpi-val text-success">{{ summary.monitored_facilities_count }}</div>
+                    <div class="kpi-lbl">Monitored Facilities</div>
                 </div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                <div class="kpi-info">
-                    <h3 style="color: var(--danger);">{{ summary.extreme_risk_facilities + summary.high_risk_facilities }}</h3>
-                    <p>High / Extreme Risk</p>
+            <div class="kpi-card critical">
+                <div class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="kpi-content">
+                    <div class="kpi-val text-danger">{{ summary.extreme_risk_facilities + summary.high_risk_facilities }}</div>
+                    <div class="kpi-lbl">High / Extreme Risk</div>
                 </div>
             </div>
         </div>
 
         <!-- Navigation Tabs -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('facilities')"><i class="fa-solid fa-shield-halved"></i> Facility Risk Matrix</button>
-            <button class="tab-btn" onclick="switchTab('monthly')"><i class="fa-solid fa-calendar-days"></i> Monthly Longitudinal</button>
-            <button class="tab-btn" onclick="switchTab('quarterly')"><i class="fa-solid fa-chart-pie"></i> Quarterly Breakdown</button>
-            <button class="tab-btn" onclick="switchTab('regional')"><i class="fa-solid fa-map-location-dot"></i> Regional Quadrants</button>
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('facilities')">
+                <i class="fa-solid fa-shield-halved"></i> Facility Risk Matrix
+            </button>
+            <button class="tab-btn" onclick="switchTab('monthly')">
+                <i class="fa-solid fa-calendar-days"></i> Monthly Longitudinal
+            </button>
+            <button class="tab-btn" onclick="switchTab('quarterly')">
+                <i class="fa-solid fa-chart-pie"></i> Quarterly Breakdown
+            </button>
+            <button class="tab-btn" onclick="switchTab('regional')">
+                <i class="fa-solid fa-map-location-dot"></i> Regional Quadrants
+            </button>
         </div>
 
         <!-- Tab 1: Facility Risk Matrix -->
@@ -300,18 +268,18 @@
             <div class="panel">
                 <div class="panel-header">
                     <h3><i class="fa-solid fa-ranking-star" style="color: var(--accent);"></i> Monitored Industrial Facilities Risk Leaderboard</h3>
-                    <div style="font-size: 12px; color: var(--text-secondary);">Dynamic Risk Index evaluated over rolling window</div>
+                    <div style="font-size: 12px; color: var(--text-secondary);">Dynamic Risk Index evaluated over rolling multi-temporal window</div>
                 </div>
-                <table>
+                <table class="cyber-table">
                     <thead>
                         <tr>
                             <th>Facility Name</th>
                             <th>Asset Type</th>
-                            <th>Nearby Fires (<5km)</th>
-                            <th>Peak FRP</th>
-                            <th>Closest Detection</th>
+                            <th class="text-center">Nearby Fires (&lt;5km)</th>
+                            <th class="text-center">Peak FRP</th>
+                            <th class="text-center">Closest Detection</th>
                             <th>Dynamic Risk Score</th>
-                            <th>Risk Tier</th>
+                            <th class="text-center">Risk Tier</th>
                             <th>Trajectory</th>
                         </tr>
                     </thead>
@@ -320,9 +288,9 @@
                         <tr>
                             <td style="font-weight: 600; color: #ffffff;">{{ f.facility_name }}</td>
                             <td><span class="type-pill">{{ f.facility_type }}</span></td>
-                            <td>{{ f.nearby_fire_count_5km }}</td>
-                            <td>{{ f.peak_frp_mw }} MW</td>
-                            <td>{% if f.closest_fire_dist_km is not none %}{{ f.closest_fire_dist_km }} km{% else %}—{% endif %}</td>
+                            <td class="text-center text-danger fw-bold">{{ f.nearby_fire_count_5km }}</td>
+                            <td class="text-center text-warning">{{ f.peak_frp_mw }} MW</td>
+                            <td class="text-center">{% if f.closest_fire_dist_km is not none %}{{ f.closest_fire_dist_km }} km{% else %}—{% endif %}</td>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <div class="progress-bar-bg">
@@ -331,7 +299,7 @@
                                     <span style="font-weight: 700;">{{ f.risk_score }}</span>
                                 </div>
                             </td>
-                            <td>
+                            <td class="text-center">
                                 <span class="badge" style="background: {{ f.badge_color }}22; color: {{ f.badge_color }}; border: 1px solid {{ f.badge_color }}55;">
                                     {{ f.risk_tier }}
                                 </span>
@@ -350,30 +318,30 @@
                 <div class="panel-header">
                     <h3><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent);"></i> Monthly Fire Detections & Velocity</h3>
                 </div>
-                <table>
+                <table class="cyber-table">
                     <thead>
                         <tr>
                             <th>Period</th>
-                            <th>Total Fires</th>
-                            <th>Avg Brightness</th>
-                            <th>Avg FRP</th>
-                            <th>Total Energy</th>
-                            <th>Near Industrial</th>
-                            <th>Day / Night Ratio</th>
-                            <th>MoM Velocity</th>
+                            <th class="text-center">Total Fires</th>
+                            <th class="text-center">Avg Brightness</th>
+                            <th class="text-center">Avg FRP</th>
+                            <th class="text-center">Total Energy</th>
+                            <th class="text-center">Near Industrial</th>
+                            <th class="text-center">Day / Night Ratio</th>
+                            <th class="text-center">MoM Velocity</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for m in monthly_data %}
                         <tr>
                             <td style="font-weight: 700; color: var(--accent);">{{ m.period }}</td>
-                            <td><b>{{ m.total_fires }}</b></td>
-                            <td>{{ m.avg_brightness_k }} K</td>
-                            <td>{{ m.avg_frp_mw }} MW</td>
-                            <td>{{ "{:,.1f}".format(m.total_frp_energy_mwh) }} MWh</td>
-                            <td>{{ m.near_industrial_count }}</td>
-                            <td>{{ m.day_fires }} / {{ m.night_fires }}</td>
-                            <td style="font-weight: 700; color: {% if m.mom_growth_percent > 0 %}var(--danger){% elif m.mom_growth_percent < 0 %}var(--success){% else %}var(--text-secondary){% endif %};">
+                            <td class="text-center"><b>{{ m.total_fires }}</b></td>
+                            <td class="text-center">{{ m.avg_brightness_k }} K</td>
+                            <td class="text-center text-warning">{{ m.avg_frp_mw }} MW</td>
+                            <td class="text-center">{{ "{:,.1f}".format(m.total_frp_energy_mwh) }} MWh</td>
+                            <td class="text-center text-danger fw-bold">{{ m.near_industrial_count }}</td>
+                            <td class="text-center">{{ m.day_fires }} / {{ m.night_fires }}</td>
+                            <td class="text-center" style="font-weight: 700; color: {% if m.mom_growth_percent > 0 %}var(--danger){% elif m.mom_growth_percent < 0 %}var(--success){% else %}var(--text-secondary){% endif %};">
                                 {% if m.mom_growth_percent != 0.0 %}{{ "{:+.1f}%".format(m.mom_growth_percent) }}{% else %}Baseline{% endif %}
                             </td>
                         </tr>
@@ -389,28 +357,28 @@
                 <div class="panel-header">
                     <h3><i class="fa-solid fa-chart-column" style="color: var(--accent);"></i> Quarterly Thermal Surveillance Breakdown</h3>
                 </div>
-                <table>
+                <table class="cyber-table">
                     <thead>
                         <tr>
                             <th>Quarter</th>
-                            <th>Total Fires</th>
-                            <th>Avg Brightness</th>
-                            <th>Avg FRP</th>
-                            <th>Thermal Energy</th>
-                            <th>Industrial Fires</th>
-                            <th>QoQ Growth</th>
+                            <th class="text-center">Total Fires</th>
+                            <th class="text-center">Avg Brightness</th>
+                            <th class="text-center">Avg FRP</th>
+                            <th class="text-center">Thermal Energy</th>
+                            <th class="text-center">Industrial Fires</th>
+                            <th class="text-center">QoQ Growth</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for q in quarterly_data %}
                         <tr>
                             <td style="font-weight: 700; color: #a78bfa;">{{ q.quarter }}</td>
-                            <td><b>{{ q.total_fires }}</b></td>
-                            <td>{{ q.avg_brightness_k }} K</td>
-                            <td>{{ q.avg_frp_mw }} MW</td>
-                            <td>{{ "{:,.1f}".format(q.total_frp_energy_mwh) }} MWh</td>
-                            <td>{{ q.near_industrial_count }}</td>
-                            <td style="font-weight: 700; color: {% if q.qoq_growth_percent > 0 %}var(--danger){% elif q.qoq_growth_percent < 0 %}var(--success){% else %}var(--text-secondary){% endif %};">
+                            <td class="text-center"><b>{{ q.total_fires }}</b></td>
+                            <td class="text-center">{{ q.avg_brightness_k }} K</td>
+                            <td class="text-center text-warning">{{ q.avg_frp_mw }} MW</td>
+                            <td class="text-center">{{ "{:,.1f}".format(q.total_frp_energy_mwh) }} MWh</td>
+                            <td class="text-center text-danger fw-bold">{{ q.near_industrial_count }}</td>
+                            <td class="text-center" style="font-weight: 700; color: {% if q.qoq_growth_percent > 0 %}var(--danger){% elif q.qoq_growth_percent < 0 %}var(--success){% else %}var(--text-secondary){% endif %};">
                                 {% if q.qoq_growth_percent != 0.0 %}{{ "{:+.1f}%".format(q.qoq_growth_percent) }}{% else %}Baseline{% endif %}
                             </td>
                         </tr>

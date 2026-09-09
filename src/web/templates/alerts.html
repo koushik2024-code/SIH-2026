@@ -3,183 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚨 Alert Incident Operations Center | SIH 2026</title>
+    <title>🚨 Alert Incident Operations Center | PYRO·VISION</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- PYRO·VISION Unified Theme -->
+    <link rel="stylesheet" href="/static/css/theme.css">
+
     <style>
-        :root {
-            --bg-base: #090d16;
-            --bg-surface: #111827;
-            --bg-card: #182234;
-            --border-color: #243248;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --danger: #ef4444;
-            --warning: #f97316;
-            --caution: #eab308;
-            --success: #10b981;
-            --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.25);
+        .page-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px 20px 48px;
+            width: 100%;
+            flex: 1;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-base);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Top Navbar */
-        .navbar {
-            background: rgba(17, 24, 39, 0.85);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 14px 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: var(--text-primary);
-        }
-        .brand-icon {
-            width: 38px;
-            height: 38px;
-            background: linear-gradient(135deg, #ef4444, #f97316);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
-        }
-        .brand-text h1 { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
-        .brand-text p { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
-
-        .nav-links { display: flex; align-items: center; gap: 14px; }
-        .nav-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border: 1px solid transparent;
-        }
-        .nav-btn-subtle {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-secondary);
-            border-color: var(--border-color);
-        }
-        .nav-btn-subtle:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
-        .nav-btn-primary {
-            background: linear-gradient(135deg, #0284c7, #0ea5e9);
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
-        }
-        .nav-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(14, 165, 233, 0.4); }
-        .nav-btn-danger {
-            background: linear-gradient(135deg, #dc2626, #ef4444);
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-        .nav-btn-danger:hover { transform: translateY(-1px); }
-
-        /* Status Indicator */
-        .live-pulse {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #34d399;
-        }
-        .pulse-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #10b981;
-            animation: pulse-ring 1.8s infinite;
-        }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-
-        /* Container */
-        .container { max-width: 1400px; margin: 0 auto; padding: 28px; width: 100%; flex: 1; }
-
-        /* KPI Cards Grid */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 28px;
-        }
-        .kpi-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 18px 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-        }
-        .kpi-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-        }
-        .kpi-card.critical::after { background: var(--danger); }
-        .kpi-card.warning::after { background: var(--warning); }
-        .kpi-card.info::after { background: var(--accent); }
-        .kpi-card.success::after { background: var(--success); }
-
-        .kpi-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        .kpi-card.critical .kpi-icon { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-        .kpi-card.warning .kpi-icon { background: rgba(249, 115, 22, 0.15); color: var(--warning); }
-        .kpi-card.info .kpi-icon { background: rgba(56, 189, 248, 0.15); color: var(--accent); }
-        .kpi-card.success .kpi-icon { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-
-        .kpi-content h3 { font-size: 24px; font-weight: 800; }
-        .kpi-content p { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-top: 2px; }
-
-        /* Filter Controls & Toolbar */
+        /* Toolbar & Filters */
         .toolbar {
             background: var(--bg-surface);
             border: 1px solid var(--border-color);
@@ -192,26 +38,19 @@
             flex-wrap: wrap;
             gap: 14px;
         }
-        .filter-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .filter-chip {
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border-color);
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-        .filter-chip:hover, .filter-chip.active {
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--accent);
-            border-color: rgba(56, 189, 248, 0.4);
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         /* Alerts List */
-        .alerts-feed { display: flex; flex-direction: column; gap: 14px; }
+        .alerts-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
         .alert-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -220,12 +59,12 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
             position: relative;
         }
         .alert-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
             border-color: #3b506e;
         }
         .alert-card.severity-CRITICAL { border-left: 5px solid var(--danger); }
@@ -233,8 +72,19 @@
         .alert-card.severity-WARNING { border-left: 5px solid var(--caution); }
         .alert-card.severity-INFO { border-left: 5px solid var(--accent); }
 
-        .alert-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
-        .alert-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .alert-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
         .severity-badge {
             font-size: 11px;
             font-weight: 800;
@@ -251,38 +101,55 @@
         .status-badge {
             font-size: 11px;
             font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 4px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 6px;
         }
-        .status-ACTIVE { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
-        .status-ACKNOWLEDGED { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
+        .status-ACTIVE { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .status-ACKNOWLEDGED { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .status-RESOLVED { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); }
 
-        .alert-title { font-size: 17px; font-weight: 700; color: #ffffff; margin-top: 4px; }
-        .alert-timestamp { font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
-
+        .alert-timestamp {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .alert-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-top: 6px;
+            color: var(--text-primary);
+        }
         .alert-body {
             font-size: 14px;
             line-height: 1.6;
             color: #cbd5e1;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 8px;
-            padding: 12px 16px;
         }
 
         .alert-stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 12px;
-            font-size: 13px;
-        }
-        .stat-pill {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(14, 21, 36, 0.6);
             border: 1px solid var(--border-color);
-            padding: 8px 12px;
             border-radius: 8px;
+            padding: 12px 16px;
         }
-        .stat-pill .label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px; }
-        .stat-pill .val { font-weight: 700; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; }
+        .stat-pill .label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .stat-pill .val {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 2px;
+        }
 
         .alert-footer {
             display: flex;
@@ -290,22 +157,29 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 12px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .channel-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .channel-tags {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
         .channel-tag {
             font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-color);
             color: var(--text-secondary);
-            background: rgba(255, 255, 255, 0.05);
-            padding: 4px 8px;
-            border-radius: 4px;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 5px;
         }
 
-        .actions { display: flex; gap: 10px; }
+        .actions { display: flex; gap: 8px; }
         .btn-action {
             padding: 6px 14px;
             border-radius: 6px;
@@ -315,48 +189,73 @@
             border: 1px solid var(--border-color);
             background: rgba(255, 255, 255, 0.05);
             color: var(--text-primary);
-            transition: all 0.2s;
+            text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            text-decoration: none;
+            transition: all 0.2s;
         }
-        .btn-action:hover { background: rgba(255, 255, 255, 0.12); }
-        .btn-ack { background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); color: #34d399; }
-        .btn-ack:hover { background: rgba(16, 185, 129, 0.35); }
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+        .btn-ack {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+        .btn-ack:hover {
+            background: rgba(16, 185, 129, 0.25);
+            color: #ffffff;
+        }
 
-        /* Empty state */
+        /* Empty State */
         .empty-state {
-            text-align: center;
-            padding: 60px 20px;
             background: var(--bg-card);
             border: 1px dashed var(--border-color);
             border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-secondary);
         }
-        .empty-state i { font-size: 48px; color: var(--success); margin-bottom: 16px; }
-        .empty-state h3 { font-size: 18px; margin-bottom: 8px; }
-        .empty-state p { color: var(--text-secondary); font-size: 14px; }
+        .empty-state i {
+            font-size: 48px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+        .empty-state p {
+            font-size: 14px;
+            max-width: 440px;
+            margin: 0 auto;
+        }
 
         /* Toast Container */
         #toast-container {
             position: fixed;
             bottom: 24px;
             right: 24px;
-            z-index: 1000;
+            z-index: 9999;
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
         .toast {
-            background: #1e293b;
-            border: 1px solid #334155;
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
             border-radius: 10px;
             padding: 16px 20px;
-            min-width: 320px;
-            max-width: 420px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 380px;
             display: flex;
-            gap: 12px;
+            gap: 14px;
             align-items: flex-start;
             animation: slideIn 0.3s ease forwards;
         }
@@ -368,38 +267,67 @@
 </head>
 <body>
 
-    <!-- Navigation Bar -->
-    <header class="navbar">
-        <a href="/" class="brand">
-            <div class="brand-icon"><i class="fa-solid fa-bell-slash"></i></div>
-            <div class="brand-text">
-                <h1>INCIDENT OPERATIONS CENTER</h1>
-                <p>Part 5.2 Multi-Channel Alert & Monitoring System</p>
+    <!-- Unified Master Navigation Bar -->
+    <header class="master-navbar">
+        <a href="/" class="brand-wrapper">
+            <div class="brand-icon-box" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(249, 115, 22, 0.3));">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <div>
+                <div class="brand-text">
+                    PYRO<span>·VISION</span>
+                </div>
+                <div class="brand-sub">INCIDENT OPERATIONS CENTER</div>
             </div>
         </a>
 
-        <div class="nav-links">
-            <div class="live-pulse">
-                <span class="pulse-dot"></span>
-                <span id="sse-status">LIVE DISPATCHER ACTIVE</span>
-            </div>
-            <button class="nav-btn nav-btn-danger" onclick="triggerTestAlert()">
-                <i class="fa-solid fa-flask"></i> Trigger Test Alert
-            </button>
-            <a href="/" class="nav-btn nav-btn-subtle">
-                <i class="fa-solid fa-map"></i> View Map
+        <!-- Master View Switcher -->
+        <nav class="nav-pills-group d-none d-md-flex">
+            <a href="/" class="nav-pill-link">
+                <i class="fa-solid fa-earth-americas"></i> GIS Map
             </a>
-            <a href="/reports" class="nav-btn nav-btn-subtle">
+            <a href="/analytics" class="nav-pill-link">
+                <i class="fa-solid fa-chart-column"></i> Analytics
+            </a>
+            <a href="/alerts" class="nav-pill-link active">
+                <i class="fa-solid fa-bell"></i> Alerts
+                {% if stats.get('active_alerts', 0) > 0 %}
+                <span class="nav-counter-pill badge bg-danger text-light ms-1">{{ stats.get('active_alerts', 0) }}</span>
+                {% endif %}
+            </a>
+            <a href="/reports" class="nav-pill-link">
                 <i class="fa-solid fa-file-invoice"></i> Reports
             </a>
-            <a href="/analytics" class="nav-btn nav-btn-subtle">
-                <i class="fa-solid fa-chart-line"></i> Analytics
-            </a>
+        </nav>
+
+        <!-- Right Controls -->
+        <div class="d-flex align-items-center gap-3">
+            <div class="live-telemetry-badge">
+                <span class="pulse-radar-dot"></span>
+                <span id="sse-status">LIVE DISPATCHER ACTIVE</span>
+            </div>
+            <button class="btn-action-custom btn-action-danger" onclick="triggerTestAlert()">
+                <i class="fa-solid fa-flask"></i> Test Alert
+            </button>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="container">
+    <main class="page-container">
+
+        <!-- Title Banner -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom" style="border-color: var(--border-color) !important;">
+            <div>
+                <h1 class="h4 fw-bold mb-1 d-flex align-items-center gap-2">
+                    <span style="color: var(--danger);">🚨</span> INCIDENT OPERATIONS CENTER
+                </h1>
+                <p class="text-secondary small mb-0">Part 5.2 Multi-Channel Alert & Real-time Automated Threat Dispatch Console</p>
+            </div>
+            <div class="d-flex align-items-center gap-2 mt-2 mt-sm-0">
+                <span class="badge bg-dark border border-secondary text-secondary" style="font-size:0.75rem; padding:6px 12px; border-radius:20px;">
+                    <i class="fa-solid fa-tower-broadcast me-1 text-success"></i> 5 Active Channels
+                </span>
+            </div>
+        </div>
 
         <!-- Executive KPI Metric Tiles -->
         <section class="kpi-grid">
@@ -436,7 +364,7 @@
         <!-- Filters & Action Bar -->
         <section class="toolbar">
             <div class="filter-group">
-                <span style="font-size:13px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-right:4px;">Filter:</span>
+                <span style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-right:4px;">Filter:</span>
                 <a href="/alerts" class="filter-chip {% if current_status == 'ALL' and current_severity == 'ALL' %}active{% endif %}">All Incidents</a>
                 <a href="/alerts?severity=CRITICAL" class="filter-chip {% if current_severity == 'CRITICAL' %}active{% endif %}">🚨 Critical</a>
                 <a href="/alerts?severity=HIGH" class="filter-chip {% if current_severity == 'HIGH' %}active{% endif %}">⚠️ High</a>
@@ -444,8 +372,9 @@
                 <a href="/alerts?status=ACKNOWLEDGED" class="filter-chip {% if current_status == 'ACKNOWLEDGED' %}active{% endif %}">Acknowledged</a>
             </div>
 
-            <div style="font-size: 13px; color: var(--text-secondary);">
-                Auto-updating via SSE Stream: <span style="color:#34d399; font-weight:600;">60 FPS</span>
+            <div style="font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px;">
+                <span class="pulse-radar-dot" style="width: 6px; height: 6px;"></span>
+                <span>Auto-updating via SSE Stream: <strong style="color:#34d399;">Active</strong></span>
             </div>
         </section>
 
