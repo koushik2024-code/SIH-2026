@@ -16,7 +16,7 @@
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Leaflet CSS & Plugins -->
+    <!-- Leaflet CSS & MarkerCluster CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
@@ -251,7 +251,7 @@
             color: var(--cyber-cyan);
         }
 
-        /* App Body Layout */
+        /* App Layout */
         .app-layout {
             display: flex;
             flex: 1;
@@ -454,13 +454,13 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
 
-        /* Workspace Panels */
+        /* Workspace Viewport */
         .workspace-viewport {
             flex: 1;
             position: relative;
             overflow: hidden;
             display: flex;
-            flex-direction: column;
+            height: 100%;
         }
 
         .tab-view {
@@ -472,12 +472,23 @@
         }
 
         .tab-view.active {
-            display: flex;
-            flex-direction: column;
+            display: block;
         }
 
-        /* Map Workspace */
+        /* Map View Absolute Positioning for Perfect Leaflet Rendering */
+        #map-view {
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
         #map-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             width: 100%;
             height: 100%;
             background: #06090e;
@@ -489,13 +500,14 @@
             top: 16px;
             left: 16px;
             z-index: 1000;
-            background: rgba(12, 16, 23, 0.92);
+            background: rgba(12, 16, 23, 0.94);
             backdrop-filter: blur(12px);
             border: 1px solid var(--border-subtle);
             border-radius: 8px;
             padding: 6px;
             display: flex;
             gap: 6px;
+            align-items: center;
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
 
@@ -525,62 +537,14 @@
             border-color: rgba(0, 240, 255, 0.35);
         }
 
-        /* Quick Jump Selector */
         .jump-select {
             background: var(--bg-card);
             color: var(--text-body);
             border: 1px solid var(--border-subtle);
             border-radius: 6px;
             font-size: 0.78rem;
-            padding: 4px 8px;
+            padding: 5px 8px;
             outline: none;
-        }
-
-        /* Time Playback Controller Overlay */
-        .playback-dock {
-            position: absolute;
-            bottom: 74px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            background: rgba(12, 16, 23, 0.94);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border-subtle);
-            border-radius: 30px;
-            padding: 8px 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-        }
-
-        .playback-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            color: #fff;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .playback-btn:hover {
-            border-color: var(--cyber-cyan);
-            color: var(--cyber-cyan);
-            box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
-        }
-
-        .playback-timeline {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            color: var(--text-dim);
         }
 
         /* Bottom Floating Stats Strip */
@@ -646,10 +610,11 @@
             color: #fff;
         }
 
-        /* Analytics Tab Styles */
+        /* Analytics Tab */
         .analytics-view-container {
             padding: 24px;
             overflow-y: auto;
+            height: 100%;
         }
 
         .analytics-grid {
@@ -692,6 +657,7 @@
         .alerts-view-container {
             padding: 24px;
             overflow-y: auto;
+            height: 100%;
         }
 
         .alert-card {
@@ -767,6 +733,7 @@
         .facilities-view-container {
             padding: 24px;
             overflow-y: auto;
+            height: 100%;
         }
 
         .facility-table {
@@ -812,6 +779,7 @@
         .telemetry-view-container {
             padding: 24px;
             overflow-y: auto;
+            height: 100%;
         }
 
         .pipeline-card {
@@ -836,7 +804,7 @@
             padding: 14px;
         }
 
-        /* Tactical Event Inspector Drawer */
+        /* Tactical Hotspot Inspector Drawer */
         .inspector-drawer {
             position: fixed;
             top: 64px;
@@ -950,6 +918,18 @@
             color: #f0f4fc;
             border: 1px solid var(--border-subtle);
             border-radius: 12px;
+        }
+
+        /* Custom Leaflet Tooltip & Popup */
+        .leaflet-popup-content-wrapper {
+            background: #121824 !important;
+            color: #f0f4fc !important;
+            border: 1px solid rgba(255,255,255,0.15) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6) !important;
+        }
+        .leaflet-popup-tip {
+            background: #121824 !important;
         }
 
         @media (max-width: 992px) {
@@ -1485,10 +1465,18 @@
         rawFacilitiesData = {{ facilities_data | tojson }};
         {% endif %}
 
+        // Fallback for standalone static file execution if raw data is empty
         if (!rawFiresData || rawFiresData.length === 0) {
             fetch('/api/fires')
                 .then(res => res.json())
-                .then(data => { rawFiresData = data; initApp(); })
+                .then(data => { 
+                    if (data && data.length > 0) {
+                        rawFiresData = data; 
+                    } else {
+                        generateClientFallbackData();
+                    }
+                    initApp(); 
+                })
                 .catch(err => { generateClientFallbackData(); initApp(); });
         } else {
             document.addEventListener("DOMContentLoaded", () => { initApp(); });
@@ -1503,12 +1491,19 @@
         let baseLayers = {};
 
         function initMap() {
-            if (map) return;
+            if (map) {
+                map.invalidateSize();
+                return;
+            }
+
+            const mapEl = document.getElementById('map-container');
+            if (!mapEl) return;
 
             map = L.map('map-container', {
                 center: [22.8, 79.5],
                 zoom: 5,
-                zoomControl: false
+                zoomControl: false,
+                preferCanvas: true
             });
 
             L.control.zoom({ position: 'topright' }).addTo(map);
@@ -1528,12 +1523,16 @@
                 maxZoom: 19
             });
 
-            fireMarkerCluster = L.markerClusterGroup({
-                chunkedLoading: true,
-                maxClusterRadius: 40,
-                spiderfyOnMaxZoom: true,
-                showCoverageOnHover: false
-            });
+            if (typeof L.markerClusterGroup === 'function') {
+                fireMarkerCluster = L.markerClusterGroup({
+                    chunkedLoading: true,
+                    maxClusterRadius: 35,
+                    spiderfyOnMaxZoom: true,
+                    showCoverageOnHover: false
+                });
+            } else {
+                fireMarkerCluster = L.layerGroup();
+            }
 
             facilityLayerGroup = L.layerGroup();
             bufferLayerGroup = L.layerGroup();
@@ -1544,21 +1543,33 @@
 
             renderFacilities();
             renderFiresOnMap();
+
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 300);
         }
 
         function setBasemap(type) {
-            Object.values(baseLayers).forEach(layer => map.removeLayer(layer));
+            Object.values(baseLayers).forEach(layer => {
+                if (map.hasLayer(layer)) map.removeLayer(layer);
+            });
             if (baseLayers[type]) baseLayers[type].addTo(map);
         }
 
         function jumpToLocation(coordStr) {
             if (!coordStr) return;
-            const [lat, lon, zoom] = coordStr.split(',').map(Number);
+            const parts = coordStr.split(',').map(Number);
+            const lat = parts[0];
+            const lon = parts[1];
+            const zoom = parts[2] || 11;
             switchView('map-view');
-            map.flyTo([lat, lon], zoom, { animate: true, duration: 1.5 });
+            if (map) {
+                map.flyTo([lat, lon], zoom, { animate: true, duration: 1.5 });
+            }
         }
 
         function renderFacilities() {
+            if (!facilityLayerGroup) return;
             facilityLayerGroup.clearLayers();
             bufferLayerGroup.clearLayers();
 
@@ -1575,8 +1586,8 @@
                 marker.bindPopup(`
                     <div style="font-family: var(--font-sans); padding: 4px;">
                         <h6 style="color: #00f0ff; margin: 0 0 4px 0; font-weight: 800;">🏭 ${fac.name}</h6>
-                        <div style="font-size: 0.75rem; color: #cbd5e1;">Type: <b>${fac.facility_type.replace(/_/g, ' ').toUpperCase()}</b></div>
-                        <div style="font-size: 0.75rem; color: #94a3b8;">Coords: ${fac.latitude.toFixed(4)}, ${fac.longitude.toFixed(4)}</div>
+                        <div style="font-size: 0.75rem; color: #cbd5e1;">Type: <b>${(fac.facility_type || 'other').replace(/_/g, ' ').toUpperCase()}</b></div>
+                        <div style="font-size: 0.75rem; color: #94a3b8;">Coords: ${Number(fac.latitude).toFixed(4)}, ${Number(fac.longitude).toFixed(4)}</div>
                         <div style="margin-top: 6px; font-size: 0.7rem; color: #ff2a5f;"><i class="fas fa-shield-alt"></i> 2.0 km Critical Vulnerability Perimeter</div>
                     </div>
                 `);
@@ -1595,7 +1606,7 @@
         }
 
         function renderFiresOnMap() {
-            if (!map) return;
+            if (!map || !fireMarkerCluster) return;
             fireMarkerCluster.clearLayers();
 
             const filtered = getFilteredFires();
@@ -1603,7 +1614,7 @@
 
             filtered.forEach(fire => {
                 const color = FIRE_COLORS[fire.fire_type] || '#64748b';
-                const frp = fire.frp || 5;
+                const frp = Number(fire.frp) || 5;
                 const radius = Math.min(Math.max(frp / 8, 4), 14);
 
                 const circleMarker = L.circleMarker([fire.latitude, fire.longitude], {
@@ -1627,13 +1638,17 @@
                 heatPoints.push([fire.latitude, fire.longitude, Math.min(frp / 60, 1.0)]);
             });
 
-            if (heatmapLayer) map.removeLayer(heatmapLayer);
-            heatmapLayer = L.heatLayer(heatPoints, {
-                radius: 20,
-                blur: 15,
-                maxZoom: 12,
-                gradient: { 0.2: '#00f0ff', 0.5: '#00e676', 0.7: '#ffea00', 0.9: '#ff8c00', 1.0: '#ff2a5f' }
-            });
+            if (heatmapLayer && map.hasLayer(heatmapLayer)) {
+                map.removeLayer(heatmapLayer);
+            }
+            if (typeof L.heatLayer === 'function') {
+                heatmapLayer = L.heatLayer(heatPoints, {
+                    radius: 20,
+                    blur: 15,
+                    maxZoom: 12,
+                    gradient: { 0.2: '#00f0ff', 0.5: '#00e676', 0.7: '#ffea00', 0.9: '#ff8c00', 1.0: '#ff2a5f' }
+                });
+            }
         }
 
         function toggleMapClusters() {
@@ -1671,6 +1686,7 @@
 
         function toggleMapHeatmap() {
             const btn = document.getElementById('btnToggleHeatmap');
+            if (!heatmapLayer) return;
             if (map.hasLayer(heatmapLayer)) {
                 map.removeLayer(heatmapLayer);
                 btn.classList.remove('active');
@@ -1684,7 +1700,7 @@
         function getFilteredFires() {
             return rawFiresData.filter(f => {
                 if (activeFilters.types.length > 0 && !activeFilters.types.includes(f.fire_type)) return false;
-                if (f.frp < activeFilters.minFRP) return false;
+                if ((Number(f.frp) || 0) < activeFilters.minFRP) return false;
                 if (activeFilters.confidence !== 'all' && f.confidence !== activeFilters.confidence) return false;
                 if (activeFilters.daynight !== 'all' && f.daynight !== activeFilters.daynight) return false;
                 return true;
@@ -1701,26 +1717,36 @@
             const agri = filtered.filter(f => f.fire_type === 'Agricultural Burning').length;
             const nearInd = filtered.filter(f => f.is_near_industrial == 1).length;
 
-            document.getElementById('statTotalDetections').innerText = total;
-            document.getElementById('statIndustrialCount').innerText = industrial;
-            document.getElementById('statFlareCount').innerText = flares;
-            document.getElementById('statForestCount').innerText = forest;
-            document.getElementById('statAgriCount').innerText = agri;
+            const statTot = document.getElementById('statTotalDetections');
+            if (statTot) statTot.innerText = total;
+            const statInd = document.getElementById('statIndustrialCount');
+            if (statInd) statInd.innerText = industrial;
+            const statFl = document.getElementById('statFlareCount');
+            if (statFl) statFl.innerText = flares;
+            const statFor = document.getElementById('statForestCount');
+            if (statFor) statFor.innerText = forest;
+            const statAg = document.getElementById('statAgriCount');
+            if (statAg) statAg.innerText = agri;
 
             const nearPct = total > 0 ? ((nearInd / total) * 100).toFixed(1) : 0;
-            document.getElementById('nearIndustrialPct').innerText = `${nearPct}% (${nearInd})`;
+            const pctEl = document.getElementById('nearIndustrialPct');
+            if (pctEl) pctEl.innerText = `${nearPct}% (${nearInd})`;
 
             if (total > 0) {
-                const avgBrightness = (filtered.reduce((acc, f) => acc + (f.brightness || 0), 0) / total).toFixed(1);
-                const avgFRP = (filtered.reduce((acc, f) => acc + (f.frp || 0), 0) / total).toFixed(1);
+                const avgBrightness = (filtered.reduce((acc, f) => acc + (Number(f.brightness) || 0), 0) / total).toFixed(1);
+                const avgFRP = (filtered.reduce((acc, f) => acc + (Number(f.frp) || 0), 0) / total).toFixed(1);
                 const highConf = filtered.filter(f => f.confidence === 'high').length;
                 const dayCount = filtered.filter(f => f.daynight === 'D').length;
                 const nightCount = total - dayCount;
 
-                document.getElementById('chipAvgBrightness').innerText = `${avgBrightness} K`;
-                document.getElementById('chipAvgFRP').innerText = `${avgFRP} MW`;
-                document.getElementById('chipHighConf').innerText = highConf;
-                document.getElementById('chipDayNightRatio').innerText = `${dayCount} / ${nightCount}`;
+                const bEl = document.getElementById('chipAvgBrightness');
+                if (bEl) bEl.innerText = `${avgBrightness} K`;
+                const frpEl = document.getElementById('chipAvgFRP');
+                if (frpEl) frpEl.innerText = `${avgFRP} MW`;
+                const hcEl = document.getElementById('chipHighConf');
+                if (hcEl) hcEl.innerText = highConf;
+                const dnEl = document.getElementById('chipDayNightRatio');
+                if (dnEl) dnEl.innerText = `${dayCount} / ${nightCount}`;
             }
 
             renderFiresOnMap();
@@ -1730,6 +1756,7 @@
 
         function buildFilterCheckboxes() {
             const container = document.getElementById('fireTypeCheckboxes');
+            if (!container) return;
             container.innerHTML = '';
             const allTypes = Object.keys(FIRE_COLORS);
 
@@ -1817,7 +1844,7 @@
             // 2. FRP Spectrum
             const frpRanges = { '0-10 MW': 0, '10-30 MW': 0, '30-60 MW': 0, '60-100 MW': 0, '>100 MW': 0 };
             data.forEach(f => {
-                const val = f.frp || 0;
+                const val = Number(f.frp) || 0;
                 if (val <= 10) frpRanges['0-10 MW']++;
                 else if (val <= 30) frpRanges['10-30 MW']++;
                 else if (val <= 60) frpRanges['30-60 MW']++;
@@ -1931,8 +1958,8 @@
             container.innerHTML = '';
 
             const criticalAlerts = data
-                .filter(f => f.is_near_industrial == 1 || f.frp > 45 || f.confidence === 'high')
-                .sort((a,b) => (b.frp || 0) - (a.frp || 0))
+                .filter(f => f.is_near_industrial == 1 || (Number(f.frp) || 0) > 45 || f.confidence === 'high')
+                .sort((a,b) => (Number(b.frp) || 0) - (Number(a.frp) || 0))
                 .slice(0, 20);
 
             const badge = document.getElementById('alertsCountBadge');
@@ -1943,11 +1970,12 @@
                 return;
             }
 
-            criticalAlerts.forEach(item => {
+            criticalAlerts.forEach((item, index) => {
                 let severity = 'elevated';
                 let tag = 'ELEVATED';
-                if (item.is_near_industrial == 1 && item.frp > 40) { severity = 'critical'; tag = 'CRITICAL PROXIMITY'; }
-                else if (item.frp > 60) { severity = 'critical'; tag = 'HIGH FRP SPIKE'; }
+                const frpVal = Number(item.frp) || 0;
+                if (item.is_near_industrial == 1 && frpVal > 40) { severity = 'critical'; tag = 'CRITICAL PROXIMITY'; }
+                else if (frpVal > 60) { severity = 'critical'; tag = 'HIGH FRP SPIKE'; }
                 else if (item.is_near_industrial == 1) { severity = 'high'; tag = 'INDUSTRIAL BUFFER'; }
 
                 const card = document.createElement('div');
@@ -1958,7 +1986,7 @@
                         <div class="alert-info">
                             <h5>${item.fire_type} - ${item.nearest_facility_name || 'Unclassified Hotspot'}</h5>
                             <div class="alert-details">
-                                <span><i class="fas fa-location-dot me-1"></i>${item.latitude.toFixed(4)}, ${item.longitude.toFixed(4)}</span>
+                                <span><i class="fas fa-location-dot me-1"></i>${Number(item.latitude).toFixed(4)}, ${Number(item.longitude).toFixed(4)}</span>
                                 <span><i class="far fa-clock me-1"></i>${item.acq_date} ${String(item.acq_time).padStart(4,'0')} UTC</span>
                                 <span><i class="fas fa-satellite me-1"></i>${item.source || 'VIIRS'}</span>
                             </div>
@@ -1967,17 +1995,22 @@
                     <div class="alert-actions">
                         <div class="text-end">
                             <div style="font-size: 0.65rem; color: var(--text-faint);">POWER</div>
-                            <div class="font-mono fw-bold text-danger">${(item.frp || 0).toFixed(1)} MW</div>
+                            <div class="font-mono fw-bold text-danger">${frpVal.toFixed(1)} MW</div>
                         </div>
                         <div class="text-end">
                             <div style="font-size: 0.65rem; color: var(--text-faint);">BRIGHTNESS</div>
                             <div class="font-mono fw-bold text-warning">${item.brightness || 0} K</div>
                         </div>
-                        <button class="btn btn-sm btn-outline-info" onclick='focusOnMapAndInspect(${JSON.stringify(item)})'>
+                        <button class="btn btn-sm btn-outline-info" id="alert_track_btn_${index}">
                             <i class="fas fa-crosshairs me-1"></i> Track
                         </button>
                     </div>
                 `;
+
+                card.querySelector(`#alert_track_btn_${index}`).addEventListener('click', () => {
+                    focusOnMapAndInspect(item);
+                });
+
                 container.appendChild(card);
             });
         }
@@ -1987,7 +2020,7 @@
             if (!tbody) return;
             tbody.innerHTML = '';
 
-            rawFacilitiesData.forEach(fac => {
+            rawFacilitiesData.forEach((fac, index) => {
                 const nearbyFires = rawFiresData.filter(f => {
                     const d = Math.hypot(f.latitude - fac.latitude, f.longitude - fac.longitude) * 111.0;
                     return d <= 2.5;
@@ -1996,28 +2029,37 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><b>${fac.name}</b></td>
-                    <td><span class="badge bg-secondary font-mono">${fac.facility_type.replace(/_/g, ' ').toUpperCase()}</span></td>
-                    <td class="font-mono text-muted">${fac.latitude.toFixed(4)}, ${fac.longitude.toFixed(4)}</td>
+                    <td><span class="badge bg-secondary font-mono">${(fac.facility_type || 'other').replace(/_/g, ' ').toUpperCase()}</span></td>
+                    <td class="font-mono text-muted">${Number(fac.latitude).toFixed(4)}, ${Number(fac.longitude).toFixed(4)}</td>
                     <td><span class="badge bg-success"><i class="fas fa-circle-check me-1"></i>ACTIVE</span></td>
                     <td><span class="badge ${nearbyFires.length > 0 ? 'bg-danger' : 'bg-dark'} font-mono">${nearbyFires.length} anomalies</span></td>
                     <td>
-                        <button class="btn btn-sm btn-outline-info" onclick="zoomToFacility(${fac.latitude}, ${fac.longitude}, '${fac.name}')">
+                        <button class="btn btn-sm btn-outline-info" id="fac_fly_btn_${index}">
                             <i class="fas fa-magnifying-glass-location me-1"></i> Fly To
                         </button>
                     </td>
                 `;
+
+                tr.querySelector(`#fac_fly_btn_${index}`).addEventListener('click', () => {
+                    zoomToFacility(fac.latitude, fac.longitude, fac.name);
+                });
+
                 tbody.appendChild(tr);
             });
         }
 
         function zoomToFacility(lat, lon, name) {
             switchView('map-view');
-            map.flyTo([lat, lon], 12, { animate: true, duration: 1.5 });
+            if (map) {
+                map.flyTo([lat, lon], 12, { animate: true, duration: 1.5 });
+            }
         }
 
         function focusOnMapAndInspect(fire) {
             switchView('map-view');
-            map.flyTo([fire.latitude, fire.longitude], 13, { animate: true, duration: 1.2 });
+            if (map) {
+                map.flyTo([fire.latitude, fire.longitude], 13, { animate: true, duration: 1.2 });
+            }
             openInspector(fire);
         }
 
@@ -2025,16 +2067,19 @@
         function openInspector(fire) {
             const drawer = document.getElementById('inspectorDrawer');
             const content = document.getElementById('inspectorContent');
+            if (!drawer || !content) return;
 
             const isNear = fire.is_near_industrial == 1;
-            const frp = (fire.frp || 0).toFixed(1);
-            const brightnessC = ((fire.brightness || 300) - 273.15).toFixed(1);
+            const frpVal = Number(fire.frp) || 0;
+            const frp = frpVal.toFixed(1);
+            const brightnessVal = Number(fire.brightness) || 300;
+            const brightnessC = (brightnessVal - 273.15).toFixed(1);
 
             let aiRisk = "Normal Environmental Thermal Source";
             let aiBadge = "LOW RISK";
             let aiColor = "text-success";
 
-            if (isNear && fire.frp > 40) {
+            if (isNear && frpVal > 40) {
                 aiRisk = "CRITICAL INDUSTRIAL ANOMALY: Thermal radiative energy exceeds standard operating baseline for adjacent facility. Immediate NTRO reconnaissance drone dispatch recommended.";
                 aiBadge = "CRITICAL ALERT";
                 aiColor = "text-danger";
@@ -2061,7 +2106,7 @@
                     </div>
                     <div class="mini-stat-card">
                         <div class="mini-stat-label">Brightness Temp</div>
-                        <div class="mini-stat-val text-warning">${fire.brightness} K (${brightnessC}°C)</div>
+                        <div class="mini-stat-val text-warning">${brightnessVal} K (${brightnessC}°C)</div>
                     </div>
                     <div class="mini-stat-card">
                         <div class="mini-stat-label">Confidence</div>
@@ -2080,7 +2125,7 @@
                     <div style="font-size: 0.8rem;">
                         <div class="d-flex justify-content-between mb-1">
                             <span class="text-muted">Target Coordinates:</span>
-                            <span class="font-mono text-white">${fire.latitude.toFixed(5)}, ${fire.longitude.toFixed(5)}</span>
+                            <span class="font-mono text-white">${Number(fire.latitude).toFixed(5)}, ${Number(fire.longitude).toFixed(5)}</span>
                         </div>
                         <div class="d-flex justify-content-between mb-1">
                             <span class="text-muted">Nearest Facility:</span>
@@ -2115,16 +2160,18 @@
         }
 
         function closeInspector() {
-            document.getElementById('inspectorDrawer').classList.remove('open');
+            const drawer = document.getElementById('inspectorDrawer');
+            if (drawer) drawer.classList.remove('open');
         }
 
         // --- 7. SITREP REPORT & DATA EXPORT ---
         function openSitrepModal() {
             const filtered = getFilteredFires();
             const industrialFires = filtered.filter(f => f.is_near_industrial == 1);
-            const avgFRP = (filtered.reduce((a,b) => a + (b.frp || 0), 0) / (filtered.length || 1)).toFixed(1);
+            const avgFRP = (filtered.reduce((a,b) => a + (Number(b.frp) || 0), 0) / (filtered.length || 1)).toFixed(1);
 
             const body = document.getElementById('sitrepModalBody');
+            if (!body) return;
             body.innerHTML = `
                 <div class="border-bottom border-secondary pb-3 mb-3">
                     <h4 class="text-white font-mono mb-1">🔥 DEFENSE SITREP: PERSISTENT THERMAL ANOMALY BRIEF</h4>
@@ -2185,8 +2232,8 @@
                                 <tr>
                                     <td class="text-info fw-bold">${f.nearest_facility_name || 'Industrial Cluster'}</td>
                                     <td>${f.fire_type}</td>
-                                    <td class="font-mono">${f.latitude.toFixed(4)}, ${f.longitude.toFixed(4)}</td>
-                                    <td class="text-danger font-mono fw-bold">${(f.frp || 0).toFixed(1)}</td>
+                                    <td class="font-mono">${Number(f.latitude).toFixed(4)}, ${Number(f.longitude).toFixed(4)}</td>
+                                    <td class="text-danger font-mono fw-bold">${(Number(f.frp) || 0).toFixed(1)}</td>
                                     <td class="text-warning font-mono">${f.brightness}</td>
                                     <td class="text-success font-mono">${f.distance_to_nearest_industrial || 0.3} km</td>
                                 </tr>
@@ -2254,7 +2301,9 @@
             });
 
             if (viewId === 'map-view' && map) {
-                setTimeout(() => map.invalidateSize(), 200);
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 200);
             }
         }
 
@@ -2274,7 +2323,8 @@
             if (slider) {
                 slider.addEventListener('input', (e) => {
                     activeFilters.minFRP = parseFloat(e.target.value);
-                    document.getElementById('frpSliderVal').innerText = `${activeFilters.minFRP.toFixed(1)} MW`;
+                    const valEl = document.getElementById('frpSliderVal');
+                    if (valEl) valEl.innerText = `${activeFilters.minFRP.toFixed(1)} MW`;
                     updateAllUI();
                 });
             }
@@ -2308,6 +2358,7 @@
 
             document.getElementById('toggleSidebarBtn')?.addEventListener('click', () => {
                 document.getElementById('mainSidebar').classList.toggle('collapsed');
+                if (map) setTimeout(() => map.invalidateSize(), 300);
             });
 
             document.getElementById('facilitySearchInput')?.addEventListener('input', (e) => {
