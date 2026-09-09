@@ -18,6 +18,7 @@
     
     <!-- Master Unified Theme CSS -->
     <link rel="stylesheet" href="/static/css/theme.css">
+    <link rel="stylesheet" href="src/web/static/css/theme.css">
 
     <style>
         :root {
@@ -542,14 +543,25 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        // 1. Safely load the Folium map into the iframe using same-origin /map
+        // 1. Safely load the Folium map into the iframe using same-origin /map or static map.html
         var mapFrame = document.getElementById('map-frame');
         
-        if (window.location.protocol === 'file:' || window.location.pathname.endsWith('.html') || window.location.pathname.includes('/docs/')) {
+        if (window.location.protocol === 'file:' || window.location.hostname.includes('github.io') || window.location.pathname.endsWith('.html') || window.location.pathname.includes('/docs/')) {
             mapFrame.src = "map.html";
         } else {
             // Always stream from same-origin /map endpoint for zero cross-origin sandboxing & instant loads
             mapFrame.src = "/map" + window.location.search;
+        }
+
+        // Auto-adapt navigation links on static hosts (GitHub Pages)
+        if (window.location.protocol === 'file:' || window.location.hostname.includes('github.io')) {
+            document.querySelectorAll('.nav-pill-link').forEach(a => {
+                const href = a.getAttribute('href');
+                if (href === '/analytics') a.href = 'analytics.html';
+                else if (href === '/') a.href = 'index.html';
+            });
+            const brand = document.querySelector('.brand-wrapper');
+            if (brand) brand.href = 'index.html';
         }
 
         // Helper to safely access iframe content window

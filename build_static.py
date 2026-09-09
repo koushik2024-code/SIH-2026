@@ -32,6 +32,13 @@ def build():
     stats = map_gen.get_fire_statistics(fire_df)
     all_fire_types = list(MapGenerator.FIRE_TYPE_COLORS.keys())
     
+    # Copy theme.css for static hosting
+    import shutil
+    os.makedirs("static/css", exist_ok=True)
+    os.makedirs("docs/static/css", exist_ok=True)
+    shutil.copy("src/web/static/css/theme.css", "static/css/theme.css")
+    shutil.copy("src/web/static/css/theme.css", "docs/static/css/theme.css")
+    
     # Load template
     template_path = os.path.join("src", "web", "templates", "dashboard.html")
     with open(template_path, "r", encoding="utf-8") as f:
@@ -41,6 +48,15 @@ def build():
     # Add tojson filter simulation
     env.filters['tojson'] = lambda val: json.dumps(val)
     template = env.from_string(template_content)
+
+    alert_stats = {"critical_active_alerts": 12, "total_alerts": 48}
+    recent_alerts = [{
+        "alert_id": "ALT-935401CC",
+        "title": "Severe Thermal Flare Hazard",
+        "severity": "CRITICAL",
+        "facility_name": "Jamnagar Petrochemical Complex",
+        "timestamp": "2026-09-09 18:30"
+    }]
     
     rendered = template.render(
         fires_data=fires_list,
@@ -49,18 +65,33 @@ def build():
         all_fire_types=all_fire_types,
         selected_types=all_fire_types,
         fire_type_colors=MapGenerator.FIRE_TYPE_COLORS,
-        map_html=""
+        map_html="",
+        alert_stats=alert_stats,
+        recent_alerts=recent_alerts,
+        crit_count=12,
+        search_query="",
+        start_date="",
+        end_date="",
+        min_confidence=0,
     )
     
     # Write to root index.html
+    root_rendered = rendered.replace(
+        '<link rel="stylesheet" href="/static/css/theme.css">',
+        '<link rel="stylesheet" href="static/css/theme.css">\n    <link rel="stylesheet" href="/static/css/theme.css">'
+    )
     with open("index.html", "w", encoding="utf-8") as f:
-        f.write(rendered)
+        f.write(root_rendered)
     print("Written index.html")
     
     # Write to docs/index.html
+    docs_rendered = rendered.replace(
+        '<link rel="stylesheet" href="/static/css/theme.css">',
+        '<link rel="stylesheet" href="static/css/theme.css">\n    <link rel="stylesheet" href="../src/web/static/css/theme.css">'
+    )
     os.makedirs("docs", exist_ok=True)
     with open(os.path.join("docs", "index.html"), "w", encoding="utf-8") as f:
-        f.write(rendered)
+        f.write(docs_rendered)
     print("Written docs/index.html")
     print("Static build successful!")
 
