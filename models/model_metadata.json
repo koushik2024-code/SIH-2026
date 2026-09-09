@@ -1,0 +1,50 @@
+{
+    "best_model": "rf",
+    "best_model_label": "Random Forest",
+    "best_model_path": "C:\\Users\\User\\Documents\\SIH\\SIH-2026\\models\\best_model.pkl",
+    "feature_names": [
+        "land_cover",
+        "frp",
+        "brightness_frp_ratio",
+        "is_daytime",
+        "fire_cluster_id",
+        "brightness",
+        "distance_to_nearest_industrial",
+        "is_near_industrial"
+    ],
+    "class_names": [
+        "Agricultural Burning",
+        "Forest Fire"
+    ],
+    "class_id_map": {
+        "Agricultural Burning": 0,
+        "Forest Fire": 1
+    },
+    "model_files": {
+        "rf": "C:\\Users\\User\\Documents\\SIH\\SIH-2026\\models\\random_forest.pkl",
+        "xgb": "C:\\Users\\User\\Documents\\SIH\\SIH-2026\\models\\xgboost.pkl"
+    },
+    "hyperparameters": {
+        "rf": {
+            "n_estimators": "300",
+            "min_samples_split": "5",
+            "min_samples_leaf": "2",
+            "max_features": "sqrt",
+            "max_depth": "None",
+            "class_weight": "balanced"
+        },
+        "xgb": {
+            "subsample": "0.9",
+            "n_estimators": "200",
+            "min_child_weight": "3",
+            "max_depth": "10",
+            "learning_rate": "0.05",
+            "gamma": "0",
+            "colsample_bytree": "1.0"
+        }
+    },
+    "cv_scores": {
+        "rf": 1.0,
+        "xgb": 1.0
+    }
+}
