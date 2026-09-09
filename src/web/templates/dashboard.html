@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔥 PYROSENTRY AI | Industrial Fire & Persistent Thermal Source Detection | SIH 2026</title>
+    <title>🔥 PYROSENTRY AI | Defense GIS Command Center | SIH 2026 (NTRO)</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -16,35 +16,38 @@
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Leaflet CSS & MarkerCluster CSS -->
+    <!-- Leaflet CSS & Plugins -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 
     <style>
         :root {
-            --bg-primary: #080b11;
-            --bg-secondary: #0e131f;
-            --bg-card: #131b2e;
-            --bg-card-hover: #19243d;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --border-glow: rgba(255, 51, 102, 0.3);
+            --bg-base: #06090e;
+            --bg-surface: #0c1017;
+            --bg-card: #121824;
+            --bg-card-hover: #182030;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(0, 240, 255, 0.3);
             
-            --accent-fire: #ff3366;
-            --accent-flare: #ff9100;
-            --accent-forest: #00e676;
-            --accent-agri: #ffd600;
-            --accent-mining: #78909c;
-            --accent-cyan: #00f0ff;
-            --accent-purple: #b388ff;
+            --fire-red: #ff2a5f;
+            --flare-orange: #ff8c00;
+            --forest-green: #00e676;
+            --agri-yellow: #ffea00;
+            --mining-slate: #90a4ae;
+            --cyber-cyan: #00f0ff;
+            --tech-purple: #b388ff;
             
-            --text-primary: #f0f4fc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
+            --text-head: #ffffff;
+            --text-body: #e2e8f0;
+            --text-dim: #94a3b8;
+            --text-faint: #64748b;
             
+            --font-display: 'Rajdhani', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
-            --font-main: 'Inter', sans-serif;
-            --sidebar-width: 320px;
+            --font-sans: 'Inter', sans-serif;
+            
+            --sidebar-width: 330px;
         }
 
         * {
@@ -52,39 +55,40 @@
         }
 
         body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-body);
+            font-family: var(--font-sans);
             margin: 0;
             padding: 0;
             height: 100vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            user-select: none;
         }
 
-        /* Custom Scrollbar */
+        /* Scrollbars */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
         }
         ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
+            background: var(--bg-surface);
         }
         ::-webkit-scrollbar-thumb {
-            background: #25334d;
-            border-radius: 4px;
+            background: #232d3f;
+            border-radius: 3px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #3b4f73;
+            background: #384863;
         }
 
-        /* Header / Navbar */
-        .top-navbar {
-            height: 62px;
-            background: rgba(14, 19, 31, 0.95);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
+        /* Top Command Navigation Header */
+        .top-header {
+            height: 64px;
+            background: rgba(12, 16, 23, 0.98);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-subtle);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -93,161 +97,165 @@
             flex-shrink: 0;
         }
 
-        .brand-section {
+        .header-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
 
-        .brand-logo {
-            width: 38px;
-            height: 38px;
-            background: linear-gradient(135deg, #ff3366, #ff9100);
+        .brand-badge {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff2a5f 0%, #ff8c00 100%);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
             color: #fff;
-            box-shadow: 0 0 15px rgba(255, 51, 102, 0.4);
+            font-size: 1.3rem;
+            box-shadow: 0 0 20px rgba(255, 42, 95, 0.4);
+            position: relative;
         }
 
-        .brand-title {
-            font-size: 1.15rem;
+        .brand-text h1 {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
             font-weight: 800;
-            letter-spacing: -0.5px;
+            letter-spacing: 0.5px;
             color: #fff;
-            display: flex;
-            flex-direction: column;
+            margin: 0;
             line-height: 1.1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .brand-subtitle {
-            font-size: 0.68rem;
+        .brand-text .tagline {
             font-family: var(--font-mono);
-            color: var(--accent-cyan);
-            letter-spacing: 0.8px;
+            font-size: 0.65rem;
+            color: var(--cyber-cyan);
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
 
-        /* Nav Tabs */
-        .nav-tabs-custom {
+        /* Nav View Switcher */
+        .nav-view-switcher {
             display: flex;
             gap: 4px;
-            background: rgba(8, 11, 17, 0.6);
+            background: rgba(6, 9, 14, 0.8);
             padding: 4px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
         }
 
-        .tab-btn {
+        .nav-view-btn {
             background: transparent;
             border: none;
-            color: var(--text-secondary);
-            font-size: 0.82rem;
+            color: var(--text-dim);
+            font-size: 0.8rem;
             font-weight: 600;
-            padding: 6px 14px;
+            padding: 7px 16px;
             border-radius: 6px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .tab-btn:hover {
+        .nav-view-btn:hover {
             color: #fff;
             background: rgba(255, 255, 255, 0.05);
         }
 
-        .tab-btn.active {
-            background: linear-gradient(135deg, rgba(255, 51, 102, 0.2), rgba(0, 240, 255, 0.15));
+        .nav-view-btn.active {
+            background: linear-gradient(135deg, rgba(255, 42, 95, 0.25), rgba(0, 240, 255, 0.2));
             color: #fff;
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            box-shadow: 0 0 16px rgba(0, 240, 255, 0.15);
         }
 
-        /* Telemetry Badges */
-        .telemetry-badges {
+        /* Status & Telemetry HUD */
+        .hud-actions {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .telemetry-pill {
+        .hud-status-box {
             font-family: var(--font-mono);
             font-size: 0.72rem;
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: 5px 10px;
+            border: 1px solid var(--border-subtle);
+            padding: 6px 12px;
             border-radius: 6px;
-            color: var(--text-secondary);
+            color: var(--text-dim);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
-        .pulse-indicator {
+        .pulse-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: var(--accent-fire);
-            box-shadow: 0 0 8px var(--accent-fire);
-            animation: pulse-glow 1.8s infinite;
+            background: var(--fire-red);
+            box-shadow: 0 0 10px var(--fire-red);
+            animation: pulse-ring 1.8s infinite;
         }
 
-        @keyframes pulse-glow {
-            0% { transform: scale(0.9); opacity: 0.8; box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.7); }
-            70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 8px rgba(255, 51, 102, 0); }
-            100% { transform: scale(0.9); opacity: 0.8; box-shadow: 0 0 0 0 rgba(255, 51, 102, 0); }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255, 42, 95, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255, 42, 95, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255, 42, 95, 0); }
         }
 
-        .btn-action-glow {
+        .btn-neon {
             background: linear-gradient(135deg, #e11d48, #be123c);
             color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             font-size: 0.8rem;
-            font-weight: 600;
-            padding: 6px 14px;
+            font-weight: 700;
+            padding: 7px 16px;
             border-radius: 6px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
+            gap: 8px;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .btn-action-glow:hover {
-            box-shadow: 0 0 15px rgba(225, 29, 72, 0.5);
+        .btn-neon:hover {
+            box-shadow: 0 0 20px rgba(225, 29, 72, 0.6);
             transform: translateY(-1px);
             color: #fff;
         }
 
-        .btn-secondary-glow {
+        .btn-ghost {
             background: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
+            color: var(--text-body);
+            border: 1px solid var(--border-subtle);
             font-size: 0.8rem;
             font-weight: 600;
-            padding: 6px 14px;
+            padding: 7px 14px;
             border-radius: 6px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
+            gap: 8px;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .btn-secondary-glow:hover {
-            border-color: var(--accent-cyan);
-            color: var(--accent-cyan);
+        .btn-ghost:hover {
+            border-color: var(--cyber-cyan);
+            color: var(--cyber-cyan);
         }
 
-        /* App Layout */
-        .app-body {
+        /* App Body Layout */
+        .app-layout {
             display: flex;
             flex: 1;
-            height: calc(100vh - 62px);
+            height: calc(100vh - 64px);
             position: relative;
             overflow: hidden;
         }
@@ -255,34 +263,34 @@
         /* Sidebar */
         .sidebar {
             width: var(--sidebar-width);
-            background: var(--bg-secondary);
-            border-right: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border-subtle);
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            padding: 16px;
+            padding: 18px;
             flex-shrink: 0;
             z-index: 1010;
-            transition: transform 0.3s ease, margin 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .sidebar.collapsed {
             margin-left: calc(-1 * var(--sidebar-width));
         }
 
-        /* Metric Deck */
-        .metrics-grid {
+        /* Metrics Grid */
+        .metrics-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         .metric-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
-            padding: 10px 12px;
+            padding: 12px;
             position: relative;
             overflow: hidden;
             transition: transform 0.2s, border-color 0.2s;
@@ -293,17 +301,17 @@
             border-color: rgba(255, 255, 255, 0.2);
         }
 
-        .metric-card.full-width {
+        .metric-card.hero {
             grid-column: span 2;
-            background: linear-gradient(135deg, rgba(255, 51, 102, 0.1), rgba(19, 27, 46, 0.8));
-            border-left: 3px solid var(--accent-fire);
+            background: linear-gradient(135deg, rgba(255, 42, 95, 0.12), rgba(18, 24, 36, 0.95));
+            border-left: 3px solid var(--fire-red);
         }
 
-        .metric-card-title {
+        .metric-label {
             font-size: 0.68rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--text-muted);
+            color: var(--text-dim);
             font-weight: 700;
             display: flex;
             justify-content: space-between;
@@ -311,142 +319,143 @@
             margin-bottom: 4px;
         }
 
-        .metric-card-val {
-            font-size: 1.35rem;
+        .metric-value {
+            font-size: 1.4rem;
             font-family: var(--font-mono);
-            font-weight: 700;
+            font-weight: 800;
             color: #fff;
-            line-height: 1.1;
+            line-height: 1;
         }
 
-        .metric-card.full-width .metric-card-val {
-            font-size: 1.7rem;
-            color: #ff5277;
+        .metric-card.hero .metric-value {
+            font-size: 1.85rem;
+            color: var(--fire-red);
         }
 
-        /* Filter Section */
-        .filter-section {
+        /* Filter Deck */
+        .filter-panel {
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
             padding: 14px;
             margin-bottom: 16px;
         }
 
-        .section-header {
+        .panel-heading {
             font-size: 0.72rem;
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            color: var(--text-secondary);
-            font-weight: 700;
+            color: var(--text-dim);
+            font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 12px;
             padding-bottom: 6px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-subtle);
         }
 
-        .filter-checkbox-item {
+        .type-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 6px 8px;
+            padding: 7px 10px;
             border-radius: 6px;
             margin-bottom: 4px;
-            background: rgba(0, 0, 0, 0.15);
+            background: rgba(0, 0, 0, 0.2);
             transition: background 0.15s;
             cursor: pointer;
         }
 
-        .filter-checkbox-item:hover {
+        .type-item:hover {
             background: rgba(255, 255, 255, 0.05);
         }
 
-        .filter-checkbox-label {
+        .type-label {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.8rem;
-            color: var(--text-primary);
+            font-size: 0.82rem;
+            color: var(--text-body);
             cursor: pointer;
             margin: 0;
             flex: 1;
         }
 
-        .color-dot {
+        .type-dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
             display: inline-block;
-            box-shadow: 0 0 6px currentColor;
+            box-shadow: 0 0 8px currentColor;
         }
 
-        .filter-badge {
+        .count-pill {
             font-family: var(--font-mono);
             font-size: 0.7rem;
             background: rgba(255, 255, 255, 0.08);
-            padding: 2px 6px;
+            padding: 2px 7px;
             border-radius: 4px;
-            color: var(--text-secondary);
+            color: var(--text-dim);
         }
 
-        .slider-group {
+        /* Slider Controls */
+        .slider-block {
             margin-top: 14px;
         }
 
-        .slider-header {
+        .slider-meta {
             display: flex;
             justify-content: space-between;
             font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
         }
 
         .slider-val {
             font-family: var(--font-mono);
-            color: var(--accent-cyan);
-            font-weight: 600;
+            color: var(--cyber-cyan);
+            font-weight: 700;
         }
 
-        .custom-range {
+        .tactical-range {
             width: 100%;
-            accent-color: var(--accent-fire);
+            accent-color: var(--fire-red);
             cursor: pointer;
         }
 
-        .radio-pills {
+        .pill-group {
             display: flex;
             gap: 4px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.35);
             padding: 3px;
             border-radius: 6px;
             margin-top: 10px;
         }
 
-        .radio-pill-btn {
+        .pill-btn {
             flex: 1;
             text-align: center;
             font-size: 0.72rem;
-            font-weight: 600;
-            padding: 4px;
+            font-weight: 700;
+            padding: 5px;
             border-radius: 4px;
-            color: var(--text-secondary);
+            color: var(--text-dim);
             cursor: pointer;
             border: none;
             background: transparent;
             transition: all 0.15s;
         }
 
-        .radio-pill-btn.active {
+        .pill-btn.active {
             background: var(--bg-card);
             color: #fff;
-            box-shadow: 0 0 6px rgba(0,0,0,0.5);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
 
-        /* Workspace Views */
-        .workspace {
+        /* Workspace Panels */
+        .workspace-viewport {
             flex: 1;
             position: relative;
             overflow: hidden;
@@ -454,7 +463,7 @@
             flex-direction: column;
         }
 
-        .view-panel {
+        .tab-view {
             display: none;
             width: 100%;
             height: 100%;
@@ -462,41 +471,41 @@
             overflow-y: auto;
         }
 
-        .view-panel.active {
+        .tab-view.active {
             display: flex;
             flex-direction: column;
         }
 
-        /* Map View Specifics */
+        /* Map Workspace */
         #map-container {
             width: 100%;
             height: 100%;
-            background: #080b11;
+            background: #06090e;
             z-index: 1;
         }
 
-        .map-floating-toolbar {
+        .map-hud-bar {
             position: absolute;
             top: 16px;
             left: 16px;
             z-index: 1000;
-            background: rgba(14, 19, 31, 0.88);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color);
+            background: rgba(12, 16, 23, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
             padding: 6px;
             display: flex;
             gap: 6px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
 
-        .map-tool-btn {
+        .map-tool {
             background: transparent;
             border: 1px solid transparent;
-            color: var(--text-secondary);
-            padding: 6px 10px;
+            color: var(--text-dim);
+            padding: 6px 12px;
             border-radius: 6px;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -505,18 +514,77 @@
             transition: all 0.2s;
         }
 
-        .map-tool-btn:hover {
+        .map-tool:hover {
             color: #fff;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        .map-tool-btn.active {
+        .map-tool.active {
             background: rgba(0, 240, 255, 0.15);
-            color: var(--accent-cyan);
-            border-color: rgba(0, 240, 255, 0.3);
+            color: var(--cyber-cyan);
+            border-color: rgba(0, 240, 255, 0.35);
         }
 
-        .map-stats-overlay {
+        /* Quick Jump Selector */
+        .jump-select {
+            background: var(--bg-card);
+            color: var(--text-body);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            font-size: 0.78rem;
+            padding: 4px 8px;
+            outline: none;
+        }
+
+        /* Time Playback Controller Overlay */
+        .playback-dock {
+            position: absolute;
+            bottom: 74px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(12, 16, 23, 0.94);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 30px;
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+
+        .playback-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            color: #fff;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .playback-btn:hover {
+            border-color: var(--cyber-cyan);
+            color: var(--cyber-cyan);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+        }
+
+        .playback-timeline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        /* Bottom Floating Stats Strip */
+        .map-stats-strip {
             position: absolute;
             bottom: 16px;
             left: 16px;
@@ -528,57 +596,58 @@
             pointer-events: none;
         }
 
-        .map-stat-chip {
+        .stat-chip {
             pointer-events: auto;
-            background: rgba(14, 19, 31, 0.88);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color);
+            background: rgba(12, 16, 23, 0.94);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
-            padding: 8px 14px;
+            padding: 8px 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+            gap: 14px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
             transition: transform 0.2s;
         }
 
-        .map-stat-chip:hover {
+        .stat-chip:hover {
             transform: translateY(-2px);
             border-color: rgba(255,255,255,0.2);
         }
 
-        .chip-icon {
-            width: 34px;
-            height: 34px;
+        .stat-chip-icon {
+            width: 36px;
+            height: 36px;
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.05);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
 
-        .chip-data {
+        .stat-chip-content {
             display: flex;
             flex-direction: column;
         }
 
-        .chip-label {
+        .stat-chip-lbl {
             font-size: 0.65rem;
-            color: var(--text-muted);
+            color: var(--text-faint);
             text-transform: uppercase;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: 0.5px;
         }
 
-        .chip-val {
-            font-size: 1rem;
+        .stat-chip-num {
+            font-size: 1.05rem;
             font-family: var(--font-mono);
-            font-weight: 700;
+            font-weight: 800;
             color: #fff;
         }
 
-        /* Analytics Tab */
-        .analytics-content {
+        /* Analytics Tab Styles */
+        .analytics-view-container {
             padding: 24px;
             overflow-y: auto;
         }
@@ -592,20 +661,20 @@
 
         .analytics-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-subtle);
             border-radius: 10px;
-            padding: 18px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
         }
 
-        .analytics-card.full {
+        .analytics-card.full-width {
             grid-column: span 2;
         }
 
-        .analytics-card-header {
-            font-size: 0.88rem;
-            font-weight: 700;
+        .analytics-header {
+            font-size: 0.92rem;
+            font-weight: 800;
             color: #fff;
             display: flex;
             justify-content: space-between;
@@ -613,200 +682,176 @@
             margin-bottom: 16px;
         }
 
-        .chart-box {
+        .chart-wrapper {
             position: relative;
-            height: 240px;
+            height: 250px;
             width: 100%;
         }
 
         /* Alert Stream Tab */
-        .alerts-content {
+        .alerts-view-container {
             padding: 24px;
             overflow-y: auto;
         }
 
-        .alert-item-card {
+        .alert-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
-            padding: 14px 18px;
+            padding: 16px 20px;
             margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .alert-item-card:hover {
+        .alert-card:hover {
             background: var(--bg-card-hover);
-            border-color: var(--accent-fire);
+            border-color: var(--fire-red);
             transform: translateX(4px);
         }
 
-        .alert-item-card.critical {
-            border-left: 4px solid var(--accent-fire);
+        .alert-card.critical {
+            border-left: 4px solid var(--fire-red);
         }
 
-        .alert-item-card.high {
-            border-left: 4px solid var(--accent-flare);
+        .alert-card.high {
+            border-left: 4px solid var(--flare-orange);
         }
 
-        .alert-item-card.elevated {
-            border-left: 4px solid var(--accent-agri);
+        .alert-card.elevated {
+            border-left: 4px solid var(--agri-yellow);
         }
 
-        .alert-left-meta {
+        .alert-meta {
             display: flex;
             align-items: center;
             gap: 16px;
         }
 
-        .alert-badge-tag {
+        .alert-tag {
             font-family: var(--font-mono);
             font-size: 0.7rem;
-            font-weight: 700;
+            font-weight: 800;
             padding: 4px 8px;
             border-radius: 4px;
             text-transform: uppercase;
         }
 
-        .alert-badge-tag.critical { background: rgba(255, 51, 102, 0.2); color: #ff5277; }
-        .alert-badge-tag.high { background: rgba(255, 145, 0, 0.2); color: #ff9100; }
-        .alert-badge-tag.elevated { background: rgba(255, 214, 0, 0.2); color: #ffd600; }
+        .alert-tag.critical { background: rgba(255, 42, 95, 0.2); color: #ff5277; }
+        .alert-tag.high { background: rgba(255, 140, 0, 0.2); color: #ff8c00; }
+        .alert-tag.elevated { background: rgba(255, 234, 0, 0.2); color: #ffea00; }
 
-        .alert-title-block h5 {
+        .alert-info h5 {
             margin: 0 0 4px 0;
             font-size: 0.95rem;
             font-weight: 700;
             color: #fff;
         }
 
-        .alert-subinfo {
-            font-size: 0.75rem;
-            color: var(--text-muted);
+        .alert-details {
+            font-size: 0.78rem;
+            color: var(--text-faint);
             display: flex;
-            gap: 16px;
+            gap: 18px;
         }
 
-        .alert-metrics-right {
+        .alert-actions {
             display: flex;
             align-items: center;
             gap: 20px;
         }
 
-        .alert-stat-pill {
-            text-align: right;
-        }
-
-        .alert-stat-pill .label {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .alert-stat-pill .val {
-            font-size: 1rem;
-            font-family: var(--font-mono);
-            font-weight: 700;
-            color: #fff;
-        }
-
-        /* Facilities Registry Tab */
-        .facilities-content {
+        /* Facilities Directory */
+        .facilities-view-container {
             padding: 24px;
             overflow-y: auto;
         }
 
-        .table-custom {
+        .facility-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0 6px;
         }
 
-        .table-custom th {
+        .facility-table th {
             font-size: 0.72rem;
             text-transform: uppercase;
-            color: var(--text-muted);
-            font-weight: 700;
+            color: var(--text-faint);
+            font-weight: 800;
             padding: 10px 14px;
             border: none;
         }
 
-        .table-custom td {
+        .facility-table td {
             background: var(--bg-card);
-            padding: 12px 14px;
+            padding: 14px;
             font-size: 0.85rem;
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
         }
 
-        .table-custom tr td:first-child {
-            border-left: 1px solid var(--border-color);
+        .facility-table tr td:first-child {
+            border-left: 1px solid var(--border-subtle);
             border-top-left-radius: 8px;
             border-bottom-left-radius: 8px;
         }
 
-        .table-custom tr td:last-child {
-            border-right: 1px solid var(--border-color);
+        .facility-table tr td:last-child {
+            border-right: 1px solid var(--border-subtle);
             border-top-right-radius: 8px;
             border-bottom-right-radius: 8px;
         }
 
-        .table-custom tr:hover td {
+        .facility-table tr:hover td {
             background: var(--bg-card-hover);
         }
 
-        /* Telemetry Tab */
-        .telemetry-content {
+        /* Sensor Telemetry Tab */
+        .telemetry-view-container {
             padding: 24px;
             overflow-y: auto;
         }
 
         .pipeline-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-subtle);
             border-radius: 10px;
-            padding: 20px;
+            padding: 22px;
             margin-bottom: 20px;
         }
 
-        .sensor-status-grid {
+        .sensor-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-            margin-top: 14px;
+            gap: 16px;
+            margin-top: 16px;
         }
 
-        .sensor-card {
-            background: rgba(0,0,0,0.25);
-            border: 1px solid var(--border-color);
+        .sensor-box {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
-            padding: 12px;
+            padding: 14px;
         }
 
-        .sensor-card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        /* Inspector Drawer */
+        /* Tactical Event Inspector Drawer */
         .inspector-drawer {
             position: fixed;
-            top: 62px;
-            right: -420px;
-            width: 400px;
-            height: calc(100vh - 62px);
-            background: rgba(14, 19, 31, 0.96);
-            backdrop-filter: blur(16px);
-            border-left: 1px solid var(--border-color);
-            box-shadow: -10px 0 30px rgba(0,0,0,0.6);
+            top: 64px;
+            right: -440px;
+            width: 420px;
+            height: calc(100vh - 64px);
+            background: rgba(12, 16, 23, 0.98);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--border-subtle);
+            box-shadow: -12px 0 35px rgba(0,0,0,0.7);
             z-index: 1050;
             display: flex;
             flex-direction: column;
             transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            padding: 20px;
+            padding: 22px;
             overflow-y: auto;
         }
 
@@ -814,121 +859,97 @@
             right: 0;
         }
 
-        .drawer-header {
+        .drawer-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding-bottom: 14px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 18px;
         }
 
         .drawer-title {
-            font-size: 1rem;
-            font-weight: 700;
+            font-size: 1.05rem;
+            font-weight: 800;
             color: #fff;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-family: var(--font-display);
+            letter-spacing: 0.5px;
         }
 
-        .btn-close-drawer {
+        .close-btn {
             background: transparent;
             border: none;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
+            color: var(--text-dim);
+            font-size: 1.2rem;
             cursor: pointer;
         }
 
-        .btn-close-drawer:hover {
+        .close-btn:hover {
             color: #fff;
         }
 
-        .inspector-metric-row {
+        .stat-grid-2x2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
-        .inspector-box {
+        .mini-stat-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
-            padding: 10px 12px;
+            padding: 12px;
         }
 
-        .inspector-box-label {
+        .mini-stat-label {
             font-size: 0.65rem;
-            color: var(--text-muted);
+            color: var(--text-faint);
             text-transform: uppercase;
-            font-weight: 700;
+            font-weight: 800;
         }
 
-        .inspector-box-val {
-            font-size: 1.15rem;
+        .mini-stat-val {
+            font-size: 1.2rem;
             font-family: var(--font-mono);
-            font-weight: 700;
+            font-weight: 800;
             color: #fff;
         }
 
-        .ai-recommendation-box {
-            background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(19, 27, 46, 0.8));
+        .ai-recommendation {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(18, 24, 36, 0.9));
             border: 1px solid rgba(0, 240, 255, 0.3);
             border-radius: 8px;
-            padding: 14px;
-            margin-top: 14px;
+            padding: 16px;
+            margin-top: 16px;
         }
 
-        .ai-recommendation-title {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--accent-cyan);
+        .ai-recommendation-head {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--cyber-cyan);
             margin-bottom: 6px;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        .ai-recommendation-text {
-            font-size: 0.8rem;
-            color: var(--text-primary);
-            line-height: 1.4;
+        .ai-recommendation-body {
+            font-size: 0.82rem;
+            color: var(--text-body);
+            line-height: 1.45;
             margin: 0;
         }
 
-        /* Leaflet popup customization */
-        .leaflet-popup-content-wrapper {
-            background: #131b2e !important;
-            color: #f0f4fc !important;
-            border: 1px solid rgba(255,255,255,0.15) !important;
-            border-radius: 8px !important;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.6) !important;
-        }
-        .leaflet-popup-tip {
-            background: #131b2e !important;
-        }
-
         /* SITREP Modal */
-        .modal-content-custom {
-            background: #0e131f;
+        .modal-sitrep {
+            background: #0c1017;
             color: #f0f4fc;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-subtle);
             border-radius: 12px;
-        }
-
-        .modal-header-custom {
-            border-bottom: 1px solid var(--border-color);
-            padding: 16px 24px;
-        }
-
-        .modal-body-custom {
-            padding: 24px;
-        }
-
-        .modal-footer-custom {
-            border-top: 1px solid var(--border-color);
-            padding: 14px 24px;
         }
 
         @media (max-width: 992px) {
@@ -943,19 +964,19 @@
                 transform: translateX(-100%);
                 margin-left: 0;
             }
-            .nav-tabs-custom {
+            .nav-view-switcher {
                 display: none;
             }
-            .map-stats-overlay {
+            .map-stats-strip {
                 grid-template-columns: repeat(2, 1fr);
             }
             .analytics-grid {
                 grid-template-columns: 1fr;
             }
-            .analytics-card.full {
+            .analytics-card.full-width {
                 grid-column: span 1;
             }
-            .sensor-status-grid {
+            .sensor-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
@@ -963,204 +984,203 @@
 </head>
 <body>
 
-    <!-- TOP MISSION CONTROL NAVBAR -->
-    <header class="top-navbar">
-        <div class="brand-section">
-            <button id="toggleSidebarBtn" class="btn btn-sm btn-outline-secondary d-md-none me-2">
+    <!-- TOP COMMAND BAR -->
+    <header class="top-header">
+        <div class="header-brand">
+            <button id="toggleSidebarBtn" class="btn btn-sm btn-outline-secondary d-md-none me-1">
                 <i class="fas fa-bars"></i>
             </button>
-            <div class="brand-logo">
+            <div class="brand-badge">
                 <i class="fas fa-satellite-dish"></i>
             </div>
-            <div class="brand-title">
-                <span>PYROSENTRY AI</span>
-                <span class="brand-subtitle">SIH-2026 // NTRO DEFENSE TELEMETRY</span>
+            <div class="brand-text">
+                <h1>PYROSENTRY AI <span class="badge bg-danger text-light fs-6 py-0 px-2 font-mono">NTRO</span></h1>
+                <div class="tagline">SIH 2026 // DEFENSE THERMAL ANOMALY RADAR</div>
             </div>
         </div>
 
-        <!-- View Switcher Tabs -->
-        <nav class="nav-tabs-custom d-none d-lg-flex">
-            <button class="tab-btn active" data-view="map-view">
+        <!-- View Switcher -->
+        <nav class="nav-view-switcher d-none d-lg-flex">
+            <button class="nav-view-btn active" data-view="map-view">
                 <i class="fas fa-map-location-dot"></i> Tactical Map
             </button>
-            <button class="tab-btn" data-view="analytics-view">
-                <i class="fas fa-chart-line"></i> Analytics & Intel
+            <button class="nav-view-btn" data-view="analytics-view">
+                <i class="fas fa-chart-line"></i> Intelligence & Intel
             </button>
-            <button class="tab-btn" data-view="alerts-view">
+            <button class="nav-view-btn" data-view="alerts-view">
                 <i class="fas fa-triangle-exclamation"></i> Live Alerts
                 <span id="alertsCountBadge" class="badge bg-danger rounded-pill px-2">0</span>
             </button>
-            <button class="tab-btn" data-view="facilities-view">
+            <button class="nav-view-btn" data-view="facilities-view">
                 <i class="fas fa-industry"></i> Facilities (24)
             </button>
-            <button class="tab-btn" data-view="telemetry-view">
-                <i class="fas fa-satellite"></i> Sensor Telemetry
+            <button class="nav-view-btn" data-view="telemetry-view">
+                <i class="fas fa-satellite"></i> Telemetry & Pipeline
             </button>
         </nav>
 
-        <!-- Right Telemetry & Actions -->
-        <div class="telemetry-badges">
-            <div class="telemetry-pill d-none d-xl-flex">
-                <div class="pulse-indicator"></div>
-                <span>VIIRS / MODIS: <b>ACTIVE</b></span>
+        <!-- Right Status HUD -->
+        <div class="hud-actions">
+            <div class="hud-status-box d-none d-xl-flex">
+                <div class="pulse-dot"></div>
+                <span>VIIRS / MODIS: <b class="text-white">ONLINE</b></span>
             </div>
-            <div class="telemetry-pill d-none d-md-flex">
+            <div class="hud-status-box d-none d-md-flex">
                 <i class="far fa-clock text-info"></i>
                 <span id="liveClockUtc">UTC --:--:--</span>
             </div>
 
-            <!-- Export SITREP Dropdown -->
+            <!-- SITREP Export -->
             <div class="dropdown">
-                <button class="btn btn-secondary-glow btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    <i class="fas fa-file-export me-1"></i> Export
+                <button class="btn-ghost dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-file-export me-1"></i> Export SITREP
                 </button>
                 <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
-                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="openSitrepModal()"><i class="fas fa-file-lines me-2 text-danger"></i> Situation Report (SITREP)</a></li>
-                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="exportCSV()"><i class="fas fa-file-csv me-2 text-success"></i> Raw CSV Data</a></li>
-                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="exportGeoJSON()"><i class="fas fa-earth-asia me-2 text-info"></i> GeoJSON Features</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="openSitrepModal()"><i class="fas fa-file-lines me-2 text-danger"></i> Defense Situation Brief</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="exportCSV()"><i class="fas fa-file-csv me-2 text-success"></i> Raw Hotspot CSV</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="exportGeoJSON()"><i class="fas fa-earth-asia me-2 text-info"></i> GeoJSON Tactical Layer</a></li>
                 </ul>
             </div>
 
-            <button id="refreshBtn" class="btn btn-action-glow btn-sm">
-                <i class="fas fa-rotate me-1"></i> Sync Telemetry
+            <button id="refreshBtn" class="btn-neon">
+                <i class="fas fa-rotate me-1"></i> Refresh Feeds
             </button>
         </div>
     </header>
 
     <!-- MAIN APP CONTAINER -->
-    <div class="app-body">
+    <div class="app-layout">
         
         <!-- SIDEBAR -->
         <aside id="mainSidebar" class="sidebar">
-            <!-- Date Filter / Status -->
-            <div class="telemetry-pill justify-content-between mb-3 w-100">
-                <span><i class="far fa-calendar-alt text-danger me-1"></i> SENSOR TIMEFRAME:</span>
-                <span id="dateRangeDisplay" class="text-white font-mono">Past 72 Hours</span>
+            <div class="hud-status-box justify-content-between mb-3 w-100">
+                <span><i class="far fa-calendar-alt text-danger me-1"></i> SENSOR WINDOW:</span>
+                <span class="text-white font-mono">Past 72 Hours (NRT)</span>
             </div>
 
-            <!-- Quick Metrics Grid -->
-            <div class="metrics-grid">
-                <div class="metric-card full-width">
-                    <div class="metric-card-title">
-                        <span>Total Thermal Detections</span>
+            <!-- Metrics Grid -->
+            <div class="metrics-container">
+                <div class="metric-card hero">
+                    <div class="metric-label">
+                        <span>Total Detected Anomalies</span>
                         <i class="fas fa-fire-flame-curved"></i>
                     </div>
-                    <div id="statTotalDetections" class="metric-card-val">500</div>
+                    <div id="statTotalDetections" class="metric-value">500</div>
                 </div>
 
-                <div class="metric-card" style="border-left: 3px solid var(--accent-fire);">
-                    <div class="metric-card-title">
-                        <span>Industrial</span>
+                <div class="metric-card" style="border-left: 3px solid var(--fire-red);">
+                    <div class="metric-label">
+                        <span>Industrial Fires</span>
                         <i class="fas fa-industry text-danger"></i>
                     </div>
-                    <div id="statIndustrialCount" class="metric-card-val text-danger">0</div>
+                    <div id="statIndustrialCount" class="metric-value text-danger">0</div>
                 </div>
 
-                <div class="metric-card" style="border-left: 3px solid var(--accent-flare);">
-                    <div class="metric-card-title">
+                <div class="metric-card" style="border-left: 3px solid var(--flare-orange);">
+                    <div class="metric-label">
                         <span>Gas Flares</span>
                         <i class="fas fa-fire text-warning"></i>
                     </div>
-                    <div id="statFlareCount" class="metric-card-val" style="color: var(--accent-flare);">0</div>
+                    <div id="statFlareCount" class="metric-value" style="color: var(--flare-orange);">0</div>
                 </div>
 
-                <div class="metric-card" style="border-left: 3px solid var(--accent-forest);">
-                    <div class="metric-card-title">
+                <div class="metric-card" style="border-left: 3px solid var(--forest-green);">
+                    <div class="metric-label">
                         <span>Forest Fires</span>
                         <i class="fas fa-tree text-success"></i>
                     </div>
-                    <div id="statForestCount" class="metric-card-val text-success">0</div>
+                    <div id="statForestCount" class="metric-value text-success">0</div>
                 </div>
 
-                <div class="metric-card" style="border-left: 3px solid var(--accent-agri);">
-                    <div class="metric-card-title">
+                <div class="metric-card" style="border-left: 3px solid var(--agri-yellow);">
+                    <div class="metric-label">
                         <span>Agricultural</span>
                         <i class="fas fa-seedling text-warning"></i>
                     </div>
-                    <div id="statAgriCount" class="metric-card-val" style="color: var(--accent-agri);">0</div>
+                    <div id="statAgriCount" class="metric-value" style="color: var(--agri-yellow);">0</div>
                 </div>
             </div>
 
-            <!-- Dynamic Filter Controls -->
-            <div class="filter-section">
-                <div class="section-header">
-                    <span><i class="fas fa-filter me-1"></i> Thermal Source Types</span>
+            <!-- Dynamic Reactive Filter Controls -->
+            <div class="filter-panel">
+                <div class="panel-heading">
+                    <span><i class="fas fa-filter me-1"></i> Thermal Classification</span>
                     <a href="javascript:void(0)" onclick="resetTypeFilters()" class="text-info text-decoration-none" style="font-size: 0.65rem;">Reset All</a>
                 </div>
 
                 <div id="fireTypeCheckboxes">
-                    <!-- Populated dynamically by JS -->
+                    <!-- Checkboxes populated dynamically -->
                 </div>
 
-                <!-- FRP Filter Slider -->
-                <div class="slider-group">
-                    <div class="slider-header">
+                <!-- FRP Slider -->
+                <div class="slider-block">
+                    <div class="slider-meta">
                         <span>Min Fire Radiative Power:</span>
                         <span id="frpSliderVal" class="slider-val">0.0 MW</span>
                     </div>
-                    <input type="range" class="custom-range" id="frpRangeInput" min="0" max="120" step="2" value="0">
+                    <input type="range" class="tactical-range" id="frpRangeInput" min="0" max="120" step="2" value="0">
                 </div>
 
-                <!-- Confidence Filter -->
-                <div class="slider-group">
-                    <div class="slider-header">
-                        <span>Confidence Threshold:</span>
+                <!-- Confidence Radio Group -->
+                <div class="slider-block">
+                    <div class="slider-meta">
+                        <span>Confidence Filter:</span>
                     </div>
-                    <div class="radio-pills">
-                        <button class="radio-pill-btn active" data-conf="all">ALL</button>
-                        <button class="radio-pill-btn" data-conf="high">HIGH</button>
-                        <button class="radio-pill-btn" data-conf="nominal">NOMINAL</button>
+                    <div class="pill-group">
+                        <button class="pill-btn active" data-conf="all">ALL</button>
+                        <button class="pill-btn" data-conf="high">HIGH</button>
+                        <button class="pill-btn" data-conf="nominal">NOMINAL</button>
                     </div>
                 </div>
 
-                <!-- Day/Night Pass Filter -->
-                <div class="slider-group">
-                    <div class="slider-header">
-                        <span>Satellite Orbital Pass:</span>
+                <!-- Orbital Pass Radio Group -->
+                <div class="slider-block">
+                    <div class="slider-meta">
+                        <span>Orbital Satellite Pass:</span>
                     </div>
-                    <div class="radio-pills">
-                        <button class="radio-pill-btn active" data-daynight="all">ALL PASSES</button>
-                        <button class="radio-pill-btn" data-daynight="D"><i class="fas fa-sun text-warning me-1"></i>DAY</button>
-                        <button class="radio-pill-btn" data-daynight="N"><i class="fas fa-moon text-info me-1"></i>NIGHT</button>
+                    <div class="pill-group">
+                        <button class="pill-btn active" data-daynight="all">ALL</button>
+                        <button class="pill-btn" data-daynight="D"><i class="fas fa-sun text-warning me-1"></i>DAY</button>
+                        <button class="pill-btn" data-daynight="N"><i class="fas fa-moon text-info me-1"></i>NIGHT</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Proximity Alert Mini Card -->
-            <div class="filter-section" style="border-left: 3px solid var(--accent-cyan);">
-                <div class="section-header mb-1">
+            <!-- Critical Proximity Watch Widget -->
+            <div class="filter-panel" style="border-left: 3px solid var(--cyber-cyan);">
+                <div class="panel-heading mb-1">
                     <span class="text-cyan"><i class="fas fa-shield-halved me-1"></i> NTRO Critical Watch</span>
                 </div>
-                <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0;">
+                <p style="font-size: 0.75rem; color: var(--text-dim); margin: 0;">
                     <span id="nearIndustrialPct" class="text-white font-mono fw-bold">0%</span> of active anomalies are within the <b>2.0 km critical buffer zone</b> of major Indian strategic energy infrastructure.
                 </p>
             </div>
         </aside>
 
         <!-- MAIN WORKSPACE -->
-        <main class="workspace">
+        <main class="workspace-viewport">
             
             <!-- VIEW 1: TACTICAL GIS MAP -->
-            <div id="map-view" class="view-panel active">
+            <div id="map-view" class="tab-view active">
                 <div id="map-container"></div>
 
-                <!-- Floating Map Toolbar -->
-                <div class="map-floating-toolbar">
-                    <button class="map-tool-btn active" id="btnToggleClusters" onclick="toggleMapClusters()">
+                <!-- Map Floating Toolbar -->
+                <div class="map-hud-bar">
+                    <button class="map-tool active" id="btnToggleClusters" onclick="toggleMapClusters()">
                         <i class="fas fa-cubes"></i> Clusters
                     </button>
-                    <button class="map-tool-btn active" id="btnToggleFacilities" onclick="toggleMapFacilities()">
+                    <button class="map-tool active" id="btnToggleFacilities" onclick="toggleMapFacilities()">
                         <i class="fas fa-industry"></i> Facilities
                     </button>
-                    <button class="map-tool-btn active" id="btnToggleBuffers" onclick="toggleMapBuffers()">
+                    <button class="map-tool active" id="btnToggleBuffers" onclick="toggleMapBuffers()">
                         <i class="fas fa-circle-dot"></i> 2km Buffer
                     </button>
-                    <button class="map-tool-btn" id="btnToggleHeatmap" onclick="toggleMapHeatmap()">
+                    <button class="map-tool" id="btnToggleHeatmap" onclick="toggleMapHeatmap()">
                         <i class="fas fa-fire-burner"></i> Heatmap
                     </button>
                     <div class="vr bg-secondary my-1"></div>
                     <div class="dropdown">
-                        <button class="map-tool-btn dropdown-toggle" data-bs-toggle="dropdown">
+                        <button class="map-tool dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fas fa-layer-group"></i> Basemap
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark">
@@ -1169,89 +1189,103 @@
                             <li><a class="dropdown-item" href="javascript:void(0)" onclick="setBasemap('osm')">OpenStreetMap Standard</a></li>
                         </ul>
                     </div>
+                    <div class="vr bg-secondary my-1"></div>
+                    <!-- Jump to cluster -->
+                    <select class="jump-select" onchange="jumpToLocation(this.value)">
+                        <option value="">🎯 Jump to Sector...</option>
+                        <option value="22.4707,70.0577,11">Jamnagar Refinery (Reliance)</option>
+                        <option value="24.0880,82.6629,11">Singrauli & Vindhyachal STPP</option>
+                        <option value="22.8394,69.7225,11">Mundra Thermal Complex</option>
+                        <option value="22.7876,86.2025,11">Tata Steel Jamshedpur</option>
+                        <option value="21.2093,81.4285,11">SAIL Bhilai Steel Plant</option>
+                        <option value="23.7466,86.4132,11">Jharia Coalfield Basin</option>
+                        <option value="21.1000,72.6500,11">Hazira Gas Processing</option>
+                        <option value="30.0,79.0,8">Uttarakhand Himalayan Forests</option>
+                        <option value="30.7,75.5,8">Punjab Stubble Burning Zone</option>
+                    </select>
                 </div>
 
                 <!-- Bottom Tactical Stat Chips Overlay -->
-                <div class="map-stats-overlay">
-                    <div class="map-stat-chip">
-                        <div class="chip-icon text-danger"><i class="fas fa-temperature-arrow-up"></i></div>
-                        <div class="chip-data">
-                            <span class="chip-label">Avg Anomaly Temp</span>
-                            <span id="chipAvgBrightness" class="chip-val">345.2 K</span>
+                <div class="map-stats-strip">
+                    <div class="stat-chip">
+                        <div class="stat-chip-icon text-danger"><i class="fas fa-temperature-arrow-up"></i></div>
+                        <div class="stat-chip-content">
+                            <span class="stat-chip-lbl">Avg Anomaly Temp</span>
+                            <span id="chipAvgBrightness" class="stat-chip-num">345.2 K</span>
                         </div>
                     </div>
 
-                    <div class="map-stat-chip">
-                        <div class="chip-icon" style="color: var(--accent-flare);"><i class="fas fa-bolt-lightning"></i></div>
-                        <div class="chip-data">
-                            <span class="chip-label">Avg Radiative Power</span>
-                            <span id="chipAvgFRP" class="chip-val">28.4 MW</span>
+                    <div class="stat-chip">
+                        <div class="stat-chip-icon" style="color: var(--flare-orange);"><i class="fas fa-bolt-lightning"></i></div>
+                        <div class="stat-chip-content">
+                            <span class="stat-chip-lbl">Avg Radiative Power</span>
+                            <span id="chipAvgFRP" class="stat-chip-num">28.4 MW</span>
                         </div>
                     </div>
 
-                    <div class="map-stat-chip">
-                        <div class="chip-icon text-info"><i class="fas fa-circle-check"></i></div>
-                        <div class="chip-data">
-                            <span class="chip-label">High Confidence Detections</span>
-                            <span id="chipHighConf" class="chip-val">182</span>
+                    <div class="stat-chip">
+                        <div class="stat-chip-icon text-info"><i class="fas fa-circle-check"></i></div>
+                        <div class="stat-chip-content">
+                            <span class="stat-chip-lbl">High Confidence Events</span>
+                            <span id="chipHighConf" class="stat-chip-num">182</span>
                         </div>
                     </div>
 
-                    <div class="map-stat-chip">
-                        <div class="chip-icon text-warning"><i class="fas fa-sun-plant-wilt"></i></div>
-                        <div class="chip-data">
-                            <span class="chip-label">Day vs Night Passes</span>
-                            <span id="chipDayNightRatio" class="chip-val">310 / 190</span>
+                    <div class="stat-chip">
+                        <div class="stat-chip-icon text-warning"><i class="fas fa-sun-plant-wilt"></i></div>
+                        <div class="stat-chip-content">
+                            <span class="stat-chip-lbl">Day vs Night Passes</span>
+                            <span id="chipDayNightRatio" class="stat-chip-num">310 / 190</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- VIEW 2: ANALYTICS & INTELLIGENCE -->
-            <div id="analytics-view" class="view-panel">
-                <div class="analytics-content">
+            <div id="analytics-view" class="tab-view">
+                <div class="analytics-view-container">
                     <div class="analytics-grid">
                         
-                        <!-- Chart 1: Distribution Doughnut -->
+                        <!-- Chart 1: Classification Doughnut -->
                         <div class="analytics-card">
-                            <div class="analytics-card-header">
-                                <span><i class="fas fa-chart-pie me-2 text-danger"></i> Thermal Anomaly Classification Breakdown</span>
-                                <span class="badge bg-secondary font-mono">VIIRS Sensor</span>
+                            <div class="analytics-header">
+                                <span><i class="fas fa-chart-pie me-2 text-danger"></i> Anomaly Classification Breakdown</span>
+                                <span class="badge bg-secondary font-mono">VIIRS NRT</span>
                             </div>
-                            <div class="chart-box">
+                            <div class="chart-wrapper">
                                 <canvas id="chartDistribution"></canvas>
                             </div>
                         </div>
 
-                        <!-- Chart 2: FRP Intensity Distribution -->
+                        <!-- Chart 2: FRP Histogram -->
                         <div class="analytics-card">
-                            <div class="analytics-card-header">
-                                <span><i class="fas fa-chart-bar me-2 text-warning"></i> Fire Radiative Power (FRP) Spectrum</span>
-                                <span class="badge bg-secondary font-mono">Megawatts (MW)</span>
+                            <div class="analytics-header">
+                                <span><i class="fas fa-chart-bar me-2 text-warning"></i> Fire Radiative Power (MW) Spectrum</span>
+                                <span class="badge bg-secondary font-mono">Intensity</span>
                             </div>
-                            <div class="chart-box">
+                            <div class="chart-wrapper">
                                 <canvas id="chartFRP"></canvas>
                             </div>
                         </div>
 
                         <!-- Chart 3: Temporal Timeline -->
-                        <div class="analytics-card full">
-                            <div class="analytics-card-header">
-                                <span><i class="fas fa-chart-line me-2 text-info"></i> Temporal Acquisition Cadence & Hourly Intensity</span>
+                        <div class="analytics-card full-width">
+                            <div class="analytics-header">
+                                <span><i class="fas fa-chart-line me-2 text-info"></i> Temporal Acquisition Cadence & Hourly Hotspots</span>
                                 <span class="badge bg-secondary font-mono">Last 72 Hours</span>
                             </div>
-                            <div class="chart-box" style="height: 280px;">
+                            <div class="chart-wrapper" style="height: 270px;">
                                 <canvas id="chartTimeline"></canvas>
                             </div>
                         </div>
 
-                        <!-- Chart 4: Top Strategic Facility Thermal Exposure -->
-                        <div class="analytics-card full">
-                            <div class="analytics-card-header">
+                        <!-- Chart 4: Strategic Facility Thermal Exposure -->
+                        <div class="analytics-card full-width">
+                            <div class="analytics-header">
                                 <span><i class="fas fa-shield-virus me-2 text-success"></i> Strategic Infrastructure Proximity Ranking</span>
-                                <span class="badge bg-danger font-mono">&le; 2.0 km Anomaly Radius</span>
+                                <span class="badge bg-danger font-mono">&le; 2.0 km Radius</span>
                             </div>
-                            <div class="chart-box" style="height: 260px;">
+                            <div class="chart-wrapper" style="height: 260px;">
                                 <canvas id="chartFacilities"></canvas>
                             </div>
                         </div>
@@ -1261,8 +1295,8 @@
             </div>
 
             <!-- VIEW 3: LIVE ALERTS STREAM -->
-            <div id="alerts-view" class="view-panel">
-                <div class="alerts-content">
+            <div id="alerts-view" class="tab-view">
+                <div class="alerts-view-container">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="m-0 text-white font-mono"><i class="fas fa-satellite-dish me-2 text-danger"></i> HIGH PRIORITY TACTICAL ALERTS</h5>
                         <span class="badge bg-danger font-mono px-3 py-2">DEFENSE SURVEILLANCE FEED</span>
@@ -1274,21 +1308,21 @@
             </div>
 
             <!-- VIEW 4: INDUSTRIAL FACILITIES DIRECTORY -->
-            <div id="facilities-view" class="view-panel">
-                <div class="facilities-content">
+            <div id="facilities-view" class="tab-view">
+                <div class="facilities-view-container">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="m-0 text-white"><i class="fas fa-industry me-2 text-info"></i> Strategic Industrial Infrastructure Registry</h5>
                         <input type="text" id="facilitySearchInput" class="form-control form-control-sm bg-dark text-light border-secondary w-25" placeholder="Search facilities...">
                     </div>
                     <div class="table-responsive">
-                        <table class="table-custom">
+                        <table class="facility-table">
                             <thead>
                                 <tr>
                                     <th>Facility Name</th>
                                     <th>Category</th>
                                     <th>Coordinates</th>
                                     <th>Status</th>
-                                    <th>Thermal Anomaly Count</th>
+                                    <th>Active Anomalies (&le;2.5km)</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -1301,60 +1335,60 @@
             </div>
 
             <!-- VIEW 5: SENSOR TELEMETRY & PIPELINE -->
-            <div id="telemetry-view" class="view-panel">
-                <div class="telemetry-content">
+            <div id="telemetry-view" class="tab-view">
+                <div class="telemetry-view-container">
                     <div class="pipeline-card">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="m-0 text-white"><i class="fas fa-diagram-project me-2 text-danger"></i> AI Detection & Classification Pipeline Architecture</h5>
                             <span class="badge bg-success font-mono px-3 py-2">PART 1 COMPLETE</span>
                         </div>
-                        <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                        <p style="font-size: 0.85rem; color: var(--text-dim);">
                             The Pyrosentry AI framework aggregates multi-spectral satellite thermal anomalies from NASA FIRMS (VIIRS 375m & MODIS 1km) and cross-references them against OpenStreetMap industrial geometries via a high-performance Haversine BallTree spatial indexing engine.
                         </p>
 
-                        <div class="sensor-status-grid">
-                            <div class="sensor-card">
-                                <div class="sensor-card-header">
+                        <div class="sensor-grid">
+                            <div class="sensor-box">
+                                <div class="d-flex justify-content-between mb-2">
                                     <span class="font-mono text-white fw-bold">NOAA-20 VIIRS</span>
                                     <span class="badge bg-success">ONLINE</span>
                                 </div>
-                                <div style="font-size: 0.72rem; color: var(--text-muted);">
+                                <div style="font-size: 0.72rem; color: var(--text-faint);">
                                     Resolution: 375m I-Band<br>
                                     Orbit: Sun-synchronous<br>
                                     Latency: ~3.2 hrs NRT
                                 </div>
                             </div>
 
-                            <div class="sensor-card">
-                                <div class="sensor-card-header">
+                            <div class="sensor-box">
+                                <div class="d-flex justify-content-between mb-2">
                                     <span class="font-mono text-white fw-bold">SUOMI NPP VIIRS</span>
                                     <span class="badge bg-success">ONLINE</span>
                                 </div>
-                                <div style="font-size: 0.72rem; color: var(--text-muted);">
+                                <div style="font-size: 0.72rem; color: var(--text-faint);">
                                     Resolution: 375m I-Band<br>
                                     Band: 3.74 µm & 11.45 µm<br>
                                     Latency: ~2.8 hrs NRT
                                 </div>
                             </div>
 
-                            <div class="sensor-card">
-                                <div class="sensor-card-header">
+                            <div class="sensor-box">
+                                <div class="d-flex justify-content-between mb-2">
                                     <span class="font-mono text-white fw-bold">AQUA / TERRA MODIS</span>
                                     <span class="badge bg-success">ONLINE</span>
                                 </div>
-                                <div style="font-size: 0.72rem; color: var(--text-muted);">
+                                <div style="font-size: 0.72rem; color: var(--text-faint);">
                                     Resolution: 1 km Thermal<br>
                                     Bands: 21/22 & 31/32<br>
                                     Coverage: Global Daily
                                 </div>
                             </div>
 
-                            <div class="sensor-card">
-                                <div class="sensor-card-header">
+                            <div class="sensor-box">
+                                <div class="d-flex justify-content-between mb-2">
                                     <span class="font-mono text-white fw-bold">OSM OVERPASS ENGINE</span>
                                     <span class="badge bg-success">CONNECTED</span>
                                 </div>
-                                <div style="font-size: 0.72rem; color: var(--text-muted);">
+                                <div style="font-size: 0.72rem; color: var(--text-faint);">
                                     Geo-Database: 24 Key Sites<br>
                                     Index: BallTree (k-d metric)<br>
                                     Spatial Buffer: 2.0 km
@@ -1369,16 +1403,16 @@
 
         <!-- EVENT INSPECTOR DRAWER -->
         <div id="inspectorDrawer" class="inspector-drawer">
-            <div class="drawer-header">
+            <div class="drawer-top">
                 <div class="drawer-title">
                     <i class="fas fa-crosshairs text-danger"></i>
-                    <span>TACTICAL INSPECTOR</span>
+                    <span>TACTICAL HOTSPOT INSPECTOR</span>
                 </div>
-                <button class="btn-close-drawer" onclick="closeInspector()"><i class="fas fa-xmark"></i></button>
+                <button class="close-btn" onclick="closeInspector()"><i class="fas fa-xmark"></i></button>
             </div>
 
             <div id="inspectorContent">
-                <!-- Populated dynamically upon clicking any fire marker or alert -->
+                <!-- Populated dynamically upon selecting any fire marker or alert -->
             </div>
         </div>
 
@@ -1387,16 +1421,16 @@
     <!-- SITUATION REPORT (SITREP) MODAL -->
     <div class="modal fade" id="sitrepModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content modal-content-custom">
-                <div class="modal-header modal-header-custom justify-content-between">
+            <div class="modal-content modal-sitrep">
+                <div class="modal-header border-secondary justify-content-between p-3">
                     <h5 class="modal-title font-mono text-danger"><i class="fas fa-shield-alt me-2"></i> SITUATION REPORT (SITREP) // NTRO SIH-2026</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body modal-body-custom" id="sitrepModalBody">
+                <div class="modal-body p-4" id="sitrepModalBody">
                     <!-- Populated dynamically -->
                 </div>
-                <div class="modal-footer modal-footer-custom justify-content-between">
-                    <span class="font-mono text-muted" style="font-size: 0.75rem;">SECURITY CLASSIFICATION: UNCLASSIFIED / EXERCISE DEMO</span>
+                <div class="modal-footer border-secondary justify-content-between p-3">
+                    <span class="font-mono text-muted" style="font-size: 0.75rem;">SECURITY CLASSIFICATION: UNCLASSIFIED / DEFENSE EXERCISE DEMO</span>
                     <div>
                         <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-danger btn-sm" onclick="window.print()"><i class="fas fa-print me-1"></i> Print / Save PDF</button>
@@ -1414,7 +1448,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        // --- 1. GLOBAL STATE & DATA INITIALIZATION ---
+        // --- 1. GLOBAL STATE & DATA ---
         let rawFiresData = [];
         let rawFacilitiesData = [];
         let activeFilters = {
@@ -1425,12 +1459,12 @@
         };
 
         const FIRE_COLORS = {
-            "Industrial Fire": "#ff3366",
-            "Gas Flare": "#ff9100",
+            "Industrial Fire": "#ff2a5f",
+            "Gas Flare": "#ff8c00",
             "Forest Fire": "#00e676",
-            "Agricultural Burning": "#ffd600",
-            "Mining Activity": "#78909c",
-            "Other/Unknown": "#94a3b8"
+            "Agricultural Burning": "#ffea00",
+            "Mining Activity": "#90a4ae",
+            "Other/Unknown": "#64748b"
         };
 
         const FACILITY_ICONS = {
@@ -1444,7 +1478,6 @@
             "petroleum_well": "fa-oil-well"
         };
 
-        // Inject initial data from Flask template or fallback
         {% if fires_data %}
         rawFiresData = {{ fires_data | tojson }};
         {% endif %}
@@ -1452,18 +1485,16 @@
         rawFacilitiesData = {{ facilities_data | tojson }};
         {% endif %}
 
-        // Fallback for standalone static file execution if raw data is empty
         if (!rawFiresData || rawFiresData.length === 0) {
-            console.log("Fetching fallback demo data from /api/fires...");
             fetch('/api/fires')
                 .then(res => res.json())
                 .then(data => { rawFiresData = data; initApp(); })
-                .catch(err => { console.warn("Using inline demo generator", err); generateClientFallbackData(); initApp(); });
+                .catch(err => { generateClientFallbackData(); initApp(); });
         } else {
             document.addEventListener("DOMContentLoaded", () => { initApp(); });
         }
 
-        // --- 2. LEAFLET MAP & GIS LAYERS ---
+        // --- 2. LEAFLET MAP & GIS ENGINE ---
         let map = null;
         let fireMarkerCluster = null;
         let facilityLayerGroup = null;
@@ -1480,16 +1511,15 @@
                 zoomControl: false
             });
 
-            L.control.zoom({ position: 'topright' }).add_to(map);
+            L.control.zoom({ position: 'topright' }).addTo(map);
 
-            // Base Tile Layers
             baseLayers.dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; CartoDB &copy; OpenStreetMap',
                 maxZoom: 19
             }).addTo(map);
 
             baseLayers.satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: '&copy; Esri & NASA',
+                attribution: '&copy; Esri & NASA Earth',
                 maxZoom: 18
             });
 
@@ -1512,16 +1542,20 @@
             map.addLayer(facilityLayerGroup);
             map.addLayer(bufferLayerGroup);
 
-            // Initial render of facilities and fires
             renderFacilities();
             renderFiresOnMap();
         }
 
         function setBasemap(type) {
             Object.values(baseLayers).forEach(layer => map.removeLayer(layer));
-            if (baseLayers[type]) {
-                baseLayers[type].addTo(map);
-            }
+            if (baseLayers[type]) baseLayers[type].addTo(map);
+        }
+
+        function jumpToLocation(coordStr) {
+            if (!coordStr) return;
+            const [lat, lon, zoom] = coordStr.split(',').map(Number);
+            switchView('map-view');
+            map.flyTo([lat, lon], zoom, { animate: true, duration: 1.5 });
         }
 
         function renderFacilities() {
@@ -1532,29 +1566,28 @@
                 const iconClass = FACILITY_ICONS[fac.facility_type] || 'fa-industry';
                 const customIcon = L.divIcon({
                     className: 'custom-fac-icon',
-                    html: `<div style="background: #1e293b; border: 2px solid #00f0ff; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #00f0ff; font-size: 13px; box-shadow: 0 0 10px rgba(0,240,255,0.5);"><i class="fas ${iconClass}"></i></div>`,
+                    html: `<div style="background: #0f172a; border: 2px solid #00f0ff; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #00f0ff; font-size: 13px; box-shadow: 0 0 10px rgba(0,240,255,0.6);"><i class="fas ${iconClass}"></i></div>`,
                     iconSize: [28, 28],
                     iconAnchor: [14, 14]
                 });
 
                 const marker = L.marker([fac.latitude, fac.longitude], { icon: customIcon });
                 marker.bindPopup(`
-                    <div style="font-family: var(--font-main); padding: 4px;">
-                        <h6 style="color: #00f0ff; margin: 0 0 4px 0; font-weight: 700;">🏭 ${fac.name}</h6>
+                    <div style="font-family: var(--font-sans); padding: 4px;">
+                        <h6 style="color: #00f0ff; margin: 0 0 4px 0; font-weight: 800;">🏭 ${fac.name}</h6>
                         <div style="font-size: 0.75rem; color: #cbd5e1;">Type: <b>${fac.facility_type.replace(/_/g, ' ').toUpperCase()}</b></div>
                         <div style="font-size: 0.75rem; color: #94a3b8;">Coords: ${fac.latitude.toFixed(4)}, ${fac.longitude.toFixed(4)}</div>
-                        <div style="margin-top: 6px; font-size: 0.7rem; color: #ff5277;"><i class="fas fa-shield-alt"></i> Critical 2.0km Defense Buffer</div>
+                        <div style="margin-top: 6px; font-size: 0.7rem; color: #ff2a5f;"><i class="fas fa-shield-alt"></i> 2.0 km Critical Vulnerability Perimeter</div>
                     </div>
                 `);
                 facilityLayerGroup.addLayer(marker);
 
-                // 2.0 km Buffer Circle
                 const bufferCircle = L.circle([fac.latitude, fac.longitude], {
                     radius: 2000,
-                    color: '#ff3366',
-                    weight: 1,
+                    color: '#ff2a5f',
+                    weight: 1.5,
                     dashArray: '4, 6',
-                    fillColor: '#ff3366',
+                    fillColor: '#ff2a5f',
                     fillOpacity: 0.08
                 });
                 bufferLayerGroup.addLayer(bufferCircle);
@@ -1569,7 +1602,7 @@
             const heatPoints = [];
 
             filtered.forEach(fire => {
-                const color = FIRE_COLORS[fire.fire_type] || '#94a3b8';
+                const color = FIRE_COLORS[fire.fire_type] || '#64748b';
                 const frp = fire.frp || 5;
                 const radius = Math.min(Math.max(frp / 8, 4), 14);
 
@@ -1578,8 +1611,8 @@
                     fillColor: color,
                     color: '#ffffff',
                     weight: 1,
-                    opacity: 0.9,
-                    fillOpacity: 0.75
+                    opacity: 0.95,
+                    fillOpacity: 0.8
                 });
 
                 circleMarker.on('click', () => {
@@ -1587,27 +1620,22 @@
                 });
 
                 circleMarker.bindTooltip(`<b>${fire.fire_type}</b><br>FRP: ${frp.toFixed(1)} MW | ${fire.brightness} K`, {
-                    direction: 'top',
-                    className: 'custom-tooltip'
+                    direction: 'top'
                 });
 
                 fireMarkerCluster.addLayer(circleMarker);
                 heatPoints.push([fire.latitude, fire.longitude, Math.min(frp / 60, 1.0)]);
             });
 
-            // Update heatmap layer
-            if (heatmapLayer) {
-                map.removeLayer(heatmapLayer);
-            }
+            if (heatmapLayer) map.removeLayer(heatmapLayer);
             heatmapLayer = L.heatLayer(heatPoints, {
                 radius: 20,
                 blur: 15,
                 maxZoom: 12,
-                gradient: { 0.2: '#00f0ff', 0.5: '#00e676', 0.7: '#ffd600', 0.9: '#ff9100', 1.0: '#ff3366' }
+                gradient: { 0.2: '#00f0ff', 0.5: '#00e676', 0.7: '#ffea00', 0.9: '#ff8c00', 1.0: '#ff2a5f' }
             });
         }
 
-        // Map Toolbar Toggles
         function toggleMapClusters() {
             const btn = document.getElementById('btnToggleClusters');
             if (map.hasLayer(fireMarkerCluster)) {
@@ -1666,7 +1694,6 @@
         function updateAllUI() {
             const filtered = getFilteredFires();
 
-            // 1. Update Metrics
             const total = filtered.length;
             const industrial = filtered.filter(f => f.fire_type === 'Industrial Fire').length;
             const flares = filtered.filter(f => f.fire_type === 'Gas Flare').length;
@@ -1683,7 +1710,6 @@
             const nearPct = total > 0 ? ((nearInd / total) * 100).toFixed(1) : 0;
             document.getElementById('nearIndustrialPct').innerText = `${nearPct}% (${nearInd})`;
 
-            // 2. Update Map Chips
             if (total > 0) {
                 const avgBrightness = (filtered.reduce((acc, f) => acc + (f.brightness || 0), 0) / total).toFixed(1);
                 const avgFRP = (filtered.reduce((acc, f) => acc + (f.frp || 0), 0) / total).toFixed(1);
@@ -1697,13 +1723,8 @@
                 document.getElementById('chipDayNightRatio').innerText = `${dayCount} / ${nightCount}`;
             }
 
-            // 3. Update Map
             renderFiresOnMap();
-
-            // 4. Update Charts
             renderCharts(filtered);
-
-            // 5. Update Alert Stream Tab
             renderAlertsList(filtered);
         }
 
@@ -1717,24 +1738,23 @@
                 const color = FIRE_COLORS[type];
                 
                 const item = document.createElement('div');
-                item.className = 'filter-checkbox-item';
+                item.className = 'type-item';
                 item.innerHTML = `
-                    <label class="filter-checkbox-label" for="type_chk_${idx}">
+                    <label class="type-label" for="type_chk_${idx}">
                         <input class="form-check-input me-2" type="checkbox" value="${type}" id="type_chk_${idx}" checked>
-                        <span class="color-dot" style="background-color: ${color}; color: ${color};"></span>
+                        <span class="type-dot" style="background-color: ${color}; color: ${color};"></span>
                         <span>${type}</span>
                     </label>
-                    <span class="filter-badge">${count}</span>
+                    <span class="count-pill">${count}</span>
                 `;
 
-                item.querySelector('input').addEventListener('change', (e) => {
+                item.querySelector('input').addEventListener('change', () => {
                     handleTypeCheckboxChange();
                 });
 
                 container.appendChild(item);
             });
 
-            // Initialize active filter types with all checked
             activeFilters.types = [...allTypes];
         }
 
@@ -1750,14 +1770,14 @@
             updateAllUI();
         }
 
-        // --- 4. CHARTS & INTELLIGENCE ---
+        // --- 4. CHARTS & ANALYTICS ---
         let chartDist = null;
         let chartFRP = null;
         let chartTimeline = null;
         let chartFac = null;
 
         function renderCharts(data) {
-            // 1. Distribution Chart
+            // 1. Distribution Doughnut
             const typeCounts = {};
             Object.keys(FIRE_COLORS).forEach(t => typeCounts[t] = 0);
             data.forEach(f => { if (typeCounts[f.fire_type] !== undefined) typeCounts[f.fire_type]++; });
@@ -1766,30 +1786,33 @@
             const distValues = Object.values(typeCounts);
             const distColors = distLabels.map(l => FIRE_COLORS[l]);
 
-            if (chartDist) chartDist.destroy();
-            chartDist = new Chart(document.getElementById('chartDistribution'), {
-                type: 'doughnut',
-                data: {
-                    labels: distLabels,
-                    datasets: [{
-                        data: distValues,
-                        backgroundColor: distColors,
-                        borderWidth: 0,
-                        hoverOffset: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '72%',
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } }
+            const distCanvas = document.getElementById('chartDistribution');
+            if (distCanvas) {
+                if (chartDist) chartDist.destroy();
+                chartDist = new Chart(distCanvas, {
+                    type: 'doughnut',
+                    data: {
+                        labels: distLabels,
+                        datasets: [{
+                            data: distValues,
+                            backgroundColor: distColors,
+                            borderWidth: 0,
+                            hoverOffset: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '72%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } }
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
 
             // 2. FRP Spectrum
             const frpRanges = { '0-10 MW': 0, '10-30 MW': 0, '30-60 MW': 0, '60-100 MW': 0, '>100 MW': 0 };
@@ -1802,63 +1825,69 @@
                 else frpRanges['>100 MW']++;
             });
 
-            if (chartFRP) chartFRP.destroy();
-            chartFRP = new Chart(document.getElementById('chartFRP'), {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(frpRanges),
-                    datasets: [{
-                        label: 'Detections',
-                        data: Object.values(frpRanges),
-                        backgroundColor: ['#00f0ff', '#00e676', '#ffd600', '#ff9100', '#ff3366'],
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#64748b' } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+            const frpCanvas = document.getElementById('chartFRP');
+            if (frpCanvas) {
+                if (chartFRP) chartFRP.destroy();
+                chartFRP = new Chart(frpCanvas, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(frpRanges),
+                        datasets: [{
+                            label: 'Detections',
+                            data: Object.values(frpRanges),
+                            backgroundColor: ['#00f0ff', '#00e676', '#ffea00', '#ff8c00', '#ff2a5f'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#64748b' } },
+                            x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                        }
                     }
-                }
-            });
+                });
+            }
 
-            // 3. Temporal Timeline Chart
+            // 3. Temporal Cadence Timeline
             const hourlyCounts = Array(24).fill(0);
             data.forEach(f => {
                 const hr = f.hour_of_day !== undefined ? f.hour_of_day : (f.acq_time ? Math.floor(f.acq_time / 100) : 12);
                 hourlyCounts[hr % 24]++;
             });
 
-            if (chartTimeline) chartTimeline.destroy();
-            chartTimeline = new Chart(document.getElementById('chartTimeline'), {
-                type: 'line',
-                data: {
-                    labels: Array.from({length: 24}, (_, i) => `${i.toString().padStart(2,'0')}:00`),
-                    datasets: [{
-                        label: 'Acquisitions / Hour',
-                        data: hourlyCounts,
-                        borderColor: '#00f0ff',
-                        backgroundColor: 'rgba(0, 240, 255, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 2,
-                        pointRadius: 3,
-                        pointBackgroundColor: '#00f0ff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#64748b' } },
-                        x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#94a3b8' } }
+            const timeCanvas = document.getElementById('chartTimeline');
+            if (timeCanvas) {
+                if (chartTimeline) chartTimeline.destroy();
+                chartTimeline = new Chart(timeCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: 24}, (_, i) => `${i.toString().padStart(2,'0')}:00`),
+                        datasets: [{
+                            label: 'Acquisitions / Hour',
+                            data: hourlyCounts,
+                            borderColor: '#00f0ff',
+                            backgroundColor: 'rgba(0, 240, 255, 0.12)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#00f0ff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#64748b' } },
+                            x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#94a3b8' } }
+                        }
                     }
-                }
-            });
+                });
+            }
 
             // 4. Strategic Facility Proximity
             const facAnomalies = {};
@@ -1867,34 +1896,38 @@
             });
             const topFacs = Object.entries(facAnomalies).sort((a,b) => b[1] - a[1]).slice(0, 8);
 
-            if (chartFac) chartFac.destroy();
-            chartFac = new Chart(document.getElementById('chartFacilities'), {
-                type: 'bar',
-                data: {
-                    labels: topFacs.map(x => x[0]),
-                    datasets: [{
-                        label: 'Adjacent Anomalies (<2km)',
-                        data: topFacs.map(x => x[1]),
-                        backgroundColor: '#ff3366',
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#64748b' } },
-                        y: { grid: { display: false }, ticks: { color: '#e2e8f0', font: { size: 11 } } }
+            const facCanvas = document.getElementById('chartFacilities');
+            if (facCanvas) {
+                if (chartFac) chartFac.destroy();
+                chartFac = new Chart(facCanvas, {
+                    type: 'bar',
+                    data: {
+                        labels: topFacs.map(x => x[0]),
+                        datasets: [{
+                            label: 'Adjacent Anomalies (<2km)',
+                            data: topFacs.map(x => x[1]),
+                            backgroundColor: '#ff2a5f',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#64748b' } },
+                            y: { grid: { display: false }, ticks: { color: '#e2e8f0', font: { size: 11 } } }
+                        }
                     }
-                }
-            });
+                });
+            }
         }
 
         // --- 5. ALERTS & FACILITIES DIRECTORY ---
         function renderAlertsList(data) {
             const container = document.getElementById('alertsListContainer');
+            if (!container) return;
             container.innerHTML = '';
 
             const criticalAlerts = data
@@ -1902,10 +1935,11 @@
                 .sort((a,b) => (b.frp || 0) - (a.frp || 0))
                 .slice(0, 20);
 
-            document.getElementById('alertsCountBadge').innerText = criticalAlerts.length;
+            const badge = document.getElementById('alertsCountBadge');
+            if (badge) badge.innerText = criticalAlerts.length;
 
             if (criticalAlerts.length === 0) {
-                container.innerHTML = `<div class="text-center text-muted py-5"><i class="fas fa-circle-check fs-1 mb-2 text-success"></i><p>No critical thermal alerts currently matching your filters.</p></div>`;
+                container.innerHTML = `<div class="text-center text-muted py-5"><i class="fas fa-circle-check fs-1 mb-2 text-success"></i><p>No critical thermal alerts matching your criteria.</p></div>`;
                 return;
             }
 
@@ -1917,27 +1951,27 @@
                 else if (item.is_near_industrial == 1) { severity = 'high'; tag = 'INDUSTRIAL BUFFER'; }
 
                 const card = document.createElement('div');
-                card.className = `alert-item-card ${severity}`;
+                card.className = `alert-card ${severity}`;
                 card.innerHTML = `
-                    <div class="alert-left-meta">
-                        <span class="alert-badge-tag ${severity}">${tag}</span>
-                        <div class="alert-title-block">
-                            <h5>${item.fire_type} - ${item.nearest_facility_name || 'Unclassified Location'}</h5>
-                            <div class="alert-subinfo">
+                    <div class="alert-meta">
+                        <span class="alert-tag ${severity}">${tag}</span>
+                        <div class="alert-info">
+                            <h5>${item.fire_type} - ${item.nearest_facility_name || 'Unclassified Hotspot'}</h5>
+                            <div class="alert-details">
                                 <span><i class="fas fa-location-dot me-1"></i>${item.latitude.toFixed(4)}, ${item.longitude.toFixed(4)}</span>
                                 <span><i class="far fa-clock me-1"></i>${item.acq_date} ${String(item.acq_time).padStart(4,'0')} UTC</span>
                                 <span><i class="fas fa-satellite me-1"></i>${item.source || 'VIIRS'}</span>
                             </div>
                         </div>
                     </div>
-                    <div class="alert-metrics-right">
-                        <div class="alert-stat-pill">
-                            <div class="label">Power</div>
-                            <div class="val text-danger">${(item.frp || 0).toFixed(1)} MW</div>
+                    <div class="alert-actions">
+                        <div class="text-end">
+                            <div style="font-size: 0.65rem; color: var(--text-faint);">POWER</div>
+                            <div class="font-mono fw-bold text-danger">${(item.frp || 0).toFixed(1)} MW</div>
                         </div>
-                        <div class="alert-stat-pill">
-                            <div class="label">Brightness</div>
-                            <div class="val text-warning">${item.brightness || 0} K</div>
+                        <div class="text-end">
+                            <div style="font-size: 0.65rem; color: var(--text-faint);">BRIGHTNESS</div>
+                            <div class="font-mono fw-bold text-warning">${item.brightness || 0} K</div>
                         </div>
                         <button class="btn btn-sm btn-outline-info" onclick='focusOnMapAndInspect(${JSON.stringify(item)})'>
                             <i class="fas fa-crosshairs me-1"></i> Track
@@ -1950,10 +1984,10 @@
 
         function renderFacilitiesTable() {
             const tbody = document.getElementById('facilitiesTableBody');
+            if (!tbody) return;
             tbody.innerHTML = '';
 
             rawFacilitiesData.forEach(fac => {
-                // Count nearby fires
                 const nearbyFires = rawFiresData.filter(f => {
                     const d = Math.hypot(f.latitude - fac.latitude, f.longitude - fac.longitude) * 111.0;
                     return d <= 2.5;
@@ -1964,7 +1998,7 @@
                     <td><b>${fac.name}</b></td>
                     <td><span class="badge bg-secondary font-mono">${fac.facility_type.replace(/_/g, ' ').toUpperCase()}</span></td>
                     <td class="font-mono text-muted">${fac.latitude.toFixed(4)}, ${fac.longitude.toFixed(4)}</td>
-                    <td><span class="badge bg-success"><i class="fas fa-circle-check me-1"></i>MONITORED</span></td>
+                    <td><span class="badge bg-success"><i class="fas fa-circle-check me-1"></i>ACTIVE</span></td>
                     <td><span class="badge ${nearbyFires.length > 0 ? 'bg-danger' : 'bg-dark'} font-mono">${nearbyFires.length} anomalies</span></td>
                     <td>
                         <button class="btn btn-sm btn-outline-info" onclick="zoomToFacility(${fac.latitude}, ${fac.longitude}, '${fac.name}')">
@@ -1996,7 +2030,7 @@
             const frp = (fire.frp || 0).toFixed(1);
             const brightnessC = ((fire.brightness || 300) - 273.15).toFixed(1);
 
-            let aiRisk = "Normal Environmental Thermal Anomaly";
+            let aiRisk = "Normal Environmental Thermal Source";
             let aiBadge = "LOW RISK";
             let aiColor = "text-success";
 
@@ -2020,27 +2054,27 @@
                     <span class="font-mono ${aiColor} fw-bold">${aiBadge}</span>
                 </div>
 
-                <div class="inspector-metric-row">
-                    <div class="inspector-box">
-                        <div class="inspector-box-label">Radiative Power</div>
-                        <div class="inspector-box-val text-danger">${frp} MW</div>
+                <div class="stat-grid-2x2">
+                    <div class="mini-stat-card">
+                        <div class="mini-stat-label">Radiative Power</div>
+                        <div class="mini-stat-val text-danger">${frp} MW</div>
                     </div>
-                    <div class="inspector-box">
-                        <div class="inspector-box-label">Brightness Temp</div>
-                        <div class="inspector-box-val text-warning">${fire.brightness} K (${brightnessC}°C)</div>
+                    <div class="mini-stat-card">
+                        <div class="mini-stat-label">Brightness Temp</div>
+                        <div class="mini-stat-val text-warning">${fire.brightness} K (${brightnessC}°C)</div>
                     </div>
-                    <div class="inspector-box">
-                        <div class="inspector-box-label">Confidence</div>
-                        <div class="inspector-box-val text-success">${(fire.confidence || 'HIGH').toUpperCase()}</div>
+                    <div class="mini-stat-card">
+                        <div class="mini-stat-label">Confidence</div>
+                        <div class="mini-stat-val text-success">${(fire.confidence || 'HIGH').toUpperCase()}</div>
                     </div>
-                    <div class="inspector-box">
-                        <div class="inspector-box-label">Satellite Sensor</div>
-                        <div class="inspector-box-val text-info">${fire.source || 'VIIRS_NRT'}</div>
+                    <div class="mini-stat-card">
+                        <div class="mini-stat-label">Satellite Sensor</div>
+                        <div class="mini-stat-val text-info">${fire.source || 'VIIRS_NRT'}</div>
                     </div>
                 </div>
 
-                <div class="filter-section">
-                    <div class="section-header">
+                <div class="filter-panel">
+                    <div class="panel-heading">
                         <span><i class="fas fa-location-crosshairs me-1"></i> Geospatial Proximity</span>
                     </div>
                     <div style="font-size: 0.8rem;">
@@ -2063,16 +2097,16 @@
                     </div>
                 </div>
 
-                <div class="ai-recommendation-box">
-                    <div class="ai-recommendation-title">
+                <div class="ai-recommendation">
+                    <div class="ai-recommendation-head">
                         <i class="fas fa-brain"></i> AI Automated SITREP Analysis
                     </div>
-                    <p class="ai-recommendation-text">${aiRisk}</p>
+                    <p class="ai-recommendation-body">${aiRisk}</p>
                 </div>
 
                 <div class="mt-3 d-grid gap-2">
                     <a href="https://www.google.com/maps?q=${fire.latitude},${fire.longitude}" target="_blank" class="btn btn-outline-light btn-sm">
-                        <i class="fas fa-external-link-alt me-1"></i> View on Satellite Imagery
+                        <i class="fas fa-external-link-alt me-1"></i> Inspect on High-Res Satellite
                     </a>
                 </div>
             `;
@@ -2084,7 +2118,7 @@
             document.getElementById('inspectorDrawer').classList.remove('open');
         }
 
-        // --- 7. SITUATION REPORT (SITREP) & EXPORTS ---
+        // --- 7. SITREP REPORT & DATA EXPORT ---
         function openSitrepModal() {
             const filtered = getFilteredFires();
             const industrialFires = filtered.filter(f => f.is_near_industrial == 1);
@@ -2130,7 +2164,7 @@
 
                 <h6 class="text-info font-mono mb-2">EXECUTIVE SUMMARY</h6>
                 <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.5;">
-                    Thermal signature data collected across Indian territory over the last 72 hours via NASA FIRMS (VIIRS NOAA-20 & Suomi-NPP) identified <b>${industrialFires.length} persistent high-temperature anomalies</b> adjacent to critical energy production assets. Spatial cross-matching against OpenStreetMap industrial layers indicates intense localized flares at Jamnagar, Mundra, and Korba energy corridors.
+                    Thermal signature telemetry collected across Indian territory over the last 72 hours via NASA FIRMS (VIIRS NOAA-20 & Suomi-NPP) identified <b>${industrialFires.length} persistent high-temperature anomalies</b> adjacent to critical energy production assets. Spatial cross-matching against OpenStreetMap industrial layers indicates intense localized flares at Jamnagar, Mundra, and Korba energy corridors.
                 </p>
 
                 <h6 class="text-danger font-mono mb-2">CRITICAL INDUSTRIAL ANOMALIES (TOP 5)</h6>
@@ -2207,14 +2241,14 @@
             a.click();
         }
 
-        // --- 8. UI SWITCHER & EVENT LISTENERS ---
+        // --- 8. UI SWITCHER & LISTENERS ---
         function switchView(viewId) {
-            document.querySelectorAll('.tab-btn').forEach(b => {
+            document.querySelectorAll('.nav-view-btn').forEach(b => {
                 if (b.dataset.view === viewId) b.classList.add('active');
                 else b.classList.remove('active');
             });
 
-            document.querySelectorAll('.view-panel').forEach(p => {
+            document.querySelectorAll('.tab-view').forEach(p => {
                 if (p.id === viewId) p.classList.add('active');
                 else p.classList.remove('active');
             });
@@ -2230,22 +2264,21 @@
             renderFacilitiesTable();
             updateAllUI();
 
-            // Tab Buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
+            document.querySelectorAll('.nav-view-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     switchView(btn.dataset.view);
                 });
             });
 
-            // FRP Slider
             const slider = document.getElementById('frpRangeInput');
-            slider.addEventListener('input', (e) => {
-                activeFilters.minFRP = parseFloat(e.target.value);
-                document.getElementById('frpSliderVal').innerText = `${activeFilters.minFRP.toFixed(1)} MW`;
-                updateAllUI();
-            });
+            if (slider) {
+                slider.addEventListener('input', (e) => {
+                    activeFilters.minFRP = parseFloat(e.target.value);
+                    document.getElementById('frpSliderVal').innerText = `${activeFilters.minFRP.toFixed(1)} MW`;
+                    updateAllUI();
+                });
+            }
 
-            // Confidence Buttons
             document.querySelectorAll('[data-conf]').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('[data-conf]').forEach(b => b.classList.remove('active'));
@@ -2255,7 +2288,6 @@
                 });
             });
 
-            // Day / Night Buttons
             document.querySelectorAll('[data-daynight]').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('[data-daynight]').forEach(b => b.classList.remove('active'));
@@ -2265,8 +2297,7 @@
                 });
             });
 
-            // Refresh Button
-            document.getElementById('refreshBtn').addEventListener('click', function() {
+            document.getElementById('refreshBtn')?.addEventListener('click', function() {
                 const btn = this;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Syncing...';
                 fetch('/api/refresh', { method: 'POST' })
@@ -2275,12 +2306,10 @@
                     .catch(() => window.location.reload());
             });
 
-            // Sidebar Toggle
             document.getElementById('toggleSidebarBtn')?.addEventListener('click', () => {
                 document.getElementById('mainSidebar').classList.toggle('collapsed');
             });
 
-            // Search in facilities
             document.getElementById('facilitySearchInput')?.addEventListener('input', (e) => {
                 const query = e.target.value.toLowerCase();
                 document.querySelectorAll('#facilitiesTableBody tr').forEach(tr => {
@@ -2289,15 +2318,14 @@
                 });
             });
 
-            // Live Clock
             setInterval(() => {
                 const now = new Date();
                 const utcStr = now.toISOString().substring(11, 19) + ' UTC';
-                document.getElementById('liveClockUtc').innerText = utcStr;
+                const el = document.getElementById('liveClockUtc');
+                if (el) el.innerText = utcStr;
             }, 1000);
         }
 
-        // Fallback Client Generator for GitHub Pages / static loading
         function generateClientFallbackData() {
             rawFacilitiesData = [
                 { name: "Jamnagar Refinery (Reliance)", latitude: 22.4707, longitude: 70.0577, facility_type: "oil_refinery" },
