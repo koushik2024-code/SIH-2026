@@ -961,8 +961,376 @@
             }
         }
     </style>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  ULTRA MODERN UI — CUSTOM CURSOR + AURORA + PARTICLES      -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <style>
+        /* ── Hide Default OS Cursor everywhere ─────────────────────── */
+        * { cursor: none !important; }
+
+        /* ── Custom Cursor Elements ────────────────────────────────── */
+        #cursor-dot {
+            position: fixed;
+            top: 0; left: 0;
+            width: 8px; height: 8px;
+            background: #00f0ff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 12px #00f0ff, 0 0 24px rgba(0, 240, 255, 0.5);
+            will-change: transform;
+            transition: opacity 0.2s;
+        }
+
+        #cursor-ring {
+            position: fixed;
+            top: 0; left: 0;
+            width: 36px; height: 36px;
+            border: 1.5px solid rgba(0, 240, 255, 0.65);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            will-change: transform;
+            transition: width 0.25s cubic-bezier(0.16,1,0.3,1),
+                        height 0.25s cubic-bezier(0.16,1,0.3,1),
+                        border-color 0.25s ease,
+                        background 0.25s ease,
+                        opacity 0.2s;
+        }
+
+        #cursor-ring.hovering {
+            width: 54px; height: 54px;
+            border-color: rgba(255, 42, 95, 0.75);
+            background: rgba(255, 42, 95, 0.06);
+            box-shadow: 0 0 18px rgba(255, 42, 95, 0.25);
+        }
+
+        #cursor-ring.clicking {
+            width: 22px; height: 22px;
+            border-color: #00f0ff;
+            background: rgba(0, 240, 255, 0.15);
+        }
+
+        /* ── Global Scanline Overlay ───────────────────────────────── */
+        #scanline-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 3px,
+                rgba(0, 0, 0, 0.05) 3px,
+                rgba(0, 0, 0, 0.05) 4px
+            );
+        }
+
+        /* ── Particle Canvas Layer ─────────────────────────────────── */
+        #particle-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.35;
+        }
+
+        /* Ensure body content is above canvas */
+        .top-header, .app-layout { position: relative; z-index: 1; }
+
+        /* ── Aurora Glow Border on hover ──────────────────────────── */
+        .metric-card, .analytics-card, .alert-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::after, .analytics-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            background: radial-gradient(ellipse at 50% 0%, rgba(0,240,255,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .metric-card:hover::after, .analytics-card:hover::after {
+            opacity: 1;
+        }
+
+        /* ── Header Brand Animated Gradient Text ─────────────────── */
+        .brand-text h1 {
+            background: linear-gradient(
+                90deg,
+                #ffffff 0%,
+                #00f0ff 25%,
+                #ff2a5f 55%,
+                #b388ff 75%,
+                #ffffff 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerText 4s linear infinite;
+        }
+
+        @keyframes shimmerText {
+            0%   { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        /* ── Brand Badge Rotating Aura ────────────────────────────── */
+        .brand-badge {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-badge::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 13px;
+            background: conic-gradient(
+                from 0deg,
+                rgba(0, 240, 255, 0.9),
+                rgba(255, 42, 95, 0.9),
+                rgba(179, 136, 255, 0.9),
+                rgba(0, 240, 255, 0.9)
+            );
+            z-index: -1;
+            animation: rotateBadge 3s linear infinite;
+            filter: blur(3px);
+        }
+
+        @keyframes rotateBadge {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── Neon Button Sheen Sweep ───────────────────────────────── */
+        .btn-neon {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-neon::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .btn-neon:hover::after {
+            transform: translateX(100%);
+        }
+
+        /* ── Nav Switcher Active Glow ─────────────────────────────── */
+        .nav-view-btn.active {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(255, 42, 95, 0.1)) !important;
+            box-shadow: 0 0 24px rgba(0, 240, 255, 0.18), inset 0 0 12px rgba(0, 240, 255, 0.06) !important;
+            color: #00f0ff !important;
+            border-color: rgba(0, 240, 255, 0.4) !important;
+        }
+
+        /* ── Metric Card Levitate ─────────────────────────────────── */
+        .metric-card {
+            transition: transform 0.35s cubic-bezier(0.16,1,0.3,1),
+                        box-shadow 0.35s ease,
+                        border-color 0.3s ease !important;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px) scale(1.02) !important;
+            box-shadow: 0 14px 45px rgba(0, 240, 255, 0.1),
+                        0 0 0 1px rgba(0,240,255,0.18) !important;
+        }
+
+        /* ── Alert Card Slide + Glow ──────────────────────────────── */
+        .alert-card {
+            transition: transform 0.25s cubic-bezier(0.16,1,0.3,1),
+                        box-shadow 0.25s ease,
+                        border-color 0.25s ease,
+                        background 0.25s ease !important;
+        }
+
+        .alert-card:hover {
+            transform: translateX(8px) !important;
+            box-shadow: -6px 0 30px rgba(255, 42, 95, 0.15) !important;
+        }
+
+        /* ── Top Header Glass + Glow ──────────────────────────────── */
+        .top-header {
+            border-bottom: 1px solid rgba(0, 240, 255, 0.15) !important;
+            box-shadow: 0 1px 40px rgba(0, 240, 255, 0.05);
+        }
+
+        /* ── Inspector Drawer Neon Edge ───────────────────────────── */
+        .inspector-drawer {
+            border-left: 1px solid rgba(0, 240, 255, 0.2) !important;
+            box-shadow: -20px 0 60px rgba(0,0,0,0.85),
+                        -2px 0 20px rgba(0, 240, 255, 0.06) !important;
+        }
+
+        /* ── Sidebar Frosted Glass ────────────────────────────────── */
+        .sidebar {
+            background: rgba(9, 13, 20, 0.97) !important;
+            backdrop-filter: blur(24px) !important;
+            border-right: 1px solid rgba(0, 240, 255, 0.1) !important;
+        }
+
+        /* ── Filter panel heading tint ────────────────────────────── */
+        .panel-heading {
+            color: rgba(0, 240, 255, 0.75) !important;
+        }
+
+        /* ── Metric value neon text glow ──────────────────────────── */
+        .metric-value {
+            text-shadow: 0 0 25px currentColor;
+        }
+
+        /* ── FRP Slider neon accent ───────────────────────────────── */
+        .tactical-range { accent-color: #00f0ff !important; }
+
+        /* ── Pill buttons neon active ─────────────────────────────── */
+        .pill-btn.active {
+            background: linear-gradient(135deg,
+                rgba(0, 240, 255, 0.15),
+                rgba(255, 42, 95, 0.08)) !important;
+            border: 1px solid rgba(0, 240, 255, 0.35) !important;
+            color: #00f0ff !important;
+            box-shadow: 0 0 14px rgba(0, 240, 255, 0.18);
+        }
+
+        /* ── Type dot double-glow ─────────────────────────────────── */
+        .type-dot {
+            box-shadow: 0 0 6px currentColor, 0 0 16px currentColor !important;
+        }
+
+        /* ── Stat chip glow on hover ──────────────────────────────── */
+        .stat-chip {
+            transition: transform 0.25s ease, box-shadow 0.25s ease,
+                        border-color 0.25s ease !important;
+        }
+
+        .stat-chip:hover {
+            transform: translateY(-3px) !important;
+            box-shadow: 0 12px 35px rgba(0, 240, 255, 0.12),
+                        0 0 0 1px rgba(0,240,255,0.12) !important;
+            border-color: rgba(0, 240, 255, 0.22) !important;
+        }
+
+        /* ── Analytics cards levitate ─────────────────────────────── */
+        .analytics-card, .pipeline-card {
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1),
+                        box-shadow 0.3s ease;
+        }
+
+        .analytics-card:hover, .pipeline-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 50px rgba(0, 240, 255, 0.07);
+        }
+
+        /* ── Map HUD Bar neon border ──────────────────────────────── */
+        .map-hud-bar {
+            border: 1px solid rgba(0, 240, 255, 0.22) !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.65),
+                        0 0 40px rgba(0, 240, 255, 0.05) !important;
+        }
+
+        /* ── Dropdown dark glass ──────────────────────────────────── */
+        .dropdown-menu.dropdown-menu-dark {
+            background: rgba(9, 13, 20, 0.98) !important;
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(0, 240, 255, 0.15) !important;
+            box-shadow: 0 14px 44px rgba(0,0,0,0.85) !important;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 240, 255, 0.07) !important;
+        }
+
+        /* ── Ghost button neon hover ──────────────────────────────── */
+        .btn-ghost:hover {
+            box-shadow: 0 0 22px rgba(0, 240, 255, 0.18);
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+        }
+
+        /* ── Facility table neon hover ────────────────────────────── */
+        .facility-table tr {
+            transition: all 0.2s ease;
+        }
+
+        .facility-table tr:hover td {
+            background: rgba(0, 240, 255, 0.04) !important;
+            border-color: rgba(0, 240, 255, 0.1) !important;
+        }
+
+        /* ── Subtle grid bg ───────────────────────────────────────── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 240, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.025) 1px, transparent 1px);
+            background-size: 64px 64px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Scrollbar neon ───────────────────────────────────────── */
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #0c2030, rgba(0,240,255,0.2)) !important;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #0f3050, rgba(0,240,255,0.4)) !important;
+        }
+
+        /* ── Map tool text glow ───────────────────────────────────── */
+        .map-tool:hover {
+            box-shadow: 0 0 14px rgba(0, 240, 255, 0.15);
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+        }
+
+        /* ── Intro fade-in animation ──────────────────────────────── */
+        @keyframes introFadeIn {
+            from { opacity: 0; transform: scale(0.985); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        body { animation: introFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        /* ── Corner notch decorations on header ───────────────────── */
+        .top-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(0, 240, 255, 0.4) 30%,
+                rgba(255, 42, 95, 0.4) 60%,
+                transparent 100%);
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  CURSOR + PARTICLES + SCANLINES                            -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+    <div id="scanline-overlay"></div>
+    <canvas id="particle-canvas"></canvas>
 
     <!-- TOP COMMAND BAR -->
     <header class="top-header">
@@ -2427,6 +2795,177 @@
                 });
             }
         }
+    </script>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!--  CUSTOM CURSOR + PARTICLE SYSTEM JS                        -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <script>
+    (function () {
+        'use strict';
+
+        /* ─── Custom cursor ─────────────────────────────────────── */
+        const dot  = document.getElementById('cursor-dot');
+        const ring = document.getElementById('cursor-ring');
+
+        let mouseX = -200, mouseY = -200;
+        let ringX  = -200, ringY  = -200;
+        const ease = 0.14; // lag factor for ring (lower = more lag)
+
+        // Move dot instantly
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            dot.style.left = mouseX + 'px';
+            dot.style.top  = mouseY + 'px';
+        });
+
+        // Animate ring with smooth lag
+        function animateRing() {
+            ringX += (mouseX - ringX) * ease;
+            ringY += (mouseY - ringY) * ease;
+            ring.style.left = ringX + 'px';
+            ring.style.top  = ringY + 'px';
+            requestAnimationFrame(animateRing);
+        }
+        animateRing();
+
+        // Hovering state — expand ring on interactive elements
+        const hoverables = 'button, a, input, select, label, .type-item, .alert-card, .metric-card, .nav-view-btn, .map-tool, .stat-chip, .pill-btn, .facility-table tr, .analytics-card, [data-conf], [data-pass]';
+
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest(hoverables)) {
+                ring.classList.add('hovering');
+            }
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            if (e.target.closest(hoverables)) {
+                ring.classList.remove('hovering');
+            }
+        });
+
+        // Clicking state
+        document.addEventListener('mousedown', () => {
+            ring.classList.remove('hovering');
+            ring.classList.add('clicking');
+            dot.style.transform = 'translate(-50%, -50%) scale(0.6)';
+        });
+
+        document.addEventListener('mouseup', () => {
+            ring.classList.remove('clicking');
+            dot.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+
+        // Hide when mouse leaves window
+        document.addEventListener('mouseleave', () => {
+            dot.style.opacity  = '0';
+            ring.style.opacity = '0';
+        });
+        document.addEventListener('mouseenter', () => {
+            dot.style.opacity  = '1';
+            ring.style.opacity = '1';
+        });
+
+        /* ─── Particle system ───────────────────────────────────── */
+        const canvas = document.getElementById('particle-canvas');
+        const ctx    = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width  = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const PARTICLE_COUNT = 80;
+        const particles = [];
+
+        const COLORS = [
+            'rgba(0, 240, 255, ',   // cyan
+            'rgba(255, 42, 95, ',   // red
+            'rgba(179, 136, 255, ', // purple
+            'rgba(255, 140, 0, ',   // orange
+        ];
+
+        function randomColor() {
+            return COLORS[Math.floor(Math.random() * COLORS.length)];
+        }
+
+        class Particle {
+            constructor() { this.reset(true); }
+
+            reset(initial) {
+                this.x     = Math.random() * canvas.width;
+                this.y     = initial ? Math.random() * canvas.height : canvas.height + 10;
+                this.size  = Math.random() * 1.8 + 0.4;
+                this.speedY = -(Math.random() * 0.4 + 0.15);
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.alpha  = 0;
+                this.maxAlpha = Math.random() * 0.5 + 0.15;
+                this.color = randomColor();
+                this.life   = 0;
+                this.maxLife = Math.random() * 400 + 200;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life++;
+
+                // fade in/out
+                const half = this.maxLife / 2;
+                if (this.life < half) {
+                    this.alpha = (this.life / half) * this.maxAlpha;
+                } else {
+                    this.alpha = ((this.maxLife - this.life) / half) * this.maxAlpha;
+                }
+
+                if (this.life >= this.maxLife) this.reset(false);
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color + this.alpha + ')';
+                ctx.fill();
+            }
+        }
+
+        // Also draw connecting lines between nearby particles
+        function drawConnections() {
+            const maxDist = 120;
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < maxDist) {
+                        const alpha = (1 - dist / maxDist) * 0.06;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(0, 240, 255, ${alpha})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawConnections();
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+    })();
     </script>
 </body>
 </html>
