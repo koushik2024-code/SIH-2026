@@ -83,7 +83,7 @@ class InteractiveGISMap:
         self,
         center: Tuple[float, float] = (22.5, 78.5),
         zoom_start: int = 5,
-        enable_temporal_slider: bool = True,
+        enable_temporal_slider: bool = False,
         enable_controls: bool = True,
     ):
         self.center = center
@@ -123,31 +123,45 @@ class InteractiveGISMap:
             max_zoom=19,
         ).add_to(m)
 
-        # 3. CartoDB Dark Matter (High-contrast night & thermal contrast)
+        # 3. Dark Basemap (High-contrast night & thermal contrast - No API key watermark)
+        carto_key = getattr(settings, "CARTO_API_KEY", "") or os.getenv("CARTO_API_KEY", "")
+        if carto_key:
+            dark_tiles = f"https://{{s}}.basemaps.cartocdn.com/dark_all/{{z}}/{{x}}/{{y}}{{r}}.png?api_key={carto_key}"
+            dark_attr = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            dark_name = "🌙 CartoDB Dark Matter"
+            dark_sub = "abcd"
+            dark_zoom = 20
+        else:
+            dark_tiles = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+            dark_attr = "&copy; <a href='https://www.esri.com/'>Esri</a> &mdash; Esri, DeLorme, NAVTEQ"
+            dark_name = "🌙 ESRI Dark Canvas (No Key Required)"
+            dark_sub = "abc"
+            dark_zoom = 18
+
         folium.TileLayer(
-            tiles="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-            attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            name="🌙 CartoDB Dark Matter",
+            tiles=dark_tiles,
+            attr=dark_attr,
+            name=dark_name,
             control=True,
             show=False,
-            subdomains="abcd",
-            max_zoom=20,
+            subdomains=dark_sub,
+            max_zoom=dark_zoom,
         ).add_to(m)
 
         # 4. Topographic / Terrain View (OpenTopoMap with ESRI Topo fallback)
         folium.TileLayer(
             tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
             attr="Esri, HERE, Garmin, Intermap, increment P Corp., GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), (c) OpenStreetMap contributors, and the GIS User Community",
-            name="🏔️ Topographic / Terrain View",
+            name="🏔️ Topographic / Terrain",
             control=True,
             show=False,
             max_zoom=18,
         ).add_to(m)
 
     # ------------------------------------------------------------------
-    # 2. Interactive GIS Controls (Part 4.1 Requirement)
+    # 2. Advanced Interactive GIS Controls
     # ------------------------------------------------------------------
-    def _add_gis_controls(self, m: folium.Map) -> None:
+    def _add_gis_controls(self, m: folium.Map, enable_layer_control: bool = False) -> None:
         """
         Add advanced GIS navigation, inspection, and measurement controls.
         """
@@ -172,28 +186,408 @@ class InteractiveGISMap:
 
         # Real-time Mouse Coordinate HUD (Latitude & Longitude)
         MousePosition(
-            position="bottomleft",
+            position="bottomright",
             separator="  |  ",
-            empty_string="Unavailable",
+            empty_string="Move cursor on map",
             lng_first=False,
             num_digits=4,
-            prefix="📍 Lat/Lon: ",
+            prefix="Lat/Lon: ",
         ).add_to(m)
 
-        # Overview MiniMap
+        # Overview MiniMap (start minimized so it doesn't block map canvas)
         MiniMap(
             tile_layer=folium.TileLayer("openstreetmap"),
             position="bottomright",
-            width=160,
-            height=120,
+            width=150,
+            height=110,
             collapsed_width=25,
             collapsed_height=25,
             zoom_level_offset=-5,
             toggle_display=True,
+            minimized=True,
         ).add_to(m)
 
-        # Collapsible Layer Switcher (always added last)
-        folium.LayerControl(collapsed=False, position="topright").add_to(m)
+        # Inject styling for pinned coordinates and global map helpers
+        nav_helpers = """
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <style>
+        /* Suppress default bottom-left scale bar (200 mi) to avoid collision with status bar */
+        .leaflet-control-scale,
+        .leaflet-control-scale-line {
+            display: none !important;
+        }
+
+        /* Pinned, high-visibility coordinates badge in bottom-right corner */
+        .leaflet-control-mouseposition {
+            position: fixed !important;
+            bottom: 14px !important;
+            right: 58px !important;
+            background: rgba(14, 21, 36, 0.94) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border: 1px solid #223048 !important;
+            border-radius: 8px !important;
+            color: #38bdf8 !important;
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            padding: 5px 12px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+            z-index: 999 !important;
+            pointer-events: auto !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+        .leaflet-control-mouseposition:before {
+            content: "📍";
+            font-size: 12px;
+        }
+        /* Dark glassmorphic styling for Leaflet left toolbar controls */
+        .leaflet-left .leaflet-control {
+            border: 1px solid #30363d !important;
+            background: rgba(22, 27, 34, 0.95) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+            overflow: hidden !important;
+            margin-left: 14px !important;
+        }
+        .leaflet-left .leaflet-control-zoom a {
+            background-color: rgba(22, 27, 34, 0.95) !important;
+            color: #38bdf8 !important;
+            border-bottom: 1px solid #30363d !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 16px !important;
+            font-weight: 700 !important;
+            width: 32px !important;
+            height: 32px !important;
+            text-decoration: none !important;
+        }
+        .leaflet-left .leaflet-control-zoom a:hover {
+            background-color: #21262d !important;
+            color: #ffffff !important;
+        }
+
+        /* 1. Fullscreen Button: Crisp SVG vector icon (Bright Cyan Blue / White) */
+        .leaflet-control-fullscreen a,
+        .leaflet-control-fullscreen a.leaflet-control-fullscreen-button,
+        .leaflet-control-fullscreen .fullscreen-icon,
+        .fullscreen-icon,
+        .leaflet-touch .fullscreen-icon,
+        .leaflet-touch .leaflet-control-fullscreen a {
+            background-color: rgba(22, 27, 34, 0.95) !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2338bdf8' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3'/%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            background-size: 16px 16px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            width: 32px !important;
+            height: 32px !important;
+            border-bottom: 1px solid #30363d !important;
+            cursor: pointer !important;
+        }
+        .leaflet-control-fullscreen a:hover,
+        .leaflet-control-fullscreen .fullscreen-icon:hover,
+        .fullscreen-icon:hover {
+            background-color: #21262d !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3'/%3E%3C/svg%3E") !important;
+        }
+        .leaflet-fullscreen-on .leaflet-control-fullscreen a,
+        .leaflet-fullscreen-on .fullscreen-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 14h6m0 0v6m0-6L3 21m17-7h-6m0 0v6m0-6l7 7M10 4v6m0 0H4m6 0L3 3m10 7h6m-6 0V4m0 6l7-7'/%3E%3C/svg%3E") !important;
+        }
+
+        /* 2. Measure Tool: Toolbar toggle button */
+        .leaflet-control-measure > a.leaflet-control-measure-toggle,
+        .leaflet-control-measure-toggle {
+            background-color: rgba(22, 27, 34, 0.95) !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2338bdf8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.3 8.7 8.7 21.3c-.4.4-1 .4-1.4 0l-4.6-4.6c-.4-.4-.4-1 0-1.4L15.3 2.7c.4-.4 1-.4 1.4 0l4.6 4.6c.4.4.4 1 0 1.4z'/%3E%3Cpath d='m14.5 3.5 1.5 1.5'/%3E%3Cpath d='m11.5 6.5 2 2'/%3E%3Cpath d='m8.5 9.5 1.5 1.5'/%3E%3Cpath d='m5.5 12.5 2 2'/%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            background-size: 16px 16px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-decoration: none !important;
+            width: 32px !important;
+            height: 32px !important;
+            border-bottom: 1px solid #30363d !important;
+            cursor: pointer !important;
+        }
+        .leaflet-control-measure > a.leaflet-control-measure-toggle:hover,
+        .leaflet-control-measure-toggle:hover {
+            background-color: #21262d !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.3 8.7 8.7 21.3c-.4.4-1 .4-1.4 0l-4.6-4.6c-.4-.4-.4-1 0-1.4L15.3 2.7c.4-.4 1-.4 1.4 0l4.6 4.6c.4.4.4 1 0 1.4z'/%3E%3Cpath d='m14.5 3.5 1.5 1.5'/%3E%3Cpath d='m11.5 6.5 2 2'/%3E%3Cpath d='m8.5 9.5 1.5 1.5'/%3E%3Cpath d='m5.5 12.5 2 2'/%3E%3C/svg%3E") !important;
+        }
+
+        /* Measure Tool: Interaction Popup Dialog (Clean typography, properly sized) */
+        .leaflet-control-measure .leaflet-control-measure-interaction {
+            background: rgba(22, 27, 34, 0.98) !important;
+            color: #f0f6fc !important;
+            border: 1px solid #30363d !important;
+            border-radius: 8px !important;
+            padding: 12px 14px !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+            min-width: 220px !important;
+            max-width: 250px !important;
+        }
+        .leaflet-control-measure-interaction h3 {
+            color: #f0f6fc !important;
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            margin: 0 0 8px 0 !important;
+            padding-bottom: 6px !important;
+            border-bottom: 1px solid #30363d !important;
+        }
+        .leaflet-control-measure-interaction p {
+            color: #8b949e !important;
+            font-size: 11px !important;
+            margin: 4px 0 !important;
+        }
+        .leaflet-control-measure-interaction ul.tasks {
+            list-style: none !important;
+            margin: 6px 0 !important;
+            padding: 0 !important;
+        }
+        .leaflet-control-measure-interaction .tasks-item {
+            margin: 4px 0 !important;
+        }
+        .leaflet-control-measure-interaction a.js-start,
+        .leaflet-control-measure-interaction a.js-cancel,
+        .leaflet-control-measure-interaction a.js-finish {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            background: rgba(56, 189, 248, 0.12) !important;
+            border: 1px solid rgba(56, 189, 248, 0.4) !important;
+            border-radius: 6px !important;
+            color: #38bdf8 !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            padding: 6px 12px !important;
+            width: auto !important;
+            height: auto !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease !important;
+            line-height: 1.3 !important;
+        }
+        .leaflet-control-measure-interaction a.js-start:hover,
+        .leaflet-control-measure-interaction a.js-finish:hover {
+            background: #0284c7 !important;
+            color: #ffffff !important;
+            border-color: #38bdf8 !important;
+        }
+        .leaflet-control-measure-interaction a.js-cancel {
+            background: rgba(239, 68, 68, 0.12) !important;
+            border-color: rgba(239, 68, 68, 0.35) !important;
+            color: #f87171 !important;
+        }
+        .leaflet-control-measure-interaction a.js-cancel:hover {
+            background: #dc2626 !important;
+            color: #ffffff !important;
+        }
+
+        /* 3. Geocoder Search Control: Icon button by default; expands only on click */
+        .leaflet-control-geocoder {
+            background: rgba(22, 27, 34, 0.95) !important;
+            border: 1px solid #30363d !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+            overflow: hidden !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            margin-top: 6px !important;
+            width: 32px !important;
+            height: 32px !important;
+            display: block !important;
+        }
+        .leaflet-control-geocoder button,
+        .leaflet-control-geocoder-icon {
+            background-color: rgba(22, 27, 34, 0.95) !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2338bdf8' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            background-size: 16px 16px !important;
+            border: none !important;
+            width: 32px !important;
+            height: 32px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            outline: none !important;
+            filter: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .leaflet-control-geocoder button:hover,
+        .leaflet-control-geocoder-icon:hover {
+            background-color: #21262d !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") !important;
+        }
+        /* Hide form when collapsed - bar only shows when clicked */
+        .leaflet-control-geocoder .leaflet-control-geocoder-form {
+            display: none !important;
+        }
+        .leaflet-control-geocoder.leaflet-control-geocoder-expanded {
+            width: auto !important;
+            height: 32px !important;
+            border-color: #38bdf8 !important;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.25) !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+        .leaflet-control-geocoder.leaflet-control-geocoder-expanded .leaflet-control-geocoder-form {
+            display: flex !important;
+            align-items: center !important;
+            padding: 0 6px 0 0 !important;
+        }
+        .leaflet-control-geocoder.leaflet-control-geocoder-expanded input {
+            color: #f0f6fc !important;
+            background: transparent !important;
+            border: none !important;
+            font-size: 12px !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            padding: 4px 8px !important;
+            outline: none !important;
+            width: 240px !important;
+            caret-color: #38bdf8 !important;
+        }
+        .leaflet-control-geocoder.leaflet-control-geocoder-expanded input::placeholder {
+            color: #8b949e !important;
+            font-size: 11px !important;
+        }
+        .leaflet-control-geocoder-alternatives {
+            background: rgba(14, 21, 36, 0.98) !important;
+            backdrop-filter: blur(16px) !important;
+            border: 1px solid #30363d !important;
+            border-radius: 8px !important;
+            margin-top: 6px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65) !important;
+            max-width: 300px !important;
+            list-style: none !important;
+            padding: 4px 0 !important;
+            overflow: hidden !important;
+        }
+        .leaflet-control-geocoder-alternatives li {
+            padding: 8px 12px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            color: #c9d1d9 !important;
+            font-size: 11px !important;
+            cursor: pointer !important;
+            line-height: 1.4 !important;
+        }
+        .leaflet-control-geocoder-alternatives li:last-child {
+            border-bottom: none !important;
+        }
+        .leaflet-control-geocoder-alternatives li:hover,
+        .leaflet-control-geocoder-selected {
+            background-color: rgba(56, 189, 248, 0.15) !important;
+            color: #38bdf8 !important;
+        }
+        .leaflet-control-geocoder-address-context {
+            color: #8b949e !important;
+            font-size: 10px !important;
+            display: block !important;
+            margin-top: 2px !important;
+        }
+
+        /* MiniMap in the bottom-right corner */
+        .leaflet-bottom.leaflet-right .leaflet-control-minimap {
+            margin-bottom: 48px !important;
+            margin-right: 16px !important;
+            border: 1px solid #223048 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+            background: rgba(14, 21, 36, 0.95) !important;
+        }
+        /* MiniMap Toggle Button: Solid Deep Black Background with Crisp White Map Logo */
+        .leaflet-control-minimap-toggle-display,
+        .leaflet-control-minimap-toggle {
+            background-color: #0d1117 !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21'/%3E%3Cline x1='9' y1='3' x2='9' y2='18'/%3E%3Cline x1='15' y1='6' x2='15' y2='21'/%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            background-size: 16px 16px !important;
+            border: 1.5px solid #30363d !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6) !important;
+            filter: none !important;
+            width: 32px !important;
+            height: 32px !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            position: fixed !important;
+            bottom: 14px !important;
+            right: 16px !important;
+            z-index: 1000 !important;
+        }
+        .leaflet-control-minimap-toggle-display:hover,
+        .leaflet-control-minimap-toggle:hover {
+            background-color: #161b22 !important;
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.45) !important;
+        }
+        .leaflet-control-minimap:not(.minimized-bottomright) .leaflet-control-minimap-toggle-display {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'/%3E%3Cline x1='6' y1='6' x2='18' y2='18'/%3E%3C/svg%3E") !important;
+        }
+        </style>
+        <script>
+        window.resetMapView = function() {
+            for (var key in window) {
+                if (window[key] && window[key]._layers && typeof window[key].setView === 'function') {
+                    window[key].setView([22.5, 78.5], 5);
+                    break;
+                }
+            }
+        };
+        window.toggleMiniMap = function() {
+            var toggleBtn = document.querySelector('.leaflet-control-minimap-toggle-display') || document.querySelector('.leaflet-control-minimap-toggle');
+            if (toggleBtn) toggleBtn.click();
+        };
+
+        // Ensure proper tooltips & placeholders for toolbar controls
+        function setupToolbarTooltips() {
+            var geocoderInput = document.querySelector('.leaflet-control-geocoder-form input');
+            if (geocoderInput) {
+                geocoderInput.setAttribute('placeholder', 'Search city, district, coordinates or address...');
+                geocoderInput.setAttribute('title', 'OSM Location Geocoder Search');
+            }
+            var geocoderBtn = document.querySelector('.leaflet-control-geocoder button') || document.querySelector('.leaflet-control-geocoder-icon');
+            if (geocoderBtn) {
+                geocoderBtn.setAttribute('title', 'Search location / address across India');
+            }
+            var fsBtn = document.querySelector('.leaflet-control-fullscreen a');
+            if (fsBtn) {
+                fsBtn.setAttribute('title', 'Toggle Fullscreen Mode');
+            }
+            var measureBtn = document.querySelector('.leaflet-control-measure-toggle') || document.querySelector('.leaflet-control-measure a');
+            if (measureBtn) {
+                measureBtn.setAttribute('title', 'Measure Distance & Area Tool');
+            }
+            var zoomIn = document.querySelector('.leaflet-control-zoom-in');
+            if (zoomIn) zoomIn.setAttribute('title', 'Zoom In');
+            var zoomOut = document.querySelector('.leaflet-control-zoom-out');
+            if (zoomOut) zoomOut.setAttribute('title', 'Zoom Out');
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupToolbarTooltips);
+        } else {
+            setTimeout(setupToolbarTooltips, 400);
+        }
+        </script>
+        """
+        m.get_root().html.add_child(branca.element.Element(nav_helpers))
+
+        # Layer switcher only added if explicitly requested (never when unified GIS dock is present)
+        if enable_layer_control:
+            folium.LayerControl(collapsed=True, position="topright").add_to(m)
 
     # ------------------------------------------------------------------
     # 3. Data Overlays (Fires, Facilities, Buffers, Heatmap)
@@ -381,52 +775,30 @@ class InteractiveGISMap:
         {{% macro html(this, kwargs) %}}
         <div id="gis-floating-legend" style="
             position: fixed;
-            bottom: 30px;
-            right: 20px;
-            z-index: 9999;
-            background: rgba(22, 27, 34, 0.88);
+            bottom: 54px;
+            left: 16px;
+            z-index: 998;
+            background: rgba(14, 21, 36, 0.94);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(48, 54, 61, 0.85);
             border-radius: 10px;
-            padding: 14px 18px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            padding: 10px 14px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.55);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             color: #e6edf3;
-            max-width: 320px;
-            font-size: 12px;
-            transition: all 0.3s ease;
+            max-width: 230px;
+            font-size: 11px;
+            overflow: hidden;
+            pointer-events: auto;
         ">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 8px; margin-bottom: 10px;">
-                <div style="font-weight: 700; font-size: 13px; display: flex; align-items: center; gap: 6px;">
+            <div style="display: flex; align-items: center; border-bottom: 1px solid #30363d; padding-bottom: 6px; margin-bottom: 8px;">
+                <div style="font-weight: 700; font-size: 11px; display: flex; align-items: center; gap: 6px;">
                     <span style="color: #e74c3c;">🔥</span> SIH GIS Legend (Part 4.1)
                 </div>
-                <button onclick="
-                    var body = document.getElementById('legend-content');
-                    if (body.style.display === 'none') {{
-                        body.style.display = 'block';
-                        this.innerText = '−';
-                    }} else {{
-                        body.style.display = 'none';
-                        this.innerText = '+';
-                    }}
-                " style="
-                    background: transparent;
-                    border: 1px solid #30363d;
-                    color: #8b949e;
-                    border-radius: 4px;
-                    width: 22px;
-                    height: 22px;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 14px;
-                    line-height: 1;
-                ">−</button>
             </div>
 
-            <div id="legend-content">
+            <div id="legend-content" style="display: block;">
                 <!-- Status Pills -->
                 <div style="display: flex; gap: 8px; margin-bottom: 10px; font-size: 11px;">
                     <span style="background: rgba(231, 76, 60, 0.2); color: #ff7b72; padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(231, 76, 60, 0.4);">
@@ -517,7 +889,7 @@ class InteractiveGISMap:
             zoom_start=self.zoom_start,
             tiles=None,
             prefer_canvas=True,
-            control_scale=True,
+            control_scale=False,
         )
 
         # 1. Base map tile layers (4 layers)
@@ -537,6 +909,7 @@ class InteractiveGISMap:
         # 2d. Clustered Fire Detections with category subgroups
         parent_cluster = MarkerCluster(
             name="🔥 All Fire Detections (Clustered)",
+            control=False,
             show=True,
             options={
                 "spiderfyOnMaxZoom": True,
@@ -558,8 +931,9 @@ class InteractiveGISMap:
         if reg_script:
             m.get_root().html.add_child(branca.element.Element(reg_script))
 
-        # 3. Interactive GIS Controls (LayerControl, Fullscreen, Measure, Coordinates, MiniMap)
-        self._add_gis_controls(m)
+        # 3. Interactive GIS Controls (Fullscreen, Measure, Coordinates, MiniMap)
+        # Prevent duplicate top-right LayerControl when single GIS dock is enabled
+        self._add_gis_controls(m, enable_layer_control=not enable_controls)
 
         # 4. Part 4.3 Dashboard Controls & HUD
         fire_count = len(display_df) if not display_df.empty else 0

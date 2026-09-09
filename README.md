@@ -300,7 +300,7 @@ All features from Part 1 + Part 2:
 **Base Map Layers**:
 - 🗺️ **OpenStreetMap** (default): Standard street cartography and urban infrastructure.
 - 🛰️ **ESRI World Imagery**: High-resolution optical satellite imagery for visual confirmation of facility layout, smoke plumes, and flare locations.
-- 🌙 **CartoDB Dark Matter**: High-contrast dark basemap engineered specifically to accentuate glowing thermal hotspot heatmaps and fire markers.
+- 🌙 **Dark Canvas / Dark Matter**: High-contrast dark basemap (ESRI Dark Canvas default with zero watermarks; supports CARTO Dark Matter via optional `CARTO_API_KEY`) engineered specifically to accentuate glowing thermal hotspot heatmaps and fire markers.
 - 🏔️ **Topographic / Terrain View**: Detailed elevation contours and relief shading to analyze terrain-driven fire behavior and dispersion.
 
 **Interactive GIS Controls**:

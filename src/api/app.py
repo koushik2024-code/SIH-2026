@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     """Application factory for the FastAPI service."""
     application = FastAPI(
-        title="AI Industrial Fire & Thermal Anomaly Detection API",
+        title="PyroVision - AI Industrial Fire & Thermal Anomaly Detection API",
         description=(
             "Production REST API for satellite thermal monitoring, industrial asset proximity analysis, "
             "hotspot intensity scoring, and machine learning fire classification (SIH 2026 / NTRO)."
@@ -53,7 +53,7 @@ def create_app() -> FastAPI:
     @application.get("/", tags=["General"])
     def root():
         return {
-            "title": "Industrial Fire & Thermal Source Detection API",
+            "title": "PyroVision - Industrial Fire & Thermal Source Detection API",
             "version": "1.0.0",
             "docs": "/docs",
             "redoc": "/redoc",

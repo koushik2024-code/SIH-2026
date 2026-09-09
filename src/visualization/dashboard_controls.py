@@ -19,10 +19,13 @@ import json
 import logging
 from typing import Any, Dict, List, Optional, Tuple
 
+import os
 import folium
 from folium.plugins import Geocoder
 import branca.element
 import pandas as pd
+
+from config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -153,21 +156,41 @@ class DashboardControlManager:
 
         total_fires = len(fire_df)
 
+        carto_key = getattr(settings, "CARTO_API_KEY", "") or os.getenv("CARTO_API_KEY", "")
+
         panel_html = f"""
         <div id="gisFilterDock" class="gis-filter-dock">
-            <!-- Header with Minimize Toggle -->
+            <!-- Header with Minimize & Close Controls -->
             <div class="filter-dock-header" id="dockHeader">
                 <div class="dock-title">
                     <i class="fas fa-sliders-h"></i>
                     <span>GIS Dashboard Controls</span>
                 </div>
-                <button type="button" id="btnToggleDock" class="dock-toggle-btn" title="Minimize/Maximize Controls">
-                    <i class="fas fa-chevron-up" id="dockToggleIcon"></i>
-                </button>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <button type="button" id="btnToggleDock" class="dock-toggle-btn" title="Minimize/Maximize Content">
+                        <i class="fas fa-chevron-up" id="dockToggleIcon"></i>
+                    </button>
+                    <button type="button" id="btnCloseDock" class="dock-toggle-btn" title="Close Controls Panel" style="font-size: 13px;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Collapsible Dock Content -->
             <div class="filter-dock-body" id="dockBody">
+                <!-- 0. Basemap Layer Switcher -->
+                <div class="dock-section">
+                    <label class="dock-label">
+                        <i class="fas fa-layer-group text-info"></i> Base Map Style:
+                    </label>
+                    <div class="basemap-pill-group" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 4px;">
+                        <button type="button" class="preset-pill active" data-tile="osm" style="padding: 4px 2px; font-size: 10px; text-align: center; background: #0284c7; border-color: #38bdf8; color: #ffffff;">Streets</button>
+                        <button type="button" class="preset-pill" data-tile="sat" style="padding: 4px 2px; font-size: 10px; text-align: center;">Satellite</button>
+                        <button type="button" class="preset-pill" data-tile="dark" style="padding: 4px 2px; font-size: 10px; text-align: center;">Dark</button>
+                        <button type="button" class="preset-pill" data-tile="topo" style="padding: 4px 2px; font-size: 10px; text-align: center;">Terrain</button>
+                    </div>
+                </div>
+
                 <!-- 1. Search Location & Facilities -->
                 <div class="dock-section">
                     <label class="dock-label">
@@ -234,6 +257,7 @@ class DashboardControlManager:
                     <div class="cb-container">
                         {checkboxes_html}
                     </div>
+                    <div class="dock-share-bar" id="dockShareBar" style="display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 8px; background: #21262d;" title="Classification Proportions"></div>
                 </div>
 
                 <!-- 5. Quick Layer Action Buttons -->
@@ -254,18 +278,18 @@ class DashboardControlManager:
         </div>
 
         <style>
-            /* Glassmorphic GIS Filter Dock */
+            /* Glassmorphic GIS Filter Dock - Positioned neatly on the right to eliminate left congestion */
             .gis-filter-dock {{
                 position: fixed;
-                top: 80px;
-                left: 12px;
+                top: 72px;
+                right: 20px;
                 width: 320px;
-                background: rgba(22, 27, 34, 0.94);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
+                background: rgba(22, 27, 34, 0.95);
+                backdrop-filter: blur(14px);
+                -webkit-backdrop-filter: blur(14px);
                 border: 1px solid rgba(48, 54, 61, 0.85);
                 border-radius: 12px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65);
                 z-index: 1000;
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
                 color: #e6edf3;
@@ -568,6 +592,12 @@ class DashboardControlManager:
                 color: #8b949e;
             }}
 
+            /* Suppress duplicate top-right layer control completely */
+            .leaflet-control-layers,
+            .leaflet-control-layers-expanded {{
+                display: none !important;
+            }}
+
             /* Responsive */
             @media (max-width: 600px) {{
                 .gis-filter-dock {{
@@ -582,15 +612,149 @@ class DashboardControlManager:
             (function() {{
                 var facilitiesData = {facilities_json};
 
-                // Wait for Leaflet map to be initialized
-                function initGISControls() {{
-                    var map = null;
-                    for (var key in window) {{
-                        if (window[key] && window[key]._layers && typeof window[key].flyTo === 'function') {{
-                            map = window[key];
-                            break;
+                // Global Map accessor - Guaranteed to find main Folium map instance
+                function getLeafletMap() {{
+                    var foliumContainer = document.querySelector('.folium-map') || document.querySelector('.leaflet-container');
+                    if (foliumContainer && foliumContainer.id && window[foliumContainer.id]) {{
+                        return window[foliumContainer.id];
+                    }}
+                    if (foliumContainer && foliumContainer._leaflet_map) {{
+                        return foliumContainer._leaflet_map;
+                    }}
+                    for (var k in window) {{
+                        if (k.indexOf('map_') === 0 && window[k] && typeof window[k].setView === 'function') {{
+                            return window[k];
                         }}
                     }}
+                    for (var key in window) {{
+                        if (window[key] && window[key]._layers && typeof window[key].flyTo === 'function') {{
+                            if (!window[key]._isMiniMap) return window[key];
+                        }}
+                    }}
+                    return null;
+                }}
+                window.getLeafletMap = getLeafletMap;
+
+                // Basemap Switcher Logic
+                function switchBasemap(key) {{
+                    var map = getLeafletMap();
+                    if (!map || typeof L === 'undefined') return;
+
+                    map.eachLayer(function(l) {{
+                        if (l instanceof L.TileLayer && !l._miniMap && (!l.options || !l.options.isMiniMap)) {{
+                            map.removeLayer(l);
+                        }}
+                    }});
+
+                    var cartoKey = '{carto_key}';
+                    var darkUrl = cartoKey 
+                        ? 'https://{{s}}.basemaps.cartocdn.com/dark_all/{{z}}/{{x}}/{{y}}{{r}}.png?api_key=' + encodeURIComponent(cartoKey)
+                        : 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{{z}}/{{y}}/{{x}}';
+                    var darkOpts = cartoKey
+                        ? {{ maxZoom: 20, subdomains: 'abcd', attribution: '&copy; CartoDB' }}
+                        : {{ maxZoom: 18, attribution: '&copy; Esri &mdash; Esri, DeLorme, NAVTEQ' }};
+
+                    var tileUrls = {{
+                        osm: {{ url: 'https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', opts: {{ maxZoom: 19, subdomains: 'abc', attribution: '&copy; OpenStreetMap' }} }},
+                        sat: {{ url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{{z}}/{{y}}/{{x}}', opts: {{ maxZoom: 19, attribution: 'Esri' }} }},
+                        dark: {{ url: darkUrl, opts: darkOpts }},
+                        topo: {{ url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{{z}}/{{y}}/{{x}}', opts: {{ maxZoom: 18, attribution: 'Esri' }} }}
+                    }};
+
+                    var cfg = tileUrls[key] || tileUrls.osm;
+                    var newLayer = L.tileLayer(cfg.url, cfg.opts);
+                    newLayer.addTo(map);
+                    newLayer.bringToBack();
+
+                    if (key === 'dark' && !cartoKey) {{
+                        var refLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{{z}}/{{y}}/{{x}}', {{
+                            maxZoom: 18,
+                            opacity: 0.85,
+                            interactive: false
+                        }});
+                        refLayer.addTo(map);
+                    }}
+
+                    document.querySelectorAll('.basemap-pill-group .preset-pill').forEach(function(btn) {{
+                        if (btn.getAttribute('data-tile') === key) {{
+                            btn.style.background = '#0284c7';
+                            btn.style.borderColor = '#38bdf8';
+                            btn.style.color = '#ffffff';
+                        }} else {{
+                            btn.style.background = '#21262d';
+                            btn.style.borderColor = '#30363d';
+                            btn.style.color = '#c9d1d9';
+                        }}
+                    }});
+
+                    if (window.parent && window.parent !== window) {{
+                        try {{ window.parent.postMessage({{ action: 'basemapSwitched', tile: key }}, '*'); }} catch(e) {{}}
+                    }}
+                }}
+                window.switchBasemap = switchBasemap;
+
+                // Dock Visibility Toggle
+                function toggleDock(force) {{
+                    var d = document.getElementById('gisFilterDock');
+                    var b = document.getElementById('dockBody');
+                    var ic = document.getElementById('dockToggleIcon');
+                    if (!d) return;
+
+                    var isHidden = (d.style.display === 'none' || getComputedStyle(d).display === 'none');
+                    var willOpen = (force === 'show' || (force !== 'hide' && isHidden));
+                    if (willOpen) {{
+                        d.style.display = 'block';
+                        if (b) b.style.display = 'flex';
+                        if (ic) ic.className = 'fas fa-chevron-up';
+                    }} else {{
+                        d.style.display = 'none';
+                    }}
+                    if (window.parent && window.parent !== window) {{
+                        try {{ window.parent.postMessage({{ action: 'dockStateChanged', open: willOpen }}, '*'); }} catch(err) {{}}
+                    }}
+                }}
+                window.toggleDock = toggleDock;
+
+                function resetMapView() {{
+                    var map = getLeafletMap();
+                    if (map && typeof map.setView === 'function') {{
+                        map.setView([22.5, 78.5], 5);
+                    }}
+                }}
+                window.resetMapView = resetMapView;
+
+                function toggleMiniMap() {{
+                    var toggleBtn = document.querySelector('.leaflet-control-minimap-toggle-display') || document.querySelector('.leaflet-control-minimap-toggle');
+                    if (toggleBtn) toggleBtn.click();
+                }}
+                window.toggleMiniMap = toggleMiniMap;
+
+                // Cross-window message listener active immediately
+                window.addEventListener('message', function(e) {{
+                    if (!e.data) return;
+                    var msg = typeof e.data === 'string' ? e.data : (e.data.action || e.data.type || '');
+                    var tile = e.data.tile || '';
+                    if (msg === 'toggleDock') {{
+                        toggleDock();
+                    }} else if (msg === 'switchBasemap' && tile) {{
+                        switchBasemap(tile);
+                    }} else if (msg === 'resetMapView') {{
+                        resetMapView();
+                    }} else if (msg === 'toggleMiniMap') {{
+                        toggleMiniMap();
+                    }}
+                }});
+
+                // Wait for Leaflet map to be initialized
+                function initGISControls() {{
+                    var map = getLeafletMap();
+
+                    document.querySelectorAll('.basemap-pill-group .preset-pill').forEach(function(btn) {{
+                        btn.addEventListener('click', function() {{
+                            var key = this.getAttribute('data-tile');
+                            switchBasemap(key);
+                        }});
+                    }});
 
                     // Populate Datalist
                     var datalist = document.getElementById('facSearchDatalist');
@@ -643,32 +807,64 @@ class DashboardControlManager:
                     var goBtn = document.getElementById('btnGoFac');
                     if (goBtn) goBtn.addEventListener('click', jumpToFacility);
 
-                    // Dock Minimize / Maximize Toggle
+                    // Dock header collapse button
                     var dockHeader = document.getElementById('dockHeader');
-                    var dockBody = document.getElementById('dockBody');
-                    var dockIcon = document.getElementById('dockToggleIcon');
-                    var isDockCollapsed = false;
+                    var btnToggleDock = document.getElementById('btnToggleDock');
 
-                    function toggleDock() {{
-                        isDockCollapsed = !isDockCollapsed;
-                        if (isDockCollapsed) {{
-                            dockBody.style.display = 'none';
-                            dockIcon.className = 'fas fa-chevron-down';
-                        }} else {{
-                            dockBody.style.display = 'flex';
-                            dockIcon.className = 'fas fa-chevron-up';
-                        }}
+                    if (dockHeader) {{
+                        dockHeader.addEventListener('click', function(e) {{
+                            if (e.target.closest('#btnToggleDock')) return;
+                            var b = document.getElementById('dockBody');
+                            var ic = document.getElementById('dockToggleIcon');
+                            if (b) {{
+                                if (b.style.display === 'none') {{
+                                    b.style.display = 'flex';
+                                    if (ic) ic.className = 'fas fa-chevron-up';
+                                }} else {{
+                                    b.style.display = 'none';
+                                    if (ic) ic.className = 'fas fa-chevron-down';
+                                }}
+                            }}
+                        }});
+                    }}
+                    if (btnToggleDock) {{
+                        btnToggleDock.addEventListener('click', function(e) {{
+                            e.stopPropagation();
+                            var b = document.getElementById('dockBody');
+                            var ic = document.getElementById('dockToggleIcon');
+                            if (b) {{
+                                if (b.style.display === 'none') {{
+                                    b.style.display = 'flex';
+                                    if (ic) ic.className = 'fas fa-chevron-up';
+                                }} else {{
+                                    b.style.display = 'none';
+                                    if (ic) ic.className = 'fas fa-chevron-down';
+                                }}
+                            }}
+                        }});
                     }}
 
-                    if (dockHeader) dockHeader.addEventListener('click', toggleDock);
+                    var btnCloseDock = document.getElementById('btnCloseDock');
+                    if (btnCloseDock) {{
+                        btnCloseDock.addEventListener('click', function(e) {{
+                            e.stopPropagation();
+                            toggleDock('hide');
+                        }});
+                    }}
 
                     // Live Filter Engine
-                    function applyMapFilters() {{
-                        var startDate = document.getElementById('dockDateStart').value;
-                        var endDate = document.getElementById('dockDateEnd').value;
-                        var minConf = parseInt(document.getElementById('dockConfSlider').value, 10);
+                    function applyMapFilters(customFilters) {{
+                        var startDate = (customFilters && customFilters.startDate !== undefined)
+                            ? customFilters.startDate
+                            : (document.getElementById('dockDateStart') ? document.getElementById('dockDateStart').value : '');
+                        var endDate = (customFilters && customFilters.endDate !== undefined)
+                            ? customFilters.endDate
+                            : (document.getElementById('dockDateEnd') ? document.getElementById('dockDateEnd').value : '');
+                        var minConf = (customFilters && customFilters.minConf !== undefined)
+                            ? customFilters.minConf
+                            : (document.getElementById('dockConfSlider') ? parseInt(document.getElementById('dockConfSlider').value, 10) : 0);
 
-                        // Update confidence badge
+                        // Update confidence badge if present
                         var confBadge = document.getElementById('dockConfBadge');
                         if (confBadge) {{
                             if (minConf === 0) {{
@@ -687,12 +883,20 @@ class DashboardControlManager:
                         }}
 
                         var checkedTypes = new Set();
-                        document.querySelectorAll('.map-type-cb:checked').forEach(function(cb) {{
-                            checkedTypes.add(cb.value);
-                        }});
+                        if (customFilters && customFilters.types) {{
+                            customFilters.types.forEach(function(t) {{ checkedTypes.add(t); }});
+                        }} else {{
+                            document.querySelectorAll('.map-type-cb:checked').forEach(function(cb) {{
+                                checkedTypes.add(cb.value);
+                            }});
+                        }}
+
+                        var startVal = startDate ? String(startDate).trim().substring(0, 10) : '';
+                        var endVal = endDate ? String(endDate).trim().substring(0, 10) : '';
 
                         var visibleCount = 0;
                         var totalCount = 0;
+                        var catCounts = {{}};
 
                         if (window._fireMarkerRegistry && window._fireMarkerRegistry.length) {{
                             totalCount = window._fireMarkerRegistry.length;
@@ -700,15 +904,17 @@ class DashboardControlManager:
                                 var m = item.marker;
                                 var data = item.data;
 
-                                var typeMatch = checkedTypes.has(data.fire_type);
+                                var typeMatch = checkedTypes.size === 0 || checkedTypes.has(data.fire_type);
                                 var confMatch = (data.confidence_num >= minConf);
                                 var dateMatch = true;
-                                if (startDate && data.acq_date < startDate) dateMatch = false;
-                                if (endDate && data.acq_date > endDate) dateMatch = false;
+                                var rowDate = String(data.acq_date || '').trim().substring(0, 10);
+                                if (startVal && rowDate < startVal) dateMatch = false;
+                                if (endVal && rowDate > endVal) dateMatch = false;
 
                                 var shouldShow = typeMatch && confMatch && dateMatch;
                                 if (shouldShow) {{
                                     visibleCount++;
+                                    catCounts[data.fire_type] = (catCounts[data.fire_type] || 0) + 1;
                                     if (item.parent && !item.parent.hasLayer(m)) {{
                                         item.parent.addLayer(m);
                                     }}
@@ -722,20 +928,49 @@ class DashboardControlManager:
 
                         var visCountElem = document.getElementById('dockVisibleCount');
                         if (visCountElem) visCountElem.innerText = visibleCount;
+
+                        // Render Category Share Bar
+                        var shareBar = document.getElementById('dockShareBar');
+                        if (shareBar && visibleCount > 0) {{
+                            var colorMap = {json.dumps(self.FIRE_TYPE_COLORS)};
+                            var barHtml = '';
+                            for (var cName in catCounts) {{
+                                var pct = ((catCounts[cName] / visibleCount) * 100).toFixed(1);
+                                var cColor = colorMap[cName] || '#38bdf8';
+                                barHtml += '<div style="width:' + pct + '%; background-color:' + cColor + ';" title="' + cName + ': ' + catCounts[cName] + ' (' + pct + '%)"></div>';
+                            }}
+                            shareBar.innerHTML = barHtml;
+                        }}
+
+                        // Synchronize with parent HUD chips if embedded
+                        if (window.parent && window.parent !== window) {{
+                            try {{
+                                var hudThermal = window.parent.document.getElementById('hudThermalCount');
+                                if (hudThermal) hudThermal.innerText = visibleCount.toLocaleString();
+                                var hudInd = window.parent.document.getElementById('hudIndustrialCount');
+                                if (hudInd && catCounts['Industrial Fire'] !== undefined) {{
+                                    hudInd.innerText = catCounts['Industrial Fire'].toLocaleString();
+                                }}
+                            }} catch(e) {{}}
+                        }}
+
+                        return {{ visible: visibleCount, total: totalCount, categories: catCounts }};
                     }}
+
+                    window.applyMapFilters = applyMapFilters;
 
                     // Attach Listeners
                     document.querySelectorAll('.map-type-cb').forEach(function(cb) {{
-                        cb.addEventListener('change', applyMapFilters);
+                        cb.addEventListener('change', function() {{ applyMapFilters(); }});
                     }});
 
                     var dateStart = document.getElementById('dockDateStart');
                     var dateEnd = document.getElementById('dockDateEnd');
-                    if (dateStart) dateStart.addEventListener('change', applyMapFilters);
-                    if (dateEnd) dateEnd.addEventListener('change', applyMapFilters);
+                    if (dateStart) dateStart.addEventListener('change', function() {{ applyMapFilters(); }});
+                    if (dateEnd) dateEnd.addEventListener('change', function() {{ applyMapFilters(); }});
 
                     var confSlider = document.getElementById('dockConfSlider');
-                    if (confSlider) confSlider.addEventListener('input', applyMapFilters);
+                    if (confSlider) confSlider.addEventListener('input', function() {{ applyMapFilters(); }});
 
                     // Date Presets
                     document.querySelectorAll('.preset-pill').forEach(function(pill) {{
@@ -757,7 +992,7 @@ class DashboardControlManager:
                             }}
                             applyMapFilters();
                         }});
-                    }}));
+                    }});
 
                     // Checkbox All / None
                     var btnAll = document.getElementById('btnSelectAllTypes');
@@ -838,12 +1073,9 @@ class DashboardControlManager:
                     <i class="fas fa-layer-group text-primary"></i>
                     <span>GIS Legend & Specifications</span>
                 </div>
-                <button type="button" id="btnToggleLegend" class="legend-toggle-btn" title="Toggle Legend View">
-                    <i class="fas fa-chevron-up" id="legendToggleIcon"></i>
-                </button>
             </div>
 
-            <div class="legend-body" id="legendBody">
+            <div class="legend-body" id="legendBody" style="display: flex;">
                 <div class="legend-sec-title">Fire Classifications</div>
                 <div class="legend-grid">
                     {category_rows}
@@ -890,31 +1122,37 @@ class DashboardControlManager:
         <style>
             .gis-legend-hud {{
                 position: fixed;
-                bottom: 24px;
-                right: 24px;
-                width: 290px;
-                background: rgba(22, 27, 34, 0.93);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
+                bottom: 54px;
+                left: 16px;
+                width: 225px;
+                background: rgba(14, 21, 36, 0.94);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
                 border: 1px solid rgba(48, 54, 61, 0.85);
-                border-radius: 12px;
+                border-radius: 10px;
                 box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
-                z-index: 1000;
+                z-index: 998;
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
                 color: #e6edf3;
                 font-size: 11px;
-                transition: all 0.3s ease;
                 overflow: hidden;
+                pointer-events: auto;
+            }}
+
+            @media (max-width: 768px) {{
+                .gis-legend-hud {{
+                    left: 12px;
+                    bottom: 54px;
+                    width: 200px;
+                }}
             }}
 
             .legend-header {{
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
-                padding: 9px 12px;
-                background: rgba(33, 38, 45, 0.95);
+                padding: 7px 10px;
+                background: rgba(22, 27, 34, 0.96);
                 border-bottom: 1px solid rgba(48, 54, 61, 0.8);
-                cursor: pointer;
                 user-select: none;
             }}
 
@@ -923,29 +1161,16 @@ class DashboardControlManager:
                 align-items: center;
                 gap: 6px;
                 font-weight: 700;
-                font-size: 12px;
+                font-size: 11px;
                 color: #f0f6fc;
             }}
 
-            .legend-toggle-btn {{
-                background: transparent;
-                border: none;
-                color: #8b949e;
-                cursor: pointer;
-                padding: 3px 6px;
-                border-radius: 4px;
-            }}
-            .legend-toggle-btn:hover {{
-                color: #ffffff;
-                background: rgba(255, 255, 255, 0.1);
-            }}
-
             .legend-body {{
-                padding: 10px 12px;
+                padding: 8px 10px;
                 display: flex;
                 flex-direction: column;
-                gap: 8px;
-                max-height: 380px;
+                gap: 6px;
+                max-height: 250px;
                 overflow-y: auto;
             }}
 
@@ -1000,14 +1225,14 @@ class DashboardControlManager:
                 background: rgba(13, 17, 23, 0.6);
                 border: 1px solid #30363d;
                 border-radius: 6px;
-                padding: 6px;
+                padding: 5px;
             }}
 
             .frp-dot-item {{
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                gap: 4px;
+                gap: 3px;
                 font-size: 9px;
                 color: #8b949e;
             }}
@@ -1018,29 +1243,29 @@ class DashboardControlManager:
                 border: 1px solid #ffffff;
             }}
             .bubble-sm {{ width: 8px; height: 8px; }}
-            .bubble-md {{ width: 14px; height: 14px; }}
-            .bubble-lg {{ width: 20px; height: 20px; }}
+            .bubble-md {{ width: 13px; height: 13px; }}
+            .bubble-lg {{ width: 18px; height: 18px; }}
 
             /* Metrics Box */
             .legend-metrics-row {{
                 display: grid;
                 grid-template-columns: repeat(3, 1fr);
-                gap: 6px;
-                margin-top: 4px;
+                gap: 5px;
+                margin-top: 2px;
             }}
 
             .metric-box {{
                 background: rgba(13, 17, 23, 0.8);
                 border: 1px solid #30363d;
                 border-radius: 6px;
-                padding: 6px 4px;
+                padding: 4px 2px;
                 text-align: center;
                 display: flex;
                 flex-direction: column;
             }}
 
             .metric-val {{
-                font-size: 13px;
+                font-size: 12px;
                 font-weight: 700;
             }}
 
@@ -1059,23 +1284,14 @@ class DashboardControlManager:
 
         <script>
             (function() {{
-                var legendHeader = document.getElementById('legendHeader');
                 var legendBody = document.getElementById('legendBody');
-                var legendIcon = document.getElementById('legendToggleIcon');
-                var isCollapsed = false;
-
-                if (legendHeader && legendBody) {{
-                    legendHeader.addEventListener('click', function() {{
-                        isCollapsed = !isCollapsed;
-                        if (isCollapsed) {{
-                            legendBody.style.display = 'none';
-                            legendIcon.className = 'fas fa-chevron-down';
-                        }} else {{
-                            legendBody.style.display = 'flex';
-                            legendIcon.className = 'fas fa-chevron-up';
-                        }}
-                    }});
-                }}
+                if (legendBody) legendBody.style.display = 'flex';
+                // Always-visible legend (no toggle)
+                window.toggleLegend = function() {{
+                    if (legendBody) {{
+                        legendBody.style.display = 'flex';
+                    }}
+                }};
             }})();
         </script>
         """

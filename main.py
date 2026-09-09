@@ -468,7 +468,8 @@ def main():
                 logger.error("No fire detections available to map.")
                 sys.exit(1)
 
-            gis_engine = InteractiveGISMap(enable_temporal_slider=True, enable_controls=True)
+            use_temporal = False if is_part_4_3 else True
+            gis_engine = InteractiveGISMap(enable_temporal_slider=use_temporal, enable_controls=True)
             out_output = settings.OUTPUT_DIR / out_filename
             out_interactive = settings.OUTPUT_DIR / "interactive_map.html"
             out_root = settings.BASE_DIR / "map.html"
@@ -479,7 +480,7 @@ def main():
                 output_path=out_output,
                 fire_df=fire_df,
                 facilities_gdf=facilities_gdf,
-                enable_temporal_slider=True,
+                enable_temporal_slider=use_temporal,
                 enable_controls=True,
             )
 
@@ -489,7 +490,7 @@ def main():
                     output_path=out_interactive,
                     fire_df=fire_df,
                     facilities_gdf=facilities_gdf,
-                    enable_temporal_slider=True,
+                    enable_temporal_slider=use_temporal,
                     enable_controls=True,
                 )
 
@@ -498,7 +499,7 @@ def main():
                 output_path=out_root,
                 fire_df=fire_df,
                 facilities_gdf=facilities_gdf,
-                enable_temporal_slider=True,
+                enable_temporal_slider=use_temporal,
                 enable_controls=True,
             )
 
@@ -507,7 +508,7 @@ def main():
                     output_path=out_docs,
                     fire_df=fire_df,
                     facilities_gdf=facilities_gdf,
-                    enable_temporal_slider=True,
+                    enable_temporal_slider=use_temporal,
                     enable_controls=True,
                 )
 

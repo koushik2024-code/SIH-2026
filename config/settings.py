@@ -20,6 +20,9 @@ FIRMS_BASE_URL = "https://firms.modaps.eosdis.nasa.gov/api/area/csv"
 FIRMS_SOURCES = ["VIIRS_NOAA20_NRT", "VIIRS_SNPP_NRT", "MODIS_NRT"]
 DEFAULT_DAY_RANGE = 2
 
+# Optional Basemap API Settings (CARTO Basemaps)
+CARTO_API_KEY = os.getenv("CARTO_API_KEY", "")
+
 # Geographic boundaries (India)
 INDIA_BBOX = {
     "west": 68.0,

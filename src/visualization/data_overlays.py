@@ -140,6 +140,7 @@ class OverlayManager:
             subgroup = FeatureGroupSubGroup(
                 parent_cluster,
                 name=group_name,
+                control=False,
                 show=show_default if count > 0 else False,
             )
 
