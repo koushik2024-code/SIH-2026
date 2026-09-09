@@ -243,6 +243,94 @@ class InteractiveGISMap:
             content: "📍";
             font-size: 12px;
         }
+
+        /* Custom Glowing Translucent Cluster Bubbles - Concentric & Geographically Stable */
+        .marker-cluster {
+            width: 42px !important;
+            height: 42px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+            background-clip: padding-box !important;
+            border-radius: 50% !important;
+            cursor: pointer !important;
+            transition: box-shadow 0.25s ease, filter 0.25s ease !important;
+        }
+
+        .marker-cluster div {
+            width: 30px !important;
+            height: 30px !important;
+            margin: 0 !important;
+            text-align: center !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+            font-weight: 800 !important;
+            font-size: 13px !important;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.45) !important;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease !important;
+            transform-origin: center center !important;
+        }
+
+        .marker-cluster span {
+            line-height: 1 !important;
+            display: inline-block !important;
+        }
+
+        /* Small Cluster (<10): Translucent Emerald / Lime Halo */
+        .marker-cluster-small {
+            background-color: rgba(163, 230, 53, 0.42) !important;
+            border: 2px solid rgba(134, 239, 172, 0.70) !important;
+            box-shadow: 0 0 16px rgba(134, 239, 172, 0.60) !important;
+        }
+        .marker-cluster-small div {
+            background-color: rgba(134, 239, 172, 0.88) !important;
+            color: #14532d !important;
+        }
+        .marker-cluster-small:hover {
+            box-shadow: 0 0 24px rgba(134, 239, 172, 0.95) !important;
+        }
+
+        /* Medium Cluster (10-29): Translucent Amber / Yellow Halo */
+        .marker-cluster-medium {
+            background-color: rgba(250, 204, 21, 0.45) !important;
+            border: 2px solid rgba(250, 204, 21, 0.75) !important;
+            box-shadow: 0 0 18px rgba(250, 204, 21, 0.60) !important;
+        }
+        .marker-cluster-medium div {
+            background-color: rgba(250, 204, 21, 0.88) !important;
+            color: #713f12 !important;
+        }
+        .marker-cluster-medium:hover {
+            box-shadow: 0 0 26px rgba(250, 204, 21, 0.95) !important;
+        }
+
+        /* Large Cluster (>=30): Translucent Sunset Orange Halo */
+        .marker-cluster-large {
+            background-color: rgba(251, 146, 60, 0.48) !important;
+            border: 2px solid rgba(251, 146, 60, 0.80) !important;
+            box-shadow: 0 0 22px rgba(251, 146, 60, 0.65) !important;
+        }
+        .marker-cluster-large div {
+            background-color: rgba(251, 146, 60, 0.90) !important;
+            color: #431407 !important;
+        }
+        .marker-cluster-large:hover {
+            box-shadow: 0 0 30px rgba(251, 146, 60, 0.95) !important;
+        }
+
+        /* Hover State: Enhanced glow without touching outer translate3d transform */
+        .marker-cluster:hover {
+            filter: brightness(1.12) !important;
+        }
+        /* Scale ONLY the inner circle on hover, strictly preserving geographic coordinates */
+        .marker-cluster:hover div {
+            transform: scale(1.12) !important;
+        }
+
         /* Dark glassmorphic styling for Leaflet left toolbar controls */
         .leaflet-left .leaflet-control {
             border: 1px solid #30363d !important;
