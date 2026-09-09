@@ -12,11 +12,24 @@ sys.path.insert(0, BASE_DIR)
 from src.web.app import get_data, _analytics_engine
 from src.web.map_generator import MapGenerator
 from src.reporting.report_engine import ReportEngine
+import re
 from src.pipeline_automation.database import FireMonitoringDatabase
 
 
 def adapt_links_for_static(html: str) -> str:
     """Transform server-side absolute routes into static relative filenames for GitHub Pages & static hosting."""
+    # 1. API route replacements
+    html = html.replace('href="/api/reports/export/pdf"', 'href="static/reports/fire_historical_report.pdf" download="fire_historical_report.pdf"')
+    html = html.replace('href="/api/reports/export/html"', 'href="static/reports/fire_historical_report.html" target="_blank"')
+    html = html.replace('href="/api/analytics"', 'href="static/reports/analytics_summary.json" target="_blank"')
+
+    # 2. Query string routes (e.g. /alerts?severity=CRITICAL, /?search=XYZ)
+    html = re.sub(r'href="/alerts\?', 'href="alerts.html?', html)
+    html = re.sub(r'href="/reports\?', 'href="reports.html?', html)
+    html = re.sub(r'href="/analytics\?', 'href="analytics.html?', html)
+    html = re.sub(r'href="/\?', 'href="index.html?', html)
+
+    # 3. Standard page routes
     replacements = [
         ('href="/"', 'href="index.html"'),
         ("href='/'", "href='index.html'"),
@@ -43,12 +56,25 @@ def build():
     # 1. Setup asset directories
     os.makedirs(os.path.join(BASE_DIR, "static", "css"), exist_ok=True)
     os.makedirs(os.path.join(BASE_DIR, "docs", "static", "css"), exist_ok=True)
+    os.makedirs(os.path.join(BASE_DIR, "static", "reports"), exist_ok=True)
+    os.makedirs(os.path.join(BASE_DIR, "docs", "static", "reports"), exist_ok=True)
     
     theme_src = os.path.join(BASE_DIR, "src", "web", "static", "css", "theme.css")
     if os.path.exists(theme_src):
         shutil.copy(theme_src, os.path.join(BASE_DIR, "static", "css", "theme.css"))
         shutil.copy(theme_src, os.path.join(BASE_DIR, "docs", "static", "css", "theme.css"))
         print("[+] Synced theme.css to static/ and docs/static/")
+
+    # Sync pre-generated report documents
+    rep_pdf = os.path.join(BASE_DIR, "output", "reports", "fire_historical_report.pdf")
+    rep_html = os.path.join(BASE_DIR, "output", "reports", "fire_historical_report.html")
+    analytics_json = os.path.join(BASE_DIR, "output", "analytics_summary.json")
+
+    for src_file in [rep_pdf, rep_html, analytics_json]:
+        if os.path.exists(src_file):
+            shutil.copy(src_file, os.path.join(BASE_DIR, "static", "reports"))
+            shutil.copy(src_file, os.path.join(BASE_DIR, "docs", "static", "reports"))
+            print(f"[+] Synced {os.path.basename(src_file)} to static/reports/ and docs/static/reports/")
 
     # 2. Setup Jinja environment
     template_dir = os.path.join(BASE_DIR, "src", "web", "templates")

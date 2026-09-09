@@ -554,10 +554,12 @@
         }
 
         // Auto-adapt navigation links on static hosts (GitHub Pages)
-        if (window.location.protocol === 'file:' || window.location.hostname.includes('github.io')) {
+        if (window.location.protocol === 'file:' || window.location.hostname.includes('github.io') || window.location.pathname.endsWith('.html')) {
             document.querySelectorAll('.nav-pill-link').forEach(a => {
-                const href = a.getAttribute('href');
-                if (href === '/analytics') a.href = 'analytics.html';
+                const href = a.getAttribute('href') || '';
+                if (href === '/analytics' || href === 'analytics') a.href = 'analytics.html';
+                else if (href === '/alerts' || href === 'alerts') a.href = 'alerts.html';
+                else if (href === '/reports' || href === 'reports') a.href = 'reports.html';
                 else if (href === '/') a.href = 'index.html';
             });
             const brand = document.querySelector('.brand-wrapper');

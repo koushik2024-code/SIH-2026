@@ -348,7 +348,7 @@
             <div class="kpi-card info">
                 <div class="kpi-icon"><i class="fa-solid fa-bullhorn"></i></div>
                 <div class="kpi-content">
-                    <h3 id="kpi-total">41</h3>
+                    <h3 id="kpi-total">43</h3>
                     <p>Total Dispatched</p>
                 </div>
             </div>
@@ -366,10 +366,10 @@
             <div class="filter-group">
                 <span style="font-size:12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-right:4px;">Filter:</span>
                 <a href="alerts.html" class="filter-chip active">All Incidents</a>
-                <a href="/alerts?severity=CRITICAL" class="filter-chip ">🚨 Critical</a>
-                <a href="/alerts?severity=HIGH" class="filter-chip ">⚠️ High</a>
-                <a href="/alerts?status=ACTIVE" class="filter-chip ">Active Only</a>
-                <a href="/alerts?status=ACKNOWLEDGED" class="filter-chip ">Acknowledged</a>
+                <a href="alerts.html?severity=CRITICAL" class="filter-chip ">🚨 Critical</a>
+                <a href="alerts.html?severity=HIGH" class="filter-chip ">⚠️ High</a>
+                <a href="alerts.html?status=ACTIVE" class="filter-chip ">Active Only</a>
+                <a href="alerts.html?status=ACKNOWLEDGED" class="filter-chip ">Acknowledged</a>
             </div>
 
             <div style="font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px;">
@@ -381,6 +381,152 @@
         <!-- Alerts Stream Feed -->
         <section class="alerts-feed" id="alerts-list">
             
+                
+                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-C7AAE111">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
+                                    <span class="status-badge status-ACKNOWLEDGED" id="status-tag-ALT-C7AAE111">ACKNOWLEDGED</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-09T17:32:00.825609+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-C7AAE111</span>
+                                </div>
+                                <h2 class="alert-title">CRITICAL TEST: Simulated Industrial Fire & Thermal Anomaly</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            SYSTEM DIAGNOSTIC ALERT: Multi-spectral sensors detected simulated extreme thermal anomaly (FRP 72.5 MW, 378.2 K) 0.45 km from Jamnagar Petrochemical Complex. All operational response channels (Email, SMS, Dashboard, Log, Webhook) tested successfully.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">Jamnagar Petrochemical Complex</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">0.45 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">72.5 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">22.4707, 70.0577</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-EBC087E5">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
+                                    <span class="status-badge status-ACKNOWLEDGED" id="status-tag-ALT-EBC087E5">ACKNOWLEDGED</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-09T17:09:42.304284+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-EBC087E5</span>
+                                </div>
+                                <h2 class="alert-title">CRITICAL TEST: Simulated Industrial Fire & Thermal Anomaly</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            SYSTEM DIAGNOSTIC ALERT: Multi-spectral sensors detected simulated extreme thermal anomaly (FRP 72.5 MW, 378.2 K) 0.45 km from Jamnagar Petrochemical Complex. All operational response channels (Email, SMS, Dashboard, Log, Webhook) tested successfully.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">Jamnagar Petrochemical Complex</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">0.45 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">72.5 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">22.4707, 70.0577</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                            </div>
+                        </div>
+                    </div>
                 
                     <div class="alert-card severity-CRITICAL" id="alert-card-ALT-C35FC645">
                         <div class="alert-header">
@@ -447,7 +593,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -520,7 +666,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -593,7 +739,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -666,7 +812,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -739,7 +885,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Korba Coalfield" class="btn-action">
+                                <a href="index.html?search=Korba Coalfield" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -816,7 +962,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Korba Coalfield" class="btn-action">
+                                <a href="index.html?search=Korba Coalfield" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -893,7 +1039,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Talcher Super TPS" class="btn-action">
+                                <a href="index.html?search=Talcher Super TPS" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -966,7 +1112,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1039,7 +1185,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1112,7 +1258,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1185,7 +1331,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1258,7 +1404,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1331,7 +1477,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1404,7 +1550,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1477,7 +1623,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1554,7 +1700,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1627,7 +1773,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1700,7 +1846,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1773,7 +1919,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1846,7 +1992,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1919,7 +2065,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Korba STPP" class="btn-action">
+                                <a href="index.html?search=Korba STPP" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -1996,7 +2142,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Korba STPP" class="btn-action">
+                                <a href="index.html?search=Korba STPP" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -2073,7 +2219,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -2146,7 +2292,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -2219,7 +2365,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -2292,7 +2438,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -2365,7 +2511,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -2438,7 +2584,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -2511,7 +2657,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -2584,7 +2730,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -2657,7 +2803,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Talcher Super TPS" class="btn-action">
+                                <a href="index.html?search=Talcher Super TPS" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -2734,7 +2880,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Tata Steel Jamshedpur" class="btn-action">
+                                <a href="index.html?search=Tata Steel Jamshedpur" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -2811,7 +2957,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jharia Coalfield" class="btn-action">
+                                <a href="index.html?search=Jharia Coalfield" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -2888,7 +3034,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Hazira Gas Processing" class="btn-action">
+                                <a href="index.html?search=Hazira Gas Processing" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -2965,7 +3111,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=JSW Steel Vijayanagar" class="btn-action">
+                                <a href="index.html?search=JSW Steel Vijayanagar" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -3042,7 +3188,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=SAIL Bhilai Steel Plant" class="btn-action">
+                                <a href="index.html?search=SAIL Bhilai Steel Plant" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -3119,7 +3265,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Talcher Super TPS" class="btn-action">
+                                <a href="index.html?search=Talcher Super TPS" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -3196,7 +3342,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -3269,7 +3415,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -3342,7 +3488,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -3415,7 +3561,7 @@
                             </div>
 
                             <div class="actions">
-                                <a href="/?search=Jamnagar Petrochemical Complex" class="btn-action">
+                                <a href="index.html?search=Jamnagar Petrochemical Complex" class="btn-action">
                                     <i class="fa-solid fa-crosshairs"></i> Locate
                                 </a>
                                 
@@ -3539,6 +3685,7 @@
             const list = document.getElementById('alerts-list');
             if (!list) return;
 
+            const homeUrl = (window.location.pathname.endsWith('.html') || window.location.hostname.includes('github.io')) ? 'index.html' : '/';
             const card = document.createElement('div');
             card.className = `alert-card severity-${alert.severity}`;
             card.id = `alert-card-${alert.alert_id}`;
@@ -3567,7 +3714,7 @@
                         <span class="channel-tag"><i class="fa-solid fa-satellite-dish"></i> Dispatched Live</span>
                     </div>
                     <div class="actions">
-                        <a href="/?search=${encodeURIComponent(alert.facility_name)}" class="btn-action"><i class="fa-solid fa-crosshairs"></i> Locate</a>
+                        <a href="${homeUrl}?search=${encodeURIComponent(alert.facility_name)}" class="btn-action"><i class="fa-solid fa-crosshairs"></i> Locate</a>
                         <button class="btn-action btn-ack" onclick="acknowledgeAlert('${alert.alert_id}')"><i class="fa-solid fa-check"></i> Acknowledge</button>
                     </div>
                 </div>
@@ -3575,32 +3722,103 @@
             list.insertBefore(card, list.firstChild);
         }
 
-        // Setup real-time Server-Sent Events (SSE) stream
-        function setupAlertStream() {
-            try {
-                if (typeof EventSource !== "undefined" && window.location.protocol.startsWith('http')) {
-                    const evtSource = new EventSource('/api/alerts/stream');
-                    evtSource.onmessage = function(event) {
-                        try {
-                            const alert = JSON.parse(event.data);
-                            showToast(alert);
-                            prependAlertCard(alert);
-                            updateKpiCounters();
-                        } catch (e) {
-                            console.error("SSE parse error", e);
-                        }
-                    };
-                    evtSource.onerror = function() {
-                        // Reconnection handled automatically by browser EventSource
-                    };
+        // Client-side instant filter handler (supports both static GitHub Pages & dynamic Flask)
+        function applyAlertFilter(filterType, filterVal) {
+            // 1. Update active state on filter chips
+            document.querySelectorAll('.toolbar .filter-chip').forEach(chip => {
+                const href = chip.getAttribute('href') || '';
+                if (filterVal === 'ALL' && (href.endsWith('/alerts') || href.endsWith('alerts.html') || href === 'alerts.html')) {
+                    chip.classList.add('active');
+                } else if (filterVal !== 'ALL' && href.includes(`${filterType}=${filterVal}`)) {
+                    chip.classList.add('active');
+                } else {
+                    chip.classList.remove('active');
                 }
-            } catch (e) {
-                console.warn("Real-time alert streaming unavailable in static/offline mode:", e);
+            });
+
+            // 2. Filter DOM alert cards
+            const cards = document.querySelectorAll('.alert-card');
+            let visibleCount = 0;
+            cards.forEach(card => {
+                let match = true;
+                if (filterType === 'severity' && filterVal !== 'ALL') {
+                    match = card.classList.contains(`severity-${filterVal}`);
+                } else if (filterType === 'status' && filterVal !== 'ALL') {
+                    const statusTag = card.querySelector('.status-badge');
+                    match = statusTag && statusTag.textContent.trim().toUpperCase() === filterVal.toUpperCase();
+                }
+
+                if (match) {
+                    card.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // 3. Show/hide empty state
+            let emptyState = document.querySelector('.empty-state');
+            if (!emptyState && visibleCount === 0) {
+                const feed = document.getElementById('alerts-list');
+                emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = '<i class="fa-solid fa-shield-halved"></i><h3>No Matching Alerts</h3><p>No thermal hazard trigger conditions currently match the selected filter criteria.</p>';
+                feed.appendChild(emptyState);
+            } else if (emptyState) {
+                emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
             }
         }
 
+        // Initialize URL parameters and attach click events
+        function initAlertFilters() {
+            // Attach click listeners to chips to prevent 404 navigation and filter instantaneously
+            document.querySelectorAll('.toolbar .filter-chip').forEach(chip => {
+                chip.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href') || '';
+                    let sev = null;
+                    let stat = null;
+                    try {
+                        const parsed = new URL(href, window.location.origin);
+                        sev = parsed.searchParams.get('severity');
+                        stat = parsed.searchParams.get('status');
+                    } catch (err) {
+                        if (href.includes('severity=')) sev = href.split('severity=')[1].split('&')[0];
+                        if (href.includes('status=')) stat = href.split('status=')[1].split('&')[0];
+                    }
+
+                    e.preventDefault();
+                    if (window.history && window.history.pushState) {
+                        window.history.pushState(null, '', href);
+                    }
+
+                    if (sev) applyAlertFilter('severity', sev);
+                    else if (stat) applyAlertFilter('status', stat);
+                    else applyAlertFilter('all', 'ALL');
+                });
+            });
+
+            // Parse URL parameters on initial page load
+            const params = new URLSearchParams(window.location.search);
+            const sev = params.get('severity');
+            const stat = params.get('status');
+            if (sev) applyAlertFilter('severity', sev);
+            else if (stat) applyAlertFilter('status', stat);
+        }
+
         // Initialize on load
-        window.addEventListener('DOMContentLoaded', setupAlertStream);
+        window.addEventListener('popstate', () => {
+            const params = new URLSearchParams(window.location.search);
+            const sev = params.get('severity');
+            const stat = params.get('status');
+            if (sev) applyAlertFilter('severity', sev);
+            else if (stat) applyAlertFilter('status', stat);
+            else applyAlertFilter('all', 'ALL');
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setupAlertStream();
+            initAlertFilters();
+        });
     </script>
 </body>
 </html>
