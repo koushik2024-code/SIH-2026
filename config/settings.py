@@ -1,10 +1,11 @@
 import os
-from pathlib import Path
-from dotenv import load_dotenv
 import logging
-
-# Load environment variables
-load_dotenv()
+from pathlib import Path
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 # Base paths
 BASE_DIR = Path(__file__).resolve().parent.parent
