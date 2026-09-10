@@ -1,0 +1,30 @@
+{
+  "total_fires": 1517,
+  "avg_brightness": 359.0,
+  "avg_frp": 14.5,
+  "high_confidence": 126,
+  "industrial_count": 18,
+  "daytime_fires": 747,
+  "nighttime_fires": 770,
+  "fire_type_distribution": {
+    "Forest Fire": 1417,
+    "Agricultural Burning": 73,
+    "Industrial Fire": 27
+  },
+  "nearest_facility_distribution": {
+    "oil_refinery": 487,
+    "thermal_power_plant": 312,
+    "steel_plant": 292,
+    "mining": 211,
+    "lng_terminal": 153,
+    "gas_flare": 58,
+    "petrochemical": 4
+  },
+  "date_range": {
+    "start": "2026-09-07 00:00:00",
+    "end": "2026-09-09 00:00:00"
+  },
+  "near_industrial_count": 18,
+  "active_alerts": 11,
+  "critical_active_alerts": 4
+}

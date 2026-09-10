@@ -105,6 +105,19 @@ def build():
     alerts_list = db.get_alerts(limit=100)
     alert_stats = db.get_alert_statistics()
 
+    # Enrich stats with unified near_industrial_count and alert metrics
+    stats["near_industrial_count"] = stats.get("industrial_count", 0)
+    stats["active_alerts"] = alert_stats.get("active_alerts", 0)
+    stats["critical_active_alerts"] = alert_stats.get("critical_active_alerts", 0)
+
+    # Save metrics.json for static client fetching
+    metrics_json_str = json.dumps(stats, indent=2)
+    with open(os.path.join(BASE_DIR, "static", "reports", "metrics.json"), "w", encoding="utf-8") as f:
+        f.write(metrics_json_str)
+    with open(os.path.join(BASE_DIR, "docs", "static", "reports", "metrics.json"), "w", encoding="utf-8") as f:
+        f.write(metrics_json_str)
+    print("[+] Generated static/reports/metrics.json and docs/static/reports/metrics.json")
+
     # -------------------------------------------------------------
     # 4. Build Page 1: Dashboard (index.html & docs/index.html)
     # -------------------------------------------------------------

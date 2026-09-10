@@ -120,6 +120,12 @@ def get_hotspots(
     summary="Get summary statistics",
     description="Retrieve system-wide analytics, average brightness, FRP metrics, and fire distribution."
 )
+@router.get(
+    "/metrics",
+    response_model=StatsResponse,
+    summary="Get operational metrics (alias for /stats)",
+    description="Retrieve system-wide analytics, average brightness, FRP metrics, and fire distribution."
+)
 def get_stats(
     service: APIService = Depends(get_service)
 ):

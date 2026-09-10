@@ -319,8 +319,9 @@ def create_app():
         })
     
     @app.route('/api/stats')
+    @app.route('/api/metrics')
     def api_stats():
-        """Return fire statistics as JSON with optional filters."""
+        """Return fire statistics and operational metrics as JSON with optional filters."""
         fire_df, _ = get_data()
         selected_types = request.args.getlist('fire_type')
         start_date = request.args.get('start_date')
@@ -337,6 +338,18 @@ def create_app():
             search=search_query,
         )
         stats = _map_gen.get_fire_statistics(filtered_fires)
+        stats["near_industrial_count"] = stats.get("industrial_count", 0)
+
+        # Include alert statistics if available
+        try:
+            from src.pipeline_automation.database import FireMonitoringDatabase
+            db = FireMonitoringDatabase()
+            alert_stats = db.get_alert_statistics()
+            stats["active_alerts"] = alert_stats.get("active_alerts", 0)
+            stats["critical_active_alerts"] = alert_stats.get("critical_active_alerts", 0)
+        except Exception:
+            pass
+
         return jsonify(stats)
     
     @app.route('/api/fires')
