@@ -298,7 +298,7 @@ All features from Part 1 + Part 2:
 **Objective**: Build a production-grade web-based GIS interface for real-time visualization and spatial analysis of thermal anomalies and industrial infrastructure.
 
 **Base Map Layers**:
-- 🗺️ **OpenStreetMap** (default): Standard street cartography and urban infrastructure.
+- 🗺️ **World Street Map (English)** (default): Standard street cartography and urban infrastructure with standardized English typography and labeling worldwide.
 - 🛰️ **ESRI World Imagery**: High-resolution optical satellite imagery for visual confirmation of facility layout, smoke plumes, and flare locations.
 - 🌙 **Dark Canvas / Dark Matter**: High-contrast dark basemap (ESRI Dark Canvas default with zero watermarks; supports CARTO Dark Matter via optional `CARTO_API_KEY`) engineered specifically to accentuate glowing thermal hotspot heatmaps and fire markers.
 - 🏔️ **Topographic / Terrain View**: Detailed elevation contours and relief shading to analyze terrain-driven fire behavior and dispersion.

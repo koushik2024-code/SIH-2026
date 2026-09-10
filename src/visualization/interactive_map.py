@@ -3,7 +3,7 @@ Interactive GIS Map Engine (Part 4.1).
 
 Production-grade web-based GIS interface using Folium/Leaflet.js.
 Features:
-- 4 Base Map Tile Layers: OpenStreetMap, ESRI Satellite, CartoDB Dark Matter, Topographic/Terrain
+- 4 Base Map Tile Layers: World Street Map (English), ESRI Satellite, CartoDB Dark Matter, Topographic/Terrain
 - Interactive GIS Controls: LayerControl, Fullscreen, MeasureControl, MousePosition HUD, MiniMap
 - Data Overlays:
     * Clustered, FRP-proportional, color-coded fire anomaly markers
@@ -99,18 +99,19 @@ class InteractiveGISMap:
     def _add_base_layers(self, m: folium.Map) -> None:
         """
         Add the 4 required base map layers:
-        1. OpenStreetMap (Default cartographic view)
+        1. World Street Map (Default cartographic view with English labels worldwide)
         2. ESRI Satellite Imagery (High-resolution optical inspection)
         3. CartoDB Dark Matter (High-contrast thermal dark basemap)
         4. Topographic / Terrain (Elevation contours & land relief)
         """
-        # 1. OpenStreetMap (Default)
+        # 1. World Street Map (Default - English Labels Worldwide)
         folium.TileLayer(
-            tiles="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            name="🗺️ OpenStreetMap (Default)",
+            tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+            attr="Tiles &copy; Esri &mdash; Street Map (English)",
+            name="🗺️ Street Map (English)",
             control=True,
             show=True,
+            max_zoom=19,
         ).add_to(m)
 
         # 2. ESRI World Imagery (Satellite)
@@ -196,7 +197,11 @@ class InteractiveGISMap:
 
         # Overview MiniMap (start minimized so it doesn't block map canvas)
         MiniMap(
-            tile_layer=folium.TileLayer("openstreetmap"),
+            tile_layer=folium.TileLayer(
+                tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+                attr="Esri",
+                max_zoom=19,
+            ),
             position="bottomright",
             width=150,
             height=110,

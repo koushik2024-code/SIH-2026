@@ -655,7 +655,7 @@ class DashboardControlManager:
                         : {{ maxZoom: 18, attribution: '&copy; Esri &mdash; Esri, DeLorme, NAVTEQ' }};
 
                     var tileUrls = {{
-                        osm: {{ url: 'https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', opts: {{ maxZoom: 19, subdomains: 'abc', attribution: '&copy; OpenStreetMap' }} }},
+                        osm: {{ url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{{z}}/{{y}}/{{x}}', opts: {{ maxZoom: 19, attribution: 'Tiles &copy; Esri &mdash; Street Map (English)' }} }},
                         sat: {{ url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{{z}}/{{y}}/{{x}}', opts: {{ maxZoom: 19, attribution: 'Esri' }} }},
                         dark: {{ url: darkUrl, opts: darkOpts }},
                         topo: {{ url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{{z}}/{{y}}/{{x}}', opts: {{ maxZoom: 18, attribution: 'Esri' }} }}
