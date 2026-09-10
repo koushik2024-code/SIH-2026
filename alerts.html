@@ -291,7 +291,7 @@
             </a>
             <a href="alerts.html" class="nav-pill-link active">
                 <i class="fa-solid fa-bell"></i> Alerts
-                <span class="nav-counter-pill badge bg-danger text-light ms-1" id="navAlertBadge" style="">2</span>
+                <span class="nav-counter-pill badge bg-danger text-light ms-1" id="navAlertBadge" style="display:none;">0</span>
             </a>
             <a href="reports.html" class="nav-pill-link">
                 <i class="fa-solid fa-file-invoice"></i> Reports
@@ -332,21 +332,21 @@
             <div class="kpi-card critical">
                 <div class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
                 <div class="kpi-content">
-                    <h3 id="kpi-critical">2</h3>
+                    <h3 id="kpi-critical">0</h3>
                     <p>Critical Active Hazards</p>
                 </div>
             </div>
             <div class="kpi-card warning">
                 <div class="kpi-icon"><i class="fa-solid fa-bell"></i></div>
                 <div class="kpi-content">
-                    <h3 id="kpi-active">2</h3>
+                    <h3 id="kpi-active">0</h3>
                     <p>Active Unresolved Alerts</p>
                 </div>
             </div>
             <div class="kpi-card info">
                 <div class="kpi-icon"><i class="fa-solid fa-bullhorn"></i></div>
                 <div class="kpi-content">
-                    <h3 id="kpi-total">2</h3>
+                    <h3 id="kpi-total">0</h3>
                     <p>Total Dispatched</p>
                 </div>
             </div>
@@ -379,161 +379,11 @@
         <!-- Alerts Stream Feed -->
         <section class="alerts-feed" id="alerts-list">
             
-                
-                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-4522EC8A">
-                        <div class="alert-header">
-                            <div>
-                                <div class="alert-meta">
-                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
-                                    <span class="status-badge status-ACTIVE" id="status-tag-ALT-4522EC8A">ACTIVE</span>
-                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-10T10:46:23.127811+00:00</span>
-                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-4522EC8A</span>
-                                </div>
-                                <h2 class="alert-title">Unusual Thermal Spike at Korba Coalfield</h2>
-                            </div>
-                        </div>
-
-                        <div class="alert-body">
-                            Severe thermal energy spike detected directly inside facility hazard perimeter (1.76 km from center of Korba Coalfield). Radiative power reached 77.8 MW with temperature of 366.7 K. Potential runaway combustion, reactor venting, or flare malfunction.
-                        </div>
-
-                        <div class="alert-stats-row">
-                            <div class="stat-pill">
-                                <div class="label">Target Facility</div>
-                                <div class="val">Korba Coalfield</div>
-                            </div>
-                            <div class="stat-pill">
-                                <div class="label">Proximity Distance</div>
-                                <div class="val">1.76 km</div>
-                            </div>
-                            <div class="stat-pill">
-                                <div class="label">Thermal FRP</div>
-                                <div class="val">77.8 MW</div>
-                            </div>
-                            <div class="stat-pill">
-                                <div class="label">Detection Coordinates</div>
-                                <div class="val">22.3424, 82.7150</div>
-                            </div>
-                        </div>
-
-                        <div class="alert-footer">
-                            <div class="channel-tags">
-                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
-                                
-                                    
-                                        <span class="channel-tag">
-                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
-                                            
-                                        </span>
-                                    
-                                        <span class="channel-tag">
-                                            <i class="fa-solid fa-file-lines"></i> Audit Log
-                                            
-                                        </span>
-                                    
-                                        <span class="channel-tag">
-                                            <i class="fa-solid fa-envelope"></i> SMTP Email
-                                            
-                                        </span>
-                                    
-                                        <span class="channel-tag">
-                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
-                                            
-                                        </span>
-                                    
-                                
-                            </div>
-
-                            <div class="actions">
-                                <a href="index.html?lat=22.3424&lon=82.715&name=Korba%20Coalfield&frp=77.78&zoom=15" class="btn-action">
-                                    <i class="fa-solid fa-crosshairs"></i> Locate
-                                </a>
-                                
-                                    <button class="btn-action btn-ack" id="ack-btn-ALT-4522EC8A" onclick="acknowledgeAlert('ALT-4522EC8A')">
-                                        <i class="fa-solid fa-check"></i> Acknowledge
-                                    </button>
-                                
-                            </div>
-                        </div>
-                    </div>
-                
-                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-BD4BF483">
-                        <div class="alert-header">
-                            <div>
-                                <div class="alert-meta">
-                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
-                                    <span class="status-badge status-ACTIVE" id="status-tag-ALT-BD4BF483">ACTIVE</span>
-                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-10T10:46:23.125984+00:00</span>
-                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-BD4BF483</span>
-                                </div>
-                                <h2 class="alert-title">High-Confidence Industrial Fire Near Korba Coalfield</h2>
-                            </div>
-                        </div>
-
-                        <div class="alert-body">
-                            Satellite surveillance confirmed active industrial combustion signature at [22.3424, 82.7150] located 1.76 km from Korba Coalfield (mining). Thermal intensity is 77.8 MW (Brightness: 366.7 K) with 84% confidence.
-                        </div>
-
-                        <div class="alert-stats-row">
-                            <div class="stat-pill">
-                                <div class="label">Target Facility</div>
-                                <div class="val">Korba Coalfield</div>
-                            </div>
-                            <div class="stat-pill">
-                                <div class="label">Proximity Distance</div>
-                                <div class="val">1.76 km</div>
-                            </div>
-                            <div class="stat-pill">
-                                <div class="label">Thermal FRP</div>
-                                <div class="val">77.8 MW</div>
-                            </div>
-                            <div class="stat-pill">
-                                <div class="label">Detection Coordinates</div>
-                                <div class="val">22.3424, 82.7150</div>
-                            </div>
-                        </div>
-
-                        <div class="alert-footer">
-                            <div class="channel-tags">
-                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
-                                
-                                    
-                                        <span class="channel-tag">
-                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
-                                            
-                                        </span>
-                                    
-                                        <span class="channel-tag">
-                                            <i class="fa-solid fa-file-lines"></i> Audit Log
-                                            
-                                        </span>
-                                    
-                                        <span class="channel-tag">
-                                            <i class="fa-solid fa-envelope"></i> SMTP Email
-                                            
-                                        </span>
-                                    
-                                        <span class="channel-tag">
-                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
-                                            
-                                        </span>
-                                    
-                                
-                            </div>
-
-                            <div class="actions">
-                                <a href="index.html?lat=22.3424&lon=82.715&name=Korba%20Coalfield&frp=77.78&zoom=15" class="btn-action">
-                                    <i class="fa-solid fa-crosshairs"></i> Locate
-                                </a>
-                                
-                                    <button class="btn-action btn-ack" id="ack-btn-ALT-BD4BF483" onclick="acknowledgeAlert('ALT-BD4BF483')">
-                                        <i class="fa-solid fa-check"></i> Acknowledge
-                                    </button>
-                                
-                            </div>
-                        </div>
-                    </div>
-                
+                <div class="empty-state">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <h3>No Active Alerts</h3>
+                    <p>No thermal hazard trigger conditions currently match the selected filter criteria.</p>
+                </div>
             
         </section>
 
