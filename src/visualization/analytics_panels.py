@@ -323,7 +323,25 @@ class AnalyticsEngine:
         results = list(facility_stats.values())
         results.sort(key=lambda x: (x["count_500m"] * 4 + x["count_1km"] * 2 + x["fire_count"]), reverse=True)
 
+        # Attach exact facility coordinates if available
+        fac_coords = {}
+        if facilities_gdf is not None and not (hasattr(facilities_gdf, "empty") and facilities_gdf.empty):
+            for _, f_row in facilities_gdf.iterrows():
+                f_n = str(f_row.get("name", "")).strip()
+                f_lat = f_row.get("latitude", None)
+                f_lon = f_row.get("longitude", None)
+                if (f_lat is None or f_lon is None) and hasattr(f_row, "geometry") and f_row.geometry:
+                    f_lat = f_row.geometry.y
+                    f_lon = f_row.geometry.x
+                if f_n and f_lat is not None and f_lon is not None and not pd.isna(f_lat) and not pd.isna(f_lon):
+                    fac_coords[f_n] = (round(float(f_lat), 5), round(float(f_lon), 5))
+
         for item in results:
+            c = fac_coords.get(item["name"])
+            if c:
+                item["latitude"] = c[0]
+                item["longitude"] = c[1]
+
             item["avg_frp"] = round(item["total_frp"] / item["fire_count"], 1) if item["fire_count"] > 0 else 0.0
             item["min_distance_km"] = round(item["min_distance_km"], 2)
             item["max_frp"] = round(item["max_frp"], 1)

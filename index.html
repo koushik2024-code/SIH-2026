@@ -381,7 +381,7 @@
                 <i class="fas fa-bell"></i> Alerts
                 
                 <span class="nav-counter-pill bg-danger text-light" id="navAlertBadge">
-                    5
+                    12
                 </span>
             </a>
             <a href="reports.html" class="nav-pill-link">
@@ -589,19 +589,26 @@
         // Single-invocation command dispatcher to eliminate double-toggle bugs
         function callMapCommand(commandName, payload) {
             const win = getMapWin();
+            const msgObj = (typeof payload === 'object' && payload !== null) 
+                ? Object.assign({ action: commandName }, payload) 
+                : { action: commandName, tile: payload, query: payload };
             if (win) {
                 if (typeof win[commandName] === 'function') {
-                    win[commandName](payload);
+                    if (typeof payload === 'object' && payload !== null) {
+                        win[commandName](payload.lat, payload.lon, payload.name, payload.frp, payload.zoom);
+                    } else {
+                        win[commandName](payload);
+                    }
                     return;
                 }
                 try {
-                    win.postMessage(payload !== undefined ? { action: commandName, tile: payload } : commandName, '*');
+                    win.postMessage(msgObj, '*');
                     return;
                 } catch(e) {}
             }
             if (mapFrame && mapFrame.contentWindow) {
                 try {
-                    mapFrame.contentWindow.postMessage(payload !== undefined ? { action: commandName, tile: payload } : commandName, '*');
+                    mapFrame.contentWindow.postMessage(msgObj, '*');
                 } catch(e) {}
             }
         }
@@ -688,7 +695,7 @@
             });
         });
 
-        // 4. Ensure map iframe never displays redundant top-right layer control box & handle facility deep link
+        // 4. Ensure map iframe never displays redundant top-right layer control box & handle facility / alert deep link
         mapFrame.addEventListener('load', () => {
             try {
                 const win = getMapWin();
@@ -696,14 +703,40 @@
                     const layersCtrl = win.document.querySelector('.leaflet-control-layers');
                     if (layersCtrl) layersCtrl.remove();
                 }
-                // Handle initial facility search query from URL
+                // Handle initial alert pinpoint coordinates or facility query from URL
                 const params = new URLSearchParams(window.location.search);
-                const q = params.get('search');
-                if (q) {
-                    callMapCommand('searchFacility', q);
+                const lat = parseFloat(params.get('lat'));
+                const lon = parseFloat(params.get('lon'));
+                const name = params.get('name') || params.get('search');
+                const frp = params.get('frp');
+                const zoom = parseInt(params.get('zoom') || '15', 10);
+
+                if (!isNaN(lat) && !isNaN(lon)) {
+                    callMapCommand('locateAlert', { lat: lat, lon: lon, name: name, frp: frp, zoom: zoom });
+                } else if (name) {
+                    callMapCommand('searchFacility', name);
                 }
             } catch (e) {}
         });
+
+        // Restore active alerts badge count from localStorage if present
+        try {
+            const savedCount = localStorage.getItem('pyrovision_active_alerts_count');
+            if (savedCount !== null) {
+                const badge = document.getElementById('navAlertBadge');
+                if (badge) {
+                    const num = parseInt(savedCount, 10);
+                    badge.innerText = num;
+                    if (num > 0) {
+                        badge.className = 'nav-counter-pill bg-danger text-light';
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.className = 'nav-counter-pill bg-secondary text-light';
+                        badge.innerText = '0';
+                    }
+                }
+            }
+        } catch(e) {}
 
         // 5. Floating Auto-Dismiss Toast Notification System (5-7s)
         function showAlertToast(alertData) {

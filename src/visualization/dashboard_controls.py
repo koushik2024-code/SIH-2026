@@ -598,6 +598,17 @@ class DashboardControlManager:
                 display: none !important;
             }}
 
+            /* High-visibility pulsing radar animation for target alert locator */
+            @keyframes alertRadarPulse {{
+                0% {{ transform: scale(0.85); opacity: 0.9; }}
+                50% {{ transform: scale(1.35); opacity: 0.25; }}
+                100% {{ transform: scale(0.85); opacity: 0.9; }}
+            }}
+            .pulsing-radar-marker {{
+                animation: alertRadarPulse 1.8s infinite ease-in-out;
+                transform-origin: center;
+            }}
+
             /* Responsive */
             @media (max-width: 600px) {{
                 .gis-filter-dock {{
@@ -729,21 +740,101 @@ class DashboardControlManager:
                 }}
                 window.toggleMiniMap = toggleMiniMap;
 
+                // Exact Alert Coordinates Locator & Zoom Engine
+                function locateAlert(lat, lon, name, frp, zoomLevel) {{
+                    var targetLat = parseFloat(lat);
+                    var targetLon = parseFloat(lon);
+                    if (isNaN(targetLat) || isNaN(targetLon)) return false;
+
+                    var z = zoomLevel || 15;
+                    var attempts = 0;
+                    var maxAttempts = 60; // Poll for up to 6s
+                    var pollTimer = setInterval(function() {{
+                        attempts++;
+                        var map = getLeafletMap();
+                        if (map && typeof map.setView === 'function') {{
+                            clearInterval(pollTimer);
+
+                            // Smooth fly to exact detection coordinates
+                            if (typeof map.flyTo === 'function') {{
+                                map.flyTo([targetLat, targetLon], z, {{ duration: 1.6 }});
+                            }} else {{
+                                map.setView([targetLat, targetLon], z);
+                            }}
+
+                            // Add prominent pulsing radar marker and popup
+                            if (typeof L !== 'undefined') {{
+                                if (window._currentAlertLayer) {{
+                                    try {{ map.removeLayer(window._currentAlertLayer); }} catch(e) {{}}
+                                }}
+                                var alertGroup = L.layerGroup();
+                                window._currentAlertLayer = alertGroup;
+
+                                // Animated outer pulsing ring
+                                var outerRing = L.circleMarker([targetLat, targetLon], {{
+                                    radius: 32,
+                                    color: '#ef4444',
+                                    weight: 3,
+                                    fillColor: '#ef4444',
+                                    fillOpacity: 0.35,
+                                    className: 'pulsing-radar-marker'
+                                }}).addTo(alertGroup);
+
+                                // Solid core beacon
+                                var coreBeacon = L.circleMarker([targetLat, targetLon], {{
+                                    radius: 9,
+                                    color: '#ffffff',
+                                    weight: 2.5,
+                                    fillColor: '#dc2626',
+                                    fillOpacity: 1.0
+                                }}).addTo(alertGroup);
+
+                                var titleStr = name || 'Active Thermal Anomaly';
+                                var frpStr = frp ? ('<div style="font-size:12px; color:#d97706; font-weight:700; margin-top:3px;">Thermal Radiative Power: ' + frp + ' MW</div>') : '';
+                                var popupHtml = 
+                                    '<div style="font-family:Inter,sans-serif; min-width:210px; padding:2px;">' +
+                                    '<div style="font-size:11px; font-weight:800; color:#ef4444; letter-spacing:0.5px; text-transform:uppercase;">🚨 INCIDENT ALERT LOCATION</div>' +
+                                    '<div style="font-size:14px; font-weight:700; color:#0f172a; margin:3px 0;">' + titleStr + '</div>' +
+                                    '<div style="font-size:12px; color:#475569;">Detection Coordinates:<br><b>' + targetLat.toFixed(4) + '&deg;N, ' + targetLon.toFixed(4) + '&deg;E</b></div>' +
+                                    frpStr +
+                                    '</div>';
+
+                                coreBeacon.bindPopup(popupHtml, {{ autoClose: false, closeOnClick: false }}).openPopup();
+                                alertGroup.addTo(map);
+
+                                var searchBox = document.getElementById('facSearchInput');
+                                if (searchBox) searchBox.value = titleStr;
+                            }}
+                            return true;
+                        }}
+                        if (attempts >= maxAttempts) {{
+                            clearInterval(pollTimer);
+                        }}
+                    }}, 100);
+                    return true;
+                }}
+                window.locateAlert = locateAlert;
+
                 // Cross-window message listener active immediately
                 window.addEventListener('message', function(e) {{
                     if (!e.data) return;
                     var msg = typeof e.data === 'string' ? e.data : (e.data.action || e.data.type || '');
-                    var tile = e.data.tile || '';
-                    if (msg === 'toggleDock') {{
+                    if (msg === 'locateAlert') {{
+                        locateAlert(e.data.lat, e.data.lon, e.data.name, e.data.frp, e.data.zoom || 15);
+                    }} else if (msg === 'searchFacility' || msg === 'jumpToFacility') {{
+                        if (e.data.lat && e.data.lon) {{
+                            locateAlert(e.data.lat, e.data.lon, e.data.query || e.data.name || e.data.tile, e.data.frp, e.data.zoom || 15);
+                        }} else {{
+                            jumpToFacility(e.data.query || e.data.tile || e.data.name || '');
+                        }}
+                    }} else if (msg === 'toggleDock') {{
                         toggleDock();
-                    }} else if (msg === 'switchBasemap' && tile) {{
-                        switchBasemap(tile);
+                    }} else if (msg === 'switchBasemap' && (e.data.tile || e.data.key)) {{
+                        switchBasemap(e.data.tile || e.data.key);
                     }} else if (msg === 'resetMapView') {{
                         resetMapView();
                     }} else if (msg === 'toggleMiniMap') {{
                         toggleMiniMap();
-                    }} else if ((msg === 'searchFacility' || msg === 'jumpToFacility') && (e.data.query || tile)) {{
-                        jumpToFacility(e.data.query || tile);
                     }}
                 }});
 
@@ -770,7 +861,7 @@ class DashboardControlManager:
                         }});
                     }}
 
-                    // Facility Search FlyTo
+                    // Facility Search FlyTo with Smart Token and Fire Registry Fallback
                     function jumpToFacility(overrideName) {{
                         var inputVal = (overrideName || (document.getElementById('facSearchInput') ? document.getElementById('facSearchInput').value : '')).trim();
                         if (!inputVal) return;
@@ -778,29 +869,55 @@ class DashboardControlManager:
                             document.getElementById('facSearchInput').value = inputVal;
                         }}
 
+                        var noiseWords = ['and', 'the', 'of', 'in', 'near', 'plant', 'station', 'complex', 'refinery', 'power', 'thermal', 'super', 'tps', 'sector', 'block'];
+                        var tokens = inputVal.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(function(w) {{
+                            return w.length >= 3 && noiseWords.indexOf(w) === -1;
+                        }});
+
                         var target = null;
-                        for (var i = 0; i < facilitiesData.length; i++) {{
-                            var facName = (facilitiesData[i].name || '').toLowerCase();
-                            var searchLower = inputVal.toLowerCase();
-                            if (facName.indexOf(searchLower) !== -1 || searchLower.indexOf(facName) !== -1) {{
-                                target = facilitiesData[i];
-                                break;
+
+                        // 1. First priority: match in facilitiesData
+                        if (facilitiesData && facilitiesData.length) {{
+                            for (var i = 0; i < facilitiesData.length; i++) {{
+                                var fNameLower = (facilitiesData[i].name || '').toLowerCase();
+                                var searchLower = inputVal.toLowerCase();
+                                if (fNameLower.indexOf(searchLower) !== -1 || searchLower.indexOf(fNameLower) !== -1) {{
+                                    target = facilitiesData[i];
+                                    break;
+                                }}
+                                for (var t = 0; t < tokens.length; t++) {{
+                                    if (fNameLower.indexOf(tokens[t]) !== -1) {{
+                                        target = facilitiesData[i];
+                                        break;
+                                    }}
+                                }}
+                                if (target) break;
                             }}
                         }}
 
-                        if (target && map) {{
-                            map.flyTo([target.lat, target.lon], 14, {{ duration: 1.5 }});
-                            if (typeof L !== 'undefined') {{
-                                var pulse = L.circleMarker([target.lat, target.lon], {{
-                                    radius: 22,
-                                    color: '#58a6ff',
-                                    weight: 3,
-                                    fillColor: '#58a6ff',
-                                    fillOpacity: 0.35
-                                }}).addTo(map);
-                                pulse.bindPopup("<b>" + target.name + "</b><br>Type: " + (target.type || target.facility_type || 'Industrial Facility') + "<br>Coordinates: " + target.lat + ", " + target.lon).openPopup();
-                                setTimeout(function() {{ map.removeLayer(pulse); }}, 10000);
+                        // 2. Second priority: match in _fireMarkerRegistry
+                        if (!target && window._fireMarkerRegistry && window._fireMarkerRegistry.length) {{
+                            for (var j = 0; j < window._fireMarkerRegistry.length; j++) {{
+                                var mData = window._fireMarkerRegistry[j].data;
+                                if (!mData) continue;
+                                var mFac = (mData.nearest_facility_name || mData.facility_name || '').toLowerCase();
+                                for (var k = 0; k < tokens.length; k++) {{
+                                    if (mFac.indexOf(tokens[k]) !== -1) {{
+                                        target = {{
+                                            name: mData.nearest_facility_name || mData.facility_name || inputVal,
+                                            lat: parseFloat(mData.latitude),
+                                            lon: parseFloat(mData.longitude),
+                                            frp: mData.frp
+                                        }};
+                                        break;
+                                    }}
+                                }}
+                                if (target) break;
                             }}
+                        }}
+
+                        if (target) {{
+                            locateAlert(target.lat, target.lon, target.name, target.frp, 15);
                         }}
                     }}
                     window.jumpToFacility = jumpToFacility;
@@ -1034,16 +1151,30 @@ class DashboardControlManager:
                     // Initial filter pass once markers are populated
                     setTimeout(applyMapFilters, 600);
 
-                    // Parse URL search parameter for direct facility jump (linking from Alerts page)
-                    var searchParam = null;
+                    // Parse URL search/alert parameters for direct pinpoint zoom (linking from Alerts page)
+                    var sp = null;
                     try {{
-                        searchParam = new URLSearchParams(window.location.search).get('search');
-                        if (!searchParam && window.parent && window.parent !== window) {{
-                            searchParam = new URLSearchParams(window.parent.location.search).get('search');
+                        var rawSearch = window.location.search;
+                        if ((!rawSearch || rawSearch.length < 2) && window.parent && window.parent !== window) {{
+                            rawSearch = window.parent.location.search;
+                        }}
+                        if (rawSearch && rawSearch.length > 1) {{
+                            sp = new URLSearchParams(rawSearch);
                         }}
                     }} catch(e) {{}}
-                    if (searchParam) {{
-                        setTimeout(function() {{ jumpToFacility(searchParam); }}, 900);
+
+                    if (sp) {{
+                        var pLat = parseFloat(sp.get('lat'));
+                        var pLon = parseFloat(sp.get('lon'));
+                        var pName = sp.get('name') || sp.get('search');
+                        var pFrp = sp.get('frp');
+                        var pZoom = parseInt(sp.get('zoom') || '15', 10);
+
+                        if (!isNaN(pLat) && !isNaN(pLon)) {{
+                            locateAlert(pLat, pLon, pName, pFrp, pZoom);
+                        }} else if (pName) {{
+                            setTimeout(function() {{ jumpToFacility(pName); }}, 500);
+                        }}
                     }}
                 }}
 

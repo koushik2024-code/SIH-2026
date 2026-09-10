@@ -176,7 +176,7 @@
                 <i class="fa-solid fa-chart-column"></i> Analytics
             </a>
             <a href="/alerts" class="nav-pill-link">
-                <i class="fa-solid fa-bell"></i> Alerts
+                <i class="fa-solid fa-bell"></i> Alerts <span id="navAlertBadge" class="nav-counter-pill badge bg-danger text-light ms-1" style="display: none;"></span>
             </a>
             <a href="/reports" class="nav-pill-link active">
                 <i class="fa-solid fa-file-invoice"></i> Reports
@@ -287,7 +287,7 @@
                         {% for f in facility_risks %}
                         <tr>
                             <td>
-                                <a href="/?search={{ f.facility_name }}" style="font-weight: 600; color: #ffffff; text-decoration: none;" title="Locate on GIS Map">
+                                <a href="/?lat={{ f.latitude }}&lon={{ f.longitude }}&name={{ f.facility_name|urlencode }}&zoom=15" style="font-weight: 600; color: #ffffff; text-decoration: none;" title="Locate on GIS Map">
                                     {{ f.facility_name }} <i class="fa-solid fa-crosshairs ms-1" style="font-size: 11px; color: var(--accent);"></i>
                                 </a>
                             </td>
@@ -430,6 +430,21 @@
             const targetContent = document.getElementById('tab-' + tabId);
             if (targetContent) targetContent.classList.add('active');
         }
+
+        // Sync navbar alert badge from localStorage
+        (function() {
+            const savedCount = localStorage.getItem('pyrovision_active_alerts_count');
+            const badge = document.getElementById('navAlertBadge');
+            if (badge && savedCount !== null) {
+                const count = parseInt(savedCount, 10);
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        })();
     </script>
 </body>
 </html>
