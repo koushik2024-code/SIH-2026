@@ -190,6 +190,15 @@ def build():
     # -------------------------------------------------------------
     print("[+] Rendering Spatial Analytics (analytics.html)...")
     analytics_data = _analytics_engine.generate_full_analytics(fire_df, facs_gdf)
+
+    # Save analytics.json for static client fetching
+    analytics_json_str = json.dumps(analytics_data, indent=2)
+    with open(os.path.join(BASE_DIR, "static", "reports", "analytics.json"), "w", encoding="utf-8") as f:
+        f.write(analytics_json_str)
+    with open(os.path.join(BASE_DIR, "docs", "static", "reports", "analytics.json"), "w", encoding="utf-8") as f:
+        f.write(analytics_json_str)
+    print("    -> Generated static/reports/analytics.json and docs/static/reports/analytics.json")
+
     t_analytics = env.get_template("analytics.html")
     analytics_html = t_analytics.render(
         **analytics_data,

@@ -346,7 +346,7 @@
             <div class="kpi-card info">
                 <div class="kpi-icon"><i class="fa-solid fa-bullhorn"></i></div>
                 <div class="kpi-content">
-                    <h3 id="kpi-total">12</h3>
+                    <h3 id="kpi-total">13</h3>
                     <p>Total Dispatched</p>
                 </div>
             </div>
@@ -379,6 +379,79 @@
         <!-- Alerts Stream Feed -->
         <section class="alerts-feed" id="alerts-list">
             
+                
+                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-C2744DE4">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
+                                    <span class="status-badge status-ACKNOWLEDGED" id="status-tag-ALT-C2744DE4">ACKNOWLEDGED</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-10T04:12:46.382906+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-C2744DE4</span>
+                                </div>
+                                <h2 class="alert-title">CRITICAL TEST: Simulated Industrial Fire & Thermal Anomaly</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            SYSTEM DIAGNOSTIC ALERT: Multi-spectral sensors detected simulated extreme thermal anomaly (FRP 72.5 MW, 378.2 K) 0.45 km from Jamnagar Petrochemical Complex. All operational response channels (Email, SMS, Dashboard, Log, Webhook) tested successfully.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">Jamnagar Petrochemical Complex</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">0.45 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">72.5 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">22.4707, 70.0577</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?lat=22.4707&lon=70.0577&name=Jamnagar%20Petrochemical%20Complex&frp=72.5&zoom=15" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                            </div>
+                        </div>
+                    </div>
                 
                     <div class="alert-card severity-CRITICAL" id="alert-card-ALT-F708840C">
                         <div class="alert-header">

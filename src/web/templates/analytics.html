@@ -39,6 +39,20 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
+        .chart-loading-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(14, 21, 36, 0.88);
+            backdrop-filter: blur(4px);
+            z-index: 5;
+            border-radius: 8px;
+            transition: opacity 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -114,7 +128,9 @@
                     <i class="fa-solid fa-satellite-dish"></i>
                 </div>
                 <div class="kpi-content">
-                    <div class="kpi-val text-info">{{ regional.total_detections }}</div>
+                    <div class="kpi-val text-info" id="kpiTotalDetections">
+                        <i class="fas fa-spinner fa-spin text-secondary" style="font-size: 1.1rem;"></i>
+                    </div>
                     <div class="kpi-lbl">Total Fire Detections</div>
                 </div>
             </div>
@@ -124,8 +140,8 @@
                     <i class="fa-solid fa-industry"></i>
                 </div>
                 <div class="kpi-content">
-                    <div class="kpi-val text-danger">
-                        {{ regional.industrial_fire_count }} <span style="font-size: 1rem; font-weight: 600; color: var(--text-secondary);">({{ regional.industrial_exposure_rate }}%)</span>
+                    <div class="kpi-val text-danger" id="kpiIndustrialExposure">
+                        <i class="fas fa-spinner fa-spin text-secondary" style="font-size: 1.1rem;"></i>
                     </div>
                     <div class="kpi-lbl">Industrial Asset Exposure</div>
                 </div>
@@ -136,10 +152,10 @@
                     <i class="fa-solid fa-bolt"></i>
                 </div>
                 <div class="kpi-content">
-                    <div class="kpi-val text-warning">
-                        {{ regional.avg_frp }} <span style="font-size: 0.95rem; font-weight: 600;">MW</span>
+                    <div class="kpi-val text-warning" id="kpiAvgFrp">
+                        <i class="fas fa-spinner fa-spin text-secondary" style="font-size: 1.1rem;"></i>
                     </div>
-                    <div class="kpi-lbl">Mean Radiative Power (Peak: {{ regional.peak_frp }} MW)</div>
+                    <div class="kpi-lbl" id="kpiPeakFrpLbl">Mean Radiative Power</div>
                 </div>
             </div>
 
@@ -148,7 +164,9 @@
                     <i class="fa-solid fa-circle-check"></i>
                 </div>
                 <div class="kpi-content">
-                    <div class="kpi-val text-success">{{ regional.high_confidence_rate }}%</div>
+                    <div class="kpi-val text-success" id="kpiConfidenceRate">
+                        <i class="fas fa-spinner fa-spin text-secondary" style="font-size: 1.1rem;"></i>
+                    </div>
                     <div class="kpi-lbl">High-Confidence Detections</div>
                 </div>
             </div>
@@ -164,7 +182,11 @@
                         </h2>
                         <span class="badge-pill-custom badge-info-soft">Part 4.4.1</span>
                     </div>
-                    <div style="height: 280px; position: relative;">
+                    <div style="height: 280px; position: relative;" id="fireTypeDonutWrapper">
+                        <div id="loading-fireTypeDonut" class="chart-loading-overlay">
+                            <i class="fas fa-spinner fa-spin fa-2x text-danger mb-2"></i>
+                            <div class="small text-secondary">Loading fire type distribution...</div>
+                        </div>
                         <canvas id="fireTypeDonut"></canvas>
                     </div>
                 </div>
@@ -188,21 +210,12 @@
                                     <th class="text-center">Brightness Temp</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {% for item in distribution.table %}
+                            <tbody id="categoryBreakdownTbody">
                                 <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background-color:{{ item.color }};"></span>
-                                            <strong>{{ item.category }}</strong>
-                                        </div>
+                                    <td colspan="5" class="text-center py-4 text-secondary">
+                                        <i class="fas fa-spinner fa-spin me-2 text-info"></i> Loading category breakdown telemetry...
                                     </td>
-                                    <td class="text-center fw-bold">{{ item.count }}</td>
-                                    <td class="text-center">{{ item.percentage }}%</td>
-                                    <td class="text-center text-warning">{{ item.avg_frp }} MW</td>
-                                    <td class="text-center">{{ item.avg_brightness }} K</td>
                                 </tr>
-                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -223,7 +236,11 @@
                         </div>
                         <span class="badge-pill-custom badge-info-soft">Part 4.4.2</span>
                     </div>
-                    <div style="height: 330px; position: relative;">
+                    <div style="height: 330px; position: relative;" id="timeSeriesChartWrapper">
+                        <div id="loading-timeSeriesChart" class="chart-loading-overlay">
+                            <i class="fas fa-spinner fa-spin fa-2x text-warning mb-2"></i>
+                            <div class="small text-secondary">Loading detection time series...</div>
+                        </div>
                         <canvas id="timeSeriesChart"></canvas>
                     </div>
                 </div>
@@ -240,7 +257,11 @@
                         </h2>
                         <span class="badge-pill-custom badge-info-soft">Part 4.4.3 Chart</span>
                     </div>
-                    <div style="height: 300px; position: relative;">
+                    <div style="height: 300px; position: relative;" id="facilitiesBarChartWrapper">
+                        <div id="loading-facilitiesBarChart" class="chart-loading-overlay">
+                            <i class="fas fa-spinner fa-spin fa-2x text-danger mb-2"></i>
+                            <div class="small text-secondary">Loading impacted facilities...</div>
+                        </div>
                         <canvas id="facilitiesBarChart"></canvas>
                     </div>
                 </div>
@@ -263,26 +284,12 @@
                                     <th class="text-center">Risk Level</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {% for fac in top_facilities %}
+                            <tbody id="leaderboardTbody">
                                 <tr>
-                                    <td>
-                                        <a href="/?lat={{ fac.latitude }}&lon={{ fac.longitude }}&name={{ fac.name|urlencode }}&zoom=15" style="color: #ffffff; text-decoration: none;" title="Locate on GIS Map">
-                                            <strong>{{ fac.name }}</strong> <i class="fa-solid fa-crosshairs ms-1" style="font-size: 11px; color: var(--accent);"></i>
-                                        </a><br>
-                                        <small class="text-secondary">{{ fac.facility_type }}</small>
-                                    </td>
-                                    <td class="text-center text-danger fw-bold">{{ fac.fire_count }}</td>
-                                    <td class="text-center text-warning">{{ fac.min_distance_km }} km</td>
-                                    <td class="text-center">
-                                        <span class="badge-pill-custom {{ fac.risk_badge_class }}">
-                                            {{ fac.risk_level }}
-                                        </span>
+                                    <td colspan="4" class="text-center text-secondary py-4">
+                                        <i class="fas fa-spinner fa-spin me-2 text-info"></i> Loading proximity hazard leaderboard...
                                     </td>
                                 </tr>
-                                {% else %}
-                                <tr><td colspan="4" class="text-center text-secondary py-4">No facilities within proximity threshold.</td></tr>
-                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -312,21 +319,12 @@
                                     <th class="text-center">Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {% for q in regional.quadrants %}
+                            <tbody id="regionalMatrixTbody">
                                 <tr>
-                                    <td><strong>{{ q.region }}</strong></td>
-                                    <td class="text-center">{{ q.fire_count }}</td>
-                                    <td class="text-center text-danger fw-bold">{{ q.industrial_count }}</td>
-                                    <td class="text-center">{{ q.avg_frp }} MW</td>
-                                    <td class="text-center">{{ q.dominant_type }}</td>
-                                    <td class="text-center fw-bold" style="color: {{ '#ef4444' if q.risk_status == 'CRITICAL' else '#10b981' }};">
-                                        {{ q.risk_status }}
+                                    <td colspan="6" class="text-center text-secondary py-4">
+                                        <i class="fas fa-spinner fa-spin me-2 text-info"></i> Loading regional surveillance matrix...
                                     </td>
                                 </tr>
-                                {% else %}
-                                <tr><td colspan="6" class="text-center text-secondary py-4">Regional spatial zones not calculated.</td></tr>
-                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -340,17 +338,21 @@
                         </h2>
                         <span class="badge-pill-custom badge-info-soft">Diurnal Ratio</span>
                     </div>
-                    <div style="height: 180px; position: relative;">
+                    <div style="height: 180px; position: relative;" id="diurnalDonutWrapper">
+                        <div id="loading-diurnalDonut" class="chart-loading-overlay">
+                            <i class="fas fa-spinner fa-spin fa-2x text-warning mb-2"></i>
+                            <div class="small text-secondary">Loading diurnal split...</div>
+                        </div>
                         <canvas id="diurnalDonut"></canvas>
                     </div>
                     <div class="d-flex justify-content-around mt-3 text-center pt-2 border-top" style="border-color: var(--border-color) !important;">
                         <div>
-                            <div class="fw-bold text-warning fs-5">{{ regional.daytime_count }}</div>
-                            <small class="text-secondary">☀️ Daytime ({{ regional.day_percentage }}%)</small>
+                            <div class="fw-bold text-warning fs-5" id="diurnalDayCount"><i class="fas fa-spinner fa-spin text-secondary" style="font-size: 0.8rem;"></i></div>
+                            <small class="text-secondary">☀️ Daytime (<span id="diurnalDayPct">--</span>%)</small>
                         </div>
                         <div>
-                            <div class="fw-bold text-info fs-5">{{ regional.nighttime_count }}</div>
-                            <small class="text-secondary">🌙 Nighttime ({{ (100.0 - regional.day_percentage)|round(1) }}%)</small>
+                            <div class="fw-bold text-info fs-5" id="diurnalNightCount"><i class="fas fa-spinner fa-spin text-secondary" style="font-size: 0.8rem;"></i></div>
+                            <small class="text-secondary">🌙 Nighttime (<span id="diurnalNightPct">--</span>%)</small>
                         </div>
                     </div>
                 </div>
@@ -363,178 +365,371 @@
         Chart.defaults.color = '#94a3b8';
         Chart.defaults.font.family = "'Inter', sans-serif";
 
-        // 1. Fire Type Donut Chart
-        const distData = {{ distribution | tojson }};
-        new Chart(document.getElementById('fireTypeDonut'), {
-            type: 'doughnut',
-            data: {
-                labels: distData.labels,
-                datasets: [{
-                    data: distData.counts,
-                    backgroundColor: distData.colors,
-                    borderWidth: 0,
-                    hoverOffset: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '70%',
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: { color: '#f8fafc', font: { size: 12, weight: '500' }, padding: 14 }
+        const chartInstances = {};
+
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function renderCharts(distData, tsData, topFacs, regData) {
+            // Destroy previous chart instances if re-rendering
+            ['fireTypeDonut', 'timeSeriesChart', 'facilitiesBarChart', 'diurnalDonut'].forEach(id => {
+                if (chartInstances[id]) {
+                    try { chartInstances[id].destroy(); } catch (e) {}
+                }
+            });
+
+            // 1. Fire Type Donut Chart
+            const fireTypeEl = document.getElementById('fireTypeDonut');
+            if (fireTypeEl) {
+                chartInstances['fireTypeDonut'] = new Chart(fireTypeEl, {
+                    type: 'doughnut',
+                    data: {
+                        labels: distData.labels || [],
+                        datasets: [{
+                            data: distData.counts || [],
+                            backgroundColor: distData.colors || ['#e74c3c', '#e67e22', '#27ae60', '#f1c40f', '#7f8c8d', '#95a5a6'],
+                            borderWidth: 0,
+                            hoverOffset: 8
+                        }]
                     },
-                    tooltip: {
-                        backgroundColor: 'rgba(14, 21, 36, 0.95)',
-                        borderColor: '#223048',
-                        borderWidth: 1,
-                        padding: 12,
-                        cornerRadius: 8
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { color: '#f8fafc', font: { size: 12, weight: '500' }, padding: 14 }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(14, 21, 36, 0.95)',
+                                borderColor: '#223048',
+                                borderWidth: 1,
+                                padding: 12,
+                                cornerRadius: 8
+                            }
+                        }
                     }
+                });
+            }
+
+            // 2. Time Series Dual-Axis Chart
+            const timeSeriesEl = document.getElementById('timeSeriesChart');
+            if (timeSeriesEl) {
+                chartInstances['timeSeriesChart'] = new Chart(timeSeriesEl, {
+                    type: 'bar',
+                    data: {
+                        labels: tsData.dates || [],
+                        datasets: [
+                            {
+                                label: 'Detection Frequency',
+                                data: tsData.counts || [],
+                                backgroundColor: 'rgba(56, 189, 248, 0.65)',
+                                borderColor: '#38bdf8',
+                                borderRadius: 4,
+                                borderWidth: 1,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Total FRP (MW)',
+                                data: tsData.total_frp || [],
+                                type: 'line',
+                                borderColor: '#ef4444',
+                                backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                                borderWidth: 2.5,
+                                tension: 0.35,
+                                pointRadius: 4,
+                                pointBackgroundColor: '#ef4444',
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        scales: {
+                            x: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: 'rgba(34, 48, 72, 0.5)' }
+                            },
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                ticks: { color: '#38bdf8' },
+                                title: { display: true, text: 'Detection Count', color: '#38bdf8' },
+                                grid: { color: 'rgba(34, 48, 72, 0.5)' }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                ticks: { color: '#ef4444' },
+                                title: { display: true, text: 'Total FRP (MW)', color: '#ef4444' },
+                                grid: { drawOnChartArea: false }
+                            }
+                        },
+                        plugins: {
+                            legend: { labels: { color: '#f8fafc', font: { weight: '600' } } },
+                            tooltip: {
+                                backgroundColor: 'rgba(14, 21, 36, 0.95)',
+                                borderColor: '#223048',
+                                borderWidth: 1,
+                                padding: 12
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 3. Top Facilities Horizontal Bar Chart
+            const facBarEl = document.getElementById('facilitiesBarChart');
+            if (facBarEl) {
+                const facLabels = (topFacs || []).map(f => f.name.length > 22 ? f.name.substring(0, 20) + '...' : f.name);
+                const facCounts = (topFacs || []).map(f => f.fire_count);
+
+                chartInstances['facilitiesBarChart'] = new Chart(facBarEl, {
+                    type: 'bar',
+                    data: {
+                        labels: facLabels,
+                        datasets: [{
+                            label: 'Nearby Fire Anomaly Count',
+                            data: facCounts,
+                            backgroundColor: 'rgba(239, 68, 68, 0.75)',
+                            borderColor: '#ef4444',
+                            borderRadius: 4,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: 'rgba(34, 48, 72, 0.5)' }
+                            },
+                            y: {
+                                ticks: { color: '#f8fafc', font: { size: 11, weight: '500' } },
+                                grid: { display: false }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(14, 21, 36, 0.95)',
+                                borderColor: '#223048',
+                                borderWidth: 1,
+                                padding: 10
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 4. Diurnal Sun/Night Donut
+            const diurnalEl = document.getElementById('diurnalDonut');
+            if (diurnalEl) {
+                const dCount = regData.daytime_count || 0;
+                const nCount = regData.nighttime_count || 0;
+                chartInstances['diurnalDonut'] = new Chart(diurnalEl, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Daytime (☀️)', 'Nighttime (🌙)'],
+                        datasets: [{
+                            data: [dCount, nCount],
+                            backgroundColor: ['#f59e0b', '#0284c7'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '68%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(14, 21, 36, 0.95)',
+                                borderColor: '#223048',
+                                borderWidth: 1,
+                                padding: 10
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Hide chart loading state overlays smoothly
+            document.querySelectorAll('.chart-loading-overlay').forEach(el => {
+                el.style.opacity = '0';
+                setTimeout(() => { el.style.display = 'none'; }, 300);
+            });
+        }
+
+        function renderTables(topFacs, regData, distData) {
+            const isStatic = (window.location.protocol === 'file:' || window.location.hostname.includes('github.io') || window.location.pathname.endsWith('.html'));
+            const baseMapUrl = isStatic ? 'index.html' : '/';
+
+            // 1. Proximity Hazard Leaderboard Table
+            const lbTbody = document.getElementById('leaderboardTbody');
+            if (lbTbody) {
+                lbTbody.innerHTML = '';
+                if (!topFacs || topFacs.length === 0) {
+                    lbTbody.innerHTML = '<tr><td colspan="4" class="text-center text-secondary py-4">No facilities within proximity threshold.</td></tr>';
+                } else {
+                    topFacs.forEach(fac => {
+                        const tr = document.createElement('tr');
+                        const locateUrl = `${baseMapUrl}?lat=${encodeURIComponent(fac.latitude || '')}&lon=${encodeURIComponent(fac.longitude || '')}&name=${encodeURIComponent(fac.name || '')}&zoom=15`;
+                        tr.innerHTML = `
+                            <td>
+                                <a href="${locateUrl}" style="color: #ffffff; text-decoration: none;" title="Locate on GIS Map">
+                                    <strong>${escapeHtml(fac.name)}</strong> <i class="fa-solid fa-crosshairs ms-1" style="font-size: 11px; color: var(--accent);"></i>
+                                </a><br>
+                                <small class="text-secondary">${escapeHtml(fac.facility_type || 'Industrial')}</small>
+                            </td>
+                            <td class="text-center text-danger fw-bold">${fac.fire_count ?? 0}</td>
+                            <td class="text-center text-warning">${fac.min_distance_km ?? 0} km</td>
+                            <td class="text-center">
+                                <span class="badge-pill-custom ${escapeHtml(fac.risk_badge_class || 'bg-secondary')}">
+                                    ${escapeHtml(fac.risk_level || 'SURVEILLANCE')}
+                                </span>
+                            </td>
+                        `;
+                        lbTbody.appendChild(tr);
+                    });
                 }
             }
-        });
 
-        // 2. Time Series Dual-Axis Chart
-        const tsData = {{ time_series | tojson }};
-        new Chart(document.getElementById('timeSeriesChart'), {
-            type: 'bar',
-            data: {
-                labels: tsData.dates,
-                datasets: [
-                    {
-                        label: 'Detection Frequency',
-                        data: tsData.counts,
-                        backgroundColor: 'rgba(56, 189, 248, 0.65)',
-                        borderColor: '#38bdf8',
-                        borderRadius: 4,
-                        borderWidth: 1,
-                        yAxisID: 'y'
-                    },
-                    {
-                        label: 'Total FRP (MW)',
-                        data: tsData.total_frp,
-                        type: 'line',
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                        borderWidth: 2.5,
-                        tension: 0.35,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#ef4444',
-                        yAxisID: 'y1'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                scales: {
-                    x: {
-                        ticks: { color: '#94a3b8' },
-                        grid: { color: 'rgba(34, 48, 72, 0.5)' }
-                    },
-                    y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        ticks: { color: '#38bdf8' },
-                        title: { display: true, text: 'Detection Count', color: '#38bdf8' },
-                        grid: { color: 'rgba(34, 48, 72, 0.5)' }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        ticks: { color: '#ef4444' },
-                        title: { display: true, text: 'Total FRP (MW)', color: '#ef4444' },
-                        grid: { drawOnChartArea: false }
-                    }
-                },
-                plugins: {
-                    legend: { labels: { color: '#f8fafc', font: { weight: '600' } } },
-                    tooltip: {
-                        backgroundColor: 'rgba(14, 21, 36, 0.95)',
-                        borderColor: '#223048',
-                        borderWidth: 1,
-                        padding: 12
-                    }
+            // 2. Regional Surveillance Risk Matrix Table
+            const regTbody = document.getElementById('regionalMatrixTbody');
+            if (regTbody) {
+                regTbody.innerHTML = '';
+                const quads = regData.quadrants || [];
+                if (quads.length === 0) {
+                    regTbody.innerHTML = '<tr><td colspan="6" class="text-center text-secondary py-4">Regional spatial zones not calculated.</td></tr>';
+                } else {
+                    quads.forEach(q => {
+                        const tr = document.createElement('tr');
+                        const statusColor = q.risk_status === 'CRITICAL' ? '#ef4444' : (q.risk_status === 'ELEVATED' ? '#f59e0b' : '#10b981');
+                        tr.innerHTML = `
+                            <td><strong>${escapeHtml(q.region)}</strong></td>
+                            <td class="text-center">${q.fire_count ?? 0}</td>
+                            <td class="text-center text-danger fw-bold">${q.industrial_count ?? 0}</td>
+                            <td class="text-center">${q.avg_frp ?? 0} MW</td>
+                            <td class="text-center">${escapeHtml(q.dominant_type || 'Other')}</td>
+                            <td class="text-center fw-bold" style="color: ${statusColor};">
+                                ${escapeHtml(q.risk_status || 'NORMAL')}
+                            </td>
+                        `;
+                        regTbody.appendChild(tr);
+                    });
                 }
             }
-        });
 
-        // 3. Top Facilities Horizontal Bar Chart
-        const topFacs = {{ top_facilities | tojson }};
-        const facLabels = topFacs.map(f => f.name.length > 22 ? f.name.substring(0, 20) + '...' : f.name);
-        const facCounts = topFacs.map(f => f.fire_count);
+            // 3. Category Metrics Breakdown Table
+            const catTbody = document.getElementById('categoryBreakdownTbody');
+            if (catTbody && distData && distData.table && distData.table.length > 0) {
+                catTbody.innerHTML = '';
+                distData.table.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background-color:${item.color || '#95a5a6'};"></span>
+                                <strong>${escapeHtml(item.category)}</strong>
+                            </div>
+                        </td>
+                        <td class="text-center fw-bold">${item.count ?? 0}</td>
+                        <td class="text-center">${item.percentage ?? 0}%</td>
+                        <td class="text-center text-warning">${item.avg_frp ?? 0} MW</td>
+                        <td class="text-center">${item.avg_brightness ?? 0} K</td>
+                    `;
+                    catTbody.appendChild(tr);
+                });
+            }
+        }
 
-        new Chart(document.getElementById('facilitiesBarChart'), {
-            type: 'bar',
-            data: {
-                labels: facLabels,
-                datasets: [{
-                    label: 'Nearby Fire Anomaly Count',
-                    data: facCounts,
-                    backgroundColor: 'rgba(239, 68, 68, 0.75)',
-                    borderColor: '#ef4444',
-                    borderRadius: 4,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        ticks: { color: '#94a3b8' },
-                        grid: { color: 'rgba(34, 48, 72, 0.5)' }
-                    },
-                    y: {
-                        ticks: { color: '#f8fafc', font: { size: 11, weight: '500' } },
-                        grid: { display: false }
+        function updateKpis(regData) {
+            if (!regData) return;
+            const elTotal = document.getElementById('kpiTotalDetections');
+            if (elTotal && regData.total_detections !== undefined) {
+                elTotal.innerText = Number(regData.total_detections).toLocaleString();
+            }
+            const elInd = document.getElementById('kpiIndustrialExposure');
+            if (elInd && regData.industrial_fire_count !== undefined) {
+                elInd.innerHTML = `${regData.industrial_fire_count} <span style="font-size: 1rem; font-weight: 600; color: var(--text-secondary);">(${regData.industrial_exposure_rate || 0}%)</span>`;
+            }
+            const elFrp = document.getElementById('kpiAvgFrp');
+            if (elFrp && regData.avg_frp !== undefined) {
+                elFrp.innerHTML = `${regData.avg_frp} <span style="font-size: 0.95rem; font-weight: 600;">MW</span>`;
+            }
+            const elPeakLbl = document.getElementById('kpiPeakFrpLbl');
+            if (elPeakLbl && regData.peak_frp !== undefined) {
+                elPeakLbl.innerText = `Mean Radiative Power (Peak: ${regData.peak_frp} MW)`;
+            }
+            const elConf = document.getElementById('kpiConfidenceRate');
+            if (elConf && regData.high_confidence_rate !== undefined) {
+                elConf.innerText = `${regData.high_confidence_rate}%`;
+            }
+
+            // Diurnal counts
+            const dDay = document.getElementById('diurnalDayCount');
+            if (dDay && regData.daytime_count !== undefined) dDay.innerText = regData.daytime_count;
+            const dDayPct = document.getElementById('diurnalDayPct');
+            if (dDayPct && regData.day_percentage !== undefined) dDayPct.innerText = regData.day_percentage;
+
+            const dNight = document.getElementById('diurnalNightCount');
+            if (dNight && regData.nighttime_count !== undefined) dNight.innerText = regData.nighttime_count;
+            const dNightPct = document.getElementById('diurnalNightPct');
+            if (dNightPct && regData.day_percentage !== undefined) {
+                dNightPct.innerText = (100.0 - Number(regData.day_percentage)).toFixed(1);
+            }
+        }
+
+        async function fetchAnalyticsData() {
+            const isStatic = (window.location.protocol === 'file:' || window.location.hostname.includes('github.io') || window.location.pathname.endsWith('.html'));
+            const endpoints = isStatic 
+                ? ['static/reports/analytics.json', '/api/analytics', '/api/stats']
+                : ['/api/analytics', 'static/reports/analytics.json', '/api/stats'];
+
+            for (const url of endpoints) {
+                try {
+                    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && (data.distribution || data.fire_type_distribution)) {
+                            const distData = data.fire_type_distribution || data.distribution || {};
+                            const tsData = data.time_series || {};
+                            const topFacs = data.top_facilities || [];
+                            const regData = data.regional_summary || data.regional || {};
+
+                            renderCharts(distData, tsData, topFacs, regData);
+                            renderTables(topFacs, regData, distData);
+                            updateKpis(regData);
+                            return data;
+                        }
                     }
-                },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(14, 21, 36, 0.95)',
-                        borderColor: '#223048',
-                        borderWidth: 1,
-                        padding: 10
-                    }
+                } catch (err) {
+                    // Try next fallback endpoint
                 }
             }
-        });
+            console.warn('Could not load dynamic analytics telemetry from API or static reports.');
+        }
 
-        // 4. Diurnal Sun/Night Donut
-        const regData = {{ regional | tojson }};
-        new Chart(document.getElementById('diurnalDonut'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Daytime (☀️)', 'Nighttime (🌙)'],
-                datasets: [{
-                    data: [regData.daytime_count, regData.nighttime_count],
-                    backgroundColor: ['#f59e0b', '#0284c7'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '68%',
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(14, 21, 36, 0.95)',
-                        borderColor: '#223048',
-                        borderWidth: 1,
-                        padding: 10
-                    }
-                }
-            }
+        // Fetch on initial load and poll every 30 seconds
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchAnalyticsData();
         });
+        setInterval(fetchAnalyticsData, 30000);
 
         // Sync navbar alert badge from localStorage
         (function() {

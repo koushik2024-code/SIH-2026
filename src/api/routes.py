@@ -131,6 +131,16 @@ def get_stats(
 ):
     return service.get_statistics()
 
+@router.get(
+    "/analytics",
+    summary="Get spatial intelligence analytics",
+    description="Retrieve fire type distribution, time series, top impacted facilities, and regional surveillance summary."
+)
+def get_analytics(
+    service: APIService = Depends(get_service)
+):
+    return service.get_analytics()
+
 @router.post(
     "/classify",
     response_model=ClassifyBatchResponse,

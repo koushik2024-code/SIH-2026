@@ -313,6 +313,23 @@ class APIService:
             last_pipeline_run=last_run
         )
 
+    def get_analytics(self) -> Dict[str, Any]:
+        """Generate comprehensive spatial analytics payload."""
+        from src.visualization.analytics_panels import AnalyticsEngine
+        engine = AnalyticsEngine()
+        fire_df = self.db.get_all_fires(limit=5000)
+        facs_gdf = None
+        try:
+            import geopandas as gpd
+            fac_path = settings.PROCESSED_DATA_DIR / "industrial_facilities.geojson"
+            if fac_path.exists():
+                facs_gdf = gpd.read_file(fac_path)
+        except Exception:
+            pass
+        if facs_gdf is None or (hasattr(facs_gdf, 'empty') and facs_gdf.empty):
+            facs_gdf = self.demo_gen.generate_facilities()
+        return engine.generate_full_analytics(fire_df, facs_gdf)
+
     def classify_records(self, records: List[ClassifyFeatureInput]) -> ClassifyBatchResponse:
         """
         Classify input fire observations into one of 6 classes:
