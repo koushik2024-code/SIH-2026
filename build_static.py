@@ -38,9 +38,8 @@ def adapt_links_for_static(html: str) -> str:
         ('href="/reports"', 'href="reports.html"'),
         ('href="/map"', 'href="map.html"'),
         ('href="/static/css/theme.css"', 'href="static/css/theme.css"'),
-        ('src="/static/css/theme.css"', 'src="static/css/theme.css"'),
+        ('mapFrame.src = "/map" + window.location.search;', 'mapFrame.src = "map.html" + window.location.search;'),
         ('mapFrame.src = "/map"', 'mapFrame.src = "map.html"'),
-        ('mapFrame.src = "/map" + window.location.search;', 'mapFrame.src = "map.html";'),
         ('href="map.html"', 'href="map.html"'),
     ]
     for old, new in replacements:

@@ -742,6 +742,8 @@ class DashboardControlManager:
                         resetMapView();
                     }} else if (msg === 'toggleMiniMap') {{
                         toggleMiniMap();
+                    }} else if ((msg === 'searchFacility' || msg === 'jumpToFacility') && (e.data.query || tile)) {{
+                        jumpToFacility(e.data.query || tile);
                     }}
                 }});
 
@@ -769,13 +771,18 @@ class DashboardControlManager:
                     }}
 
                     // Facility Search FlyTo
-                    function jumpToFacility() {{
-                        var inputVal = document.getElementById('facSearchInput').value.trim();
+                    function jumpToFacility(overrideName) {{
+                        var inputVal = (overrideName || (document.getElementById('facSearchInput') ? document.getElementById('facSearchInput').value : '')).trim();
                         if (!inputVal) return;
+                        if (document.getElementById('facSearchInput')) {{
+                            document.getElementById('facSearchInput').value = inputVal;
+                        }}
 
                         var target = null;
                         for (var i = 0; i < facilitiesData.length; i++) {{
-                            if (facilitiesData[i].name.toLowerCase().indexOf(inputVal.toLowerCase()) !== -1) {{
+                            var facName = (facilitiesData[i].name || '').toLowerCase();
+                            var searchLower = inputVal.toLowerCase();
+                            if (facName.indexOf(searchLower) !== -1 || searchLower.indexOf(facName) !== -1) {{
                                 target = facilitiesData[i];
                                 break;
                             }}
@@ -785,17 +792,18 @@ class DashboardControlManager:
                             map.flyTo([target.lat, target.lon], 14, {{ duration: 1.5 }});
                             if (typeof L !== 'undefined') {{
                                 var pulse = L.circleMarker([target.lat, target.lon], {{
-                                    radius: 20,
+                                    radius: 22,
                                     color: '#58a6ff',
                                     weight: 3,
                                     fillColor: '#58a6ff',
-                                    fillOpacity: 0.3
+                                    fillOpacity: 0.35
                                 }}).addTo(map);
-                                pulse.bindPopup("<b>" + target.name + "</b><br>Coordinates: " + target.lat + ", " + target.lon).openPopup();
-                                setTimeout(function() {{ map.removeLayer(pulse); }}, 8000);
+                                pulse.bindPopup("<b>" + target.name + "</b><br>Type: " + (target.type || target.facility_type || 'Industrial Facility') + "<br>Coordinates: " + target.lat + ", " + target.lon).openPopup();
+                                setTimeout(function() {{ map.removeLayer(pulse); }}, 10000);
                             }}
                         }}
                     }}
+                    window.jumpToFacility = jumpToFacility;
 
                     var searchInput = document.getElementById('facSearchInput');
                     if (searchInput) {{
@@ -1025,6 +1033,18 @@ class DashboardControlManager:
 
                     // Initial filter pass once markers are populated
                     setTimeout(applyMapFilters, 600);
+
+                    // Parse URL search parameter for direct facility jump (linking from Alerts page)
+                    var searchParam = null;
+                    try {{
+                        searchParam = new URLSearchParams(window.location.search).get('search');
+                        if (!searchParam && window.parent && window.parent !== window) {{
+                            searchParam = new URLSearchParams(window.parent.location.search).get('search');
+                        }}
+                    }} catch(e) {{}}
+                    if (searchParam) {{
+                        setTimeout(function() {{ jumpToFacility(searchParam); }}, 900);
+                    }}
                 }}
 
                 if (document.readyState === 'loading') {{

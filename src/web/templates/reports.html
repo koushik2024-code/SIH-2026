@@ -286,7 +286,11 @@
                     <tbody>
                         {% for f in facility_risks %}
                         <tr>
-                            <td style="font-weight: 600; color: #ffffff;">{{ f.facility_name }}</td>
+                            <td>
+                                <a href="/?search={{ f.facility_name }}" style="font-weight: 600; color: #ffffff; text-decoration: none;" title="Locate on GIS Map">
+                                    {{ f.facility_name }} <i class="fa-solid fa-crosshairs ms-1" style="font-size: 11px; color: var(--accent);"></i>
+                                </a>
+                            </td>
                             <td><span class="type-pill">{{ f.facility_type }}</span></td>
                             <td class="text-center text-danger fw-bold">{{ f.nearby_fire_count_5km }}</td>
                             <td class="text-center text-warning">{{ f.peak_frp_mw }} MW</td>

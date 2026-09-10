@@ -465,15 +465,23 @@
     <div id="toast-container"></div>
 
     <script>
+        const isStaticHost = (window.location.protocol === 'file:' || window.location.hostname.includes('github.io') || window.location.pathname.endsWith('.html'));
+
         // Real-time Server-Sent Events (SSE) listener
         function setupAlertStream() {
+            const statusEl = document.getElementById('sse-status');
+            if (isStaticHost) {
+                if (statusEl) statusEl.innerText = "SATELLITE ARCHIVE LIVE";
+                console.log("Static deployment: Alerts operating in client-side interactive telemetry mode.");
+                return;
+            }
+
             if (!window.EventSource) {
                 console.warn("Server-Sent Events not supported by this browser.");
                 return;
             }
 
             const evtSource = new EventSource('/api/alerts/stream');
-            const statusEl = document.getElementById('sse-status');
 
             evtSource.addEventListener('connected', function(e) {
                 console.log("Connected to Alert Stream SSE.");
@@ -486,7 +494,7 @@
                     console.log("New Real-time Alert Received:", alertData);
                     showToast(alertData);
                     prependAlertCard(alertData);
-                    updateKpiCounters();
+                    recalculateClientKpis();
                 } catch (err) {
                     console.error("Error processing SSE alert:", err);
                 }
@@ -498,16 +506,50 @@
             };
         }
 
-        // Acknowledge alert via API
+        // Acknowledge alert via API or Client-side State
         async function acknowledgeAlert(alertId) {
+            // Optimistically update UI immediately
+            const statusTag = document.getElementById(`status-tag-${alertId}`);
+            if (statusTag) {
+                statusTag.innerText = 'ACKNOWLEDGED';
+                statusTag.className = 'status-badge status-ACKNOWLEDGED';
+            }
+            const ackBtn = document.getElementById(`ack-btn-${alertId}`);
+            if (ackBtn) ackBtn.remove();
+
+            // Save to localStorage for persistence across reloads
             try {
-                const res = await fetch(`/api/alerts/${alertId}/ack`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({user: 'operator_ui'})
-                });
-                const data = await res.json();
-                if (data.status === 'success') {
+                let acked = JSON.parse(localStorage.getItem('pyrovision_acked_alerts') || '[]');
+                if (!acked.includes(alertId)) {
+                    acked.push(alertId);
+                    localStorage.setItem('pyrovision_acked_alerts', JSON.stringify(acked));
+                }
+            } catch (e) {
+                console.warn("Could not save to localStorage", e);
+            }
+
+            // Recalculate KPIs
+            recalculateClientKpis();
+
+            // If not static, also sync with server
+            if (!isStaticHost) {
+                try {
+                    await fetch(`/api/alerts/${alertId}/ack`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({user: 'operator_ui'})
+                    });
+                } catch (err) {
+                    console.warn("Backend ack sync error (operating in optimistic mode):", err);
+                }
+            }
+        }
+
+        // Restore acknowledged alerts from localStorage
+        function restoreAcknowledgedAlerts() {
+            try {
+                const acked = JSON.parse(localStorage.getItem('pyrovision_acked_alerts') || '[]');
+                acked.forEach(alertId => {
                     const statusTag = document.getElementById(`status-tag-${alertId}`);
                     if (statusTag) {
                         statusTag.innerText = 'ACKNOWLEDGED';
@@ -515,24 +557,83 @@
                     }
                     const ackBtn = document.getElementById(`ack-btn-${alertId}`);
                     if (ackBtn) ackBtn.remove();
-                    updateKpiCounters();
-                }
-            } catch (err) {
-                console.error("Failed to acknowledge alert:", err);
-            }
+                });
+                recalculateClientKpis();
+            } catch (e) {}
         }
+
+        // Recalculate KPI metric cards in real-time
+        function recalculateClientKpis() {
+            const cards = document.querySelectorAll('.alert-card');
+            let total = cards.length;
+            let active = 0;
+            let critical = 0;
+            cards.forEach(card => {
+                const badge = card.querySelector('.status-badge');
+                const isAck = badge && badge.textContent.trim().toUpperCase() === 'ACKNOWLEDGED';
+                if (!isAck) {
+                    active++;
+                    if (card.classList.contains('severity-CRITICAL')) {
+                        critical++;
+                    }
+                }
+            });
+            const totalEl = document.getElementById('kpi-total');
+            const activeEl = document.getElementById('kpi-active');
+            const critEl = document.getElementById('kpi-critical');
+            if (totalEl) totalEl.innerText = total;
+            if (activeEl) activeEl.innerText = active;
+            if (critEl) critEl.innerText = critical;
+        }
+
+        const TEST_SITES = [
+            { name: 'Jamnagar Refinery Complex', lat: 22.378, lon: 69.832, frp: 184.2, sev: 'CRITICAL', dist: 1.15, type: 'Crude Distillation Unit 3' },
+            { name: 'Talcher Thermal Power Station', lat: 20.916, lon: 85.221, frp: 96.5, sev: 'HIGH', dist: 2.30, type: 'Coal Boiler Flare' },
+            { name: 'Hazira Petrochemical Complex', lat: 21.144, lon: 72.671, frp: 142.8, sev: 'CRITICAL', dist: 0.85, type: 'Olefin Cracker Stack' },
+            { name: 'Bhilai Steel Plant', lat: 21.189, lon: 81.401, frp: 110.4, sev: 'HIGH', dist: 1.62, type: 'Blast Furnace Off-Gas' },
+            { name: 'Jharia Coalfield Sector 4', lat: 23.751, lon: 86.418, frp: 215.0, sev: 'CRITICAL', dist: 0.45, type: 'Subsurface Seam Outcrop' }
+        ];
 
         // Trigger diagnostic test alert
         async function triggerTestAlert() {
-            try {
-                const res = await fetch('/api/alerts/test', { method: 'POST' });
-                const data = await res.json();
-                if (data.alert) {
-                    showToast(data.alert);
+            if (!isStaticHost) {
+                try {
+                    const res = await fetch('/api/alerts/test', { method: 'POST' });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.alert) {
+                            showToast(data.alert);
+                            prependAlertCard(data.alert);
+                            recalculateClientKpis();
+                            return;
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Server test alert endpoint unavailable, falling back to simulated dispatch:", err);
                 }
-            } catch (err) {
-                alert("Failed to trigger test alert: " + err);
             }
+
+            // Fallback simulation for static hosting / offline
+            const site = TEST_SITES[Math.floor(Math.random() * TEST_SITES.length)];
+            const now = new Date();
+            const simAlert = {
+                alert_id: 'SIM-' + Date.now().toString().slice(-6),
+                title: `Thermal Anomaly Triggered at ${site.name}`,
+                description: `VIIRS/MODIS infrared spectral radiometer detected intense heat release (${site.frp} MW) near ${site.type}. Proximity threshold safety interlocks initiated automated incident notification.`,
+                severity: site.sev,
+                status: 'ACTIVE',
+                facility_name: site.name,
+                distance_km: site.dist,
+                frp: site.frp,
+                latitude: site.lat,
+                longitude: site.lon,
+                timestamp: now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC',
+                channels_dispatched: ['email', 'sms', 'dashboard', 'webhook']
+            };
+
+            showToast(simAlert);
+            prependAlertCard(simAlert);
+            recalculateClientKpis();
         }
 
         // Update KPI metrics via API
@@ -703,6 +804,7 @@
         });
 
         window.addEventListener('DOMContentLoaded', () => {
+            restoreAcknowledgedAlerts();
             setupAlertStream();
             initAlertFilters();
         });

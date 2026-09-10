@@ -267,7 +267,9 @@
                                 {% for fac in top_facilities %}
                                 <tr>
                                     <td>
-                                        <strong>{{ fac.name }}</strong><br>
+                                        <a href="/?search={{ fac.name }}" style="color: #ffffff; text-decoration: none;" title="Locate on GIS Map">
+                                            <strong>{{ fac.name }}</strong> <i class="fa-solid fa-crosshairs ms-1" style="font-size: 11px; color: var(--accent);"></i>
+                                        </a><br>
                                         <small class="text-secondary">{{ fac.facility_type }}</small>
                                     </td>
                                     <td class="text-center text-danger fw-bold">{{ fac.fire_count }}</td>
