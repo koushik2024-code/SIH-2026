@@ -794,13 +794,30 @@
             }, 6000);
         }
 
-        // Pop toast on load if there's a recent active alert
-        {% if recent_alerts and recent_alerts|length > 0 %}
-        const initialAlert = {{ recent_alerts[0] | tojson }};
-        if (initialAlert) {
-            setTimeout(() => {
-                showAlertToast(initialAlert);
-            }, 1000);
+        // Pop toast on load ONLY if there is a real, active unacknowledged alert, and suppress repeating across reloads in the same session
+        {%- set active_real_alerts = [] -%}
+        {%- for a in recent_alerts -%}
+            {%- if a.status == 'ACTIVE' and a.trigger_type != 'DIAGNOSTIC_TEST' -%}
+                {%- set _ = active_real_alerts.append(a) -%}
+            {%- endif -%}
+        {%- endfor -%}
+        {%- if active_real_alerts|length > 0 %}
+        const initialAlert = {{ active_real_alerts[0] | tojson }};
+        if (initialAlert && initialAlert.status === 'ACTIVE') {
+            try {
+                // Check if already acknowledged by operator in localStorage
+                const ackedList = JSON.parse(localStorage.getItem('pyrovision_acked_alerts') || '[]');
+                const isAcked = ackedList.includes(initialAlert.alert_id);
+                // Check if already shown in this browser session to prevent reload spam
+                const alreadyShownInSession = sessionStorage.getItem('pyrovision_alert_toast_shown_' + initialAlert.alert_id);
+                
+                if (!isAcked && !alreadyShownInSession) {
+                    sessionStorage.setItem('pyrovision_alert_toast_shown_' + initialAlert.alert_id, '1');
+                    setTimeout(() => {
+                        showAlertToast(initialAlert);
+                    }, 1000);
+                }
+            } catch (e) {}
         }
         {% endif %}
 

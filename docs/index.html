@@ -381,7 +381,7 @@
                 <i class="fas fa-bell"></i> Alerts
                 
                 <span class="nav-counter-pill bg-danger text-light" id="navAlertBadge">
-                    12
+                    11
                 </span>
             </a>
             <a href="reports.html" class="nav-pill-link">
@@ -794,13 +794,23 @@
             }, 6000);
         }
 
-        // Pop toast on load if there's a recent active alert
-        
-        const initialAlert = {"alert_id": "ALT-15BC87A1", "timestamp": "2026-09-10T02:12:14.330288+00:00", "trigger_type": "DIAGNOSTIC_TEST", "severity": "CRITICAL", "detection_id": "TEST-SIM-001", "latitude": 22.4707, "longitude": 70.0577, "facility_name": "Jamnagar Petrochemical Complex", "facility_type": "Refinery & Petrochemicals", "distance_km": 0.45, "frp": 72.5, "brightness": 378.2, "confidence": 95.0, "title": "CRITICAL TEST: Simulated Industrial Fire & Thermal Anomaly", "description": "SYSTEM DIAGNOSTIC ALERT: Multi-spectral sensors detected simulated extreme thermal anomaly (FRP 72.5 MW, 378.2 K) 0.45 km from Jamnagar Petrochemical Complex. All operational response channels (Email, SMS, Dashboard, Log, Webhook) tested successfully.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACKNOWLEDGED", "acknowledged_at": "2026-09-10T02:12:14.401562+00:00", "acknowledged_by": "test_agent"};
-        if (initialAlert) {
-            setTimeout(() => {
-                showAlertToast(initialAlert);
-            }, 1000);
+        // Pop toast on load ONLY if there is a real, active unacknowledged alert, and suppress repeating across reloads in the same session
+        const initialAlert = {"alert_id": "ALT-F708840C", "timestamp": "2026-09-09T14:53:49.675832+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "bf65e28e8b137b8e", "latitude": 22.3363, "longitude": 82.7084, "facility_name": "Korba Coalfield", "facility_type": "mining", "distance_km": 1.7512863403920402, "frp": 77.26, "brightness": 371.78, "confidence": 82.8, "title": "Unusual Thermal Spike at Korba Coalfield", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (1.75 km from center of Korba Coalfield). Radiative power reached 77.3 MW with temperature of 371.8 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
+        if (initialAlert && initialAlert.status === 'ACTIVE') {
+            try {
+                // Check if already acknowledged by operator in localStorage
+                const ackedList = JSON.parse(localStorage.getItem('pyrovision_acked_alerts') || '[]');
+                const isAcked = ackedList.includes(initialAlert.alert_id);
+                // Check if already shown in this browser session to prevent reload spam
+                const alreadyShownInSession = sessionStorage.getItem('pyrovision_alert_toast_shown_' + initialAlert.alert_id);
+                
+                if (!isAcked && !alreadyShownInSession) {
+                    sessionStorage.setItem('pyrovision_alert_toast_shown_' + initialAlert.alert_id, '1');
+                    setTimeout(() => {
+                        showAlertToast(initialAlert);
+                    }, 1000);
+                }
+            } catch (e) {}
         }
         
 
