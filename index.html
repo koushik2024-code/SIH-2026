@@ -381,7 +381,7 @@
                 <i class="fas fa-bell"></i> Alerts
                 
                 <span class="nav-counter-pill bg-danger text-light" id="navAlertBadge">
-                    13
+                    2
                 </span>
             </a>
             <a href="reports.html" class="nav-pill-link">
@@ -449,7 +449,7 @@
                     <div class="hud-chip-icon text-warning"><i class="fas fa-fire"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Avg Fire Power</span>
-                        <span class="hud-chip-value text-warning">12.3 MW</span>
+                        <span class="hud-chip-value text-warning">79.0 MW</span>
                     </div>
                 </div>
 
@@ -458,7 +458,7 @@
                     <div class="hud-chip-icon text-caution"><i class="fas fa-cloud-sun"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Diurnal Split</span>
-                        <span class="hud-chip-value">1046☀️ / 960🌙</span>
+                        <span class="hud-chip-value">30☀️ / 0🌙</span>
                     </div>
                 </div>
 
@@ -467,7 +467,7 @@
                     <div class="hud-chip-icon text-success"><i class="fas fa-shield-check"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Confidence Verified</span>
-                        <span class="hud-chip-value text-success">126 Verified (%)</span>
+                        <span class="hud-chip-value text-success">21 Verified (%)</span>
                     </div>
                 </div>
             </div>
@@ -795,7 +795,7 @@
         }
 
         // Pop toast on load ONLY if there is a real, active unacknowledged alert, and suppress repeating across reloads in the same session
-        const initialAlert = {"alert_id": "ALT-50C58293", "timestamp": "2026-09-10T05:07:41.835260+00:00", "trigger_type": "INDUSTRIAL_CLUSTER_FORMATION", "severity": "HIGH", "detection_id": "CLUSTER-80", "latitude": 15.176586666666665, "longitude": 76.65688333333333, "facility_name": "JSW Steel Vijayanagar", "facility_type": "steel_plant", "distance_km": 4.628755727063344, "frp": 8.76, "brightness": 310.57, "confidence": 85.0, "title": "Industrial Cluster Formation (3 Anomalies) Near JSW Steel Vijayanagar", "description": "Multi-point thermal cluster detected comprising 3 simultaneous fire anomalies within 1.5 km of each other, situated 4.63 km from JSW Steel Vijayanagar. Cumulative radiative power: 17.3 MW. High risk of perimeter breach.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
+        const initialAlert = {"alert_id": "ALT-4522EC8A", "timestamp": "2026-09-10T10:46:23.127811+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "b3a232da80f8d910", "latitude": 22.3424, "longitude": 82.715, "facility_name": "Korba Coalfield", "facility_type": "mining", "distance_km": 1.758973829160216, "frp": 77.78, "brightness": 366.66, "confidence": 84.2, "title": "Unusual Thermal Spike at Korba Coalfield", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (1.76 km from center of Korba Coalfield). Radiative power reached 77.8 MW with temperature of 366.7 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
         if (initialAlert && initialAlert.status === 'ACTIVE') {
             try {
                 // Check if already acknowledged by operator in localStorage
