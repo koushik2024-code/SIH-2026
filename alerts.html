@@ -291,7 +291,7 @@
             </a>
             <a href="alerts.html" class="nav-pill-link active">
                 <i class="fa-solid fa-bell"></i> Alerts
-                <span class="nav-counter-pill badge bg-danger text-light ms-1" id="navAlertBadge" style="">11</span>
+                <span class="nav-counter-pill badge bg-danger text-light ms-1" id="navAlertBadge" style="">13</span>
             </a>
             <a href="reports.html" class="nav-pill-link">
                 <i class="fa-solid fa-file-invoice"></i> Reports
@@ -339,14 +339,14 @@
             <div class="kpi-card warning">
                 <div class="kpi-icon"><i class="fa-solid fa-bell"></i></div>
                 <div class="kpi-content">
-                    <h3 id="kpi-active">11</h3>
+                    <h3 id="kpi-active">13</h3>
                     <p>Active Unresolved Alerts</p>
                 </div>
             </div>
             <div class="kpi-card info">
                 <div class="kpi-icon"><i class="fa-solid fa-bullhorn"></i></div>
                 <div class="kpi-content">
-                    <h3 id="kpi-total">13</h3>
+                    <h3 id="kpi-total">16</h3>
                     <p>Total Dispatched</p>
                 </div>
             </div>
@@ -379,6 +379,233 @@
         <!-- Alerts Stream Feed -->
         <section class="alerts-feed" id="alerts-list">
             
+                
+                    <div class="alert-card severity-HIGH" id="alert-card-ALT-50C58293">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-HIGH">HIGH</span>
+                                    <span class="status-badge status-ACTIVE" id="status-tag-ALT-50C58293">ACTIVE</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-10T05:07:41.835260+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-50C58293</span>
+                                </div>
+                                <h2 class="alert-title">Industrial Cluster Formation (3 Anomalies) Near JSW Steel Vijayanagar</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            Multi-point thermal cluster detected comprising 3 simultaneous fire anomalies within 1.5 km of each other, situated 4.63 km from JSW Steel Vijayanagar. Cumulative radiative power: 17.3 MW. High risk of perimeter breach.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">JSW Steel Vijayanagar</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">4.63 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">8.8 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">15.1766, 76.6569</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?lat=15.176586666666665&lon=76.65688333333333&name=JSW%20Steel%20Vijayanagar&frp=8.76&zoom=15" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                                    <button class="btn-action btn-ack" id="ack-btn-ALT-50C58293" onclick="acknowledgeAlert('ALT-50C58293')">
+                                        <i class="fa-solid fa-check"></i> Acknowledge
+                                    </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="alert-card severity-HIGH" id="alert-card-ALT-73B89DB0">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-HIGH">HIGH</span>
+                                    <span class="status-badge status-ACTIVE" id="status-tag-ALT-73B89DB0">ACTIVE</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-10T05:07:41.824075+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-73B89DB0</span>
+                                </div>
+                                <h2 class="alert-title">Industrial Cluster Formation (17 Anomalies) Near Hazira Gas Processing</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            Multi-point thermal cluster detected comprising 17 simultaneous fire anomalies within 1.5 km of each other, situated 1.22 km from Hazira Gas Processing. Cumulative radiative power: 145.7 MW. High risk of perimeter breach.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">Hazira Gas Processing</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">1.22 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">18.8 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">21.1049, 72.6423</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?lat=21.104904705882355&lon=72.64227588235293&name=Hazira%20Gas%20Processing&frp=18.82&zoom=15" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                                    <button class="btn-action btn-ack" id="ack-btn-ALT-73B89DB0" onclick="acknowledgeAlert('ALT-73B89DB0')">
+                                        <i class="fa-solid fa-check"></i> Acknowledge
+                                    </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-4D316187">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
+                                    <span class="status-badge status-ACKNOWLEDGED" id="status-tag-ALT-4D316187">ACKNOWLEDGED</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-10T04:22:34.660746+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-4D316187</span>
+                                </div>
+                                <h2 class="alert-title">CRITICAL TEST: Simulated Industrial Fire & Thermal Anomaly</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            SYSTEM DIAGNOSTIC ALERT: Multi-spectral sensors detected simulated extreme thermal anomaly (FRP 72.5 MW, 378.2 K) 0.45 km from Jamnagar Petrochemical Complex. All operational response channels (Email, SMS, Dashboard, Log, Webhook) tested successfully.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">Jamnagar Petrochemical Complex</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">0.45 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">72.5 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">22.4707, 70.0577</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?lat=22.4707&lon=70.0577&name=Jamnagar%20Petrochemical%20Complex&frp=72.5&zoom=15" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                            </div>
+                        </div>
+                    </div>
                 
                     <div class="alert-card severity-CRITICAL" id="alert-card-ALT-C2744DE4">
                         <div class="alert-header">
