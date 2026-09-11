@@ -380,8 +380,8 @@
             <a href="alerts.html" class="nav-pill-link">
                 <i class="fas fa-bell"></i> Alerts
                 
-                <span class="nav-counter-pill bg-danger text-light" id="navAlertBadge">
-                    2
+                <span class="nav-counter-pill bg-secondary text-light" id="navAlertBadge">
+                    0
                 </span>
             </a>
             <a href="reports.html" class="nav-pill-link">
@@ -449,7 +449,7 @@
                     <div class="hud-chip-icon text-warning"><i class="fas fa-fire"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Avg Fire Power</span>
-                        <span class="hud-chip-value text-warning">79.7 MW</span>
+                        <span class="hud-chip-value text-warning">94.3 MW</span>
                     </div>
                 </div>
 
@@ -458,7 +458,7 @@
                     <div class="hud-chip-icon text-caution"><i class="fas fa-cloud-sun"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Diurnal Split</span>
-                        <span class="hud-chip-value">27☀️ / 0🌙</span>
+                        <span class="hud-chip-value">0☀️ / 22🌙</span>
                     </div>
                 </div>
 
@@ -467,7 +467,7 @@
                     <div class="hud-chip-icon text-success"><i class="fas fa-shield-check"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Confidence Verified</span>
-                        <span class="hud-chip-value text-success">18 Verified (%)</span>
+                        <span class="hud-chip-value text-success">15 Verified (%)</span>
                     </div>
                 </div>
             </div>
@@ -795,24 +795,6 @@
         }
 
         // Pop toast on load ONLY if there is a real, active unacknowledged alert, and suppress repeating across reloads in the same session
-        const initialAlert = {"alert_id": "ALT-B36EC814", "timestamp": "2026-09-11T15:59:23.760751+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "42e88351ef4cb219", "latitude": 22.3591, "longitude": 82.7647, "facility_name": "Korba STPP", "facility_type": "thermal_power_plant", "distance_km": 1.5020482456794717, "frp": 78.8, "brightness": 343.86, "confidence": 89.1, "title": "Unusual Thermal Spike at Korba STPP", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (1.50 km from center of Korba STPP). Radiative power reached 78.8 MW with temperature of 343.9 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
-        if (initialAlert && initialAlert.status === 'ACTIVE') {
-            try {
-                // Check if already acknowledged by operator in localStorage
-                const ackedList = JSON.parse(localStorage.getItem('pyrovision_acked_alerts') || '[]');
-                const isAcked = ackedList.includes(initialAlert.alert_id);
-                // Check if already shown in this browser session to prevent reload spam
-                const alreadyShownInSession = sessionStorage.getItem('pyrovision_alert_toast_shown_' + initialAlert.alert_id);
-                
-                if (!isAcked && !alreadyShownInSession) {
-                    sessionStorage.setItem('pyrovision_alert_toast_shown_' + initialAlert.alert_id, '1');
-                    setTimeout(() => {
-                        showAlertToast(initialAlert);
-                    }, 1000);
-                }
-            } catch (e) {}
-        }
-        
 
         // 6. Handle Refresh Button (Robust Hybrid: instant graceful static refresh or backend API)
         document.getElementById('refreshBtn').addEventListener('click', function() {
