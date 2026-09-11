@@ -381,7 +381,7 @@
                 <i class="fas fa-bell"></i> Alerts
                 
                 <span class="nav-counter-pill bg-danger text-light" id="navAlertBadge">
-                    1
+                    2
                 </span>
             </a>
             <a href="reports.html" class="nav-pill-link">
@@ -449,7 +449,7 @@
                     <div class="hud-chip-icon text-warning"><i class="fas fa-fire"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Avg Fire Power</span>
-                        <span class="hud-chip-value text-warning">77.8 MW</span>
+                        <span class="hud-chip-value text-warning">79.7 MW</span>
                     </div>
                 </div>
 
@@ -458,7 +458,7 @@
                     <div class="hud-chip-icon text-caution"><i class="fas fa-cloud-sun"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Diurnal Split</span>
-                        <span class="hud-chip-value">29☀️ / 0🌙</span>
+                        <span class="hud-chip-value">27☀️ / 0🌙</span>
                     </div>
                 </div>
 
@@ -467,7 +467,7 @@
                     <div class="hud-chip-icon text-success"><i class="fas fa-shield-check"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Confidence Verified</span>
-                        <span class="hud-chip-value text-success">21 Verified (%)</span>
+                        <span class="hud-chip-value text-success">18 Verified (%)</span>
                     </div>
                 </div>
             </div>
@@ -795,7 +795,7 @@
         }
 
         // Pop toast on load ONLY if there is a real, active unacknowledged alert, and suppress repeating across reloads in the same session
-        const initialAlert = {"alert_id": "ALT-2695D863", "timestamp": "2026-09-11T10:43:57.666407+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "2e2d81b8b5e5303a", "latitude": 22.3621, "longitude": 82.7693, "facility_name": "Korba STPP", "facility_type": "thermal_power_plant", "distance_km": 1.9954631239629848, "frp": 79.43, "brightness": 352.52, "confidence": 96.39999999999999, "title": "Unusual Thermal Spike at Korba STPP", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (2.00 km from center of Korba STPP). Radiative power reached 79.4 MW with temperature of 352.5 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
+        const initialAlert = {"alert_id": "ALT-B36EC814", "timestamp": "2026-09-11T15:59:23.760751+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "42e88351ef4cb219", "latitude": 22.3591, "longitude": 82.7647, "facility_name": "Korba STPP", "facility_type": "thermal_power_plant", "distance_km": 1.5020482456794717, "frp": 78.8, "brightness": 343.86, "confidence": 89.1, "title": "Unusual Thermal Spike at Korba STPP", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (1.50 km from center of Korba STPP). Radiative power reached 78.8 MW with temperature of 343.9 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
         if (initialAlert && initialAlert.status === 'ACTIVE') {
             try {
                 // Check if already acknowledged by operator in localStorage
