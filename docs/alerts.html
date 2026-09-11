@@ -291,7 +291,7 @@
             </a>
             <a href="alerts.html" class="nav-pill-link active">
                 <i class="fa-solid fa-bell"></i> Alerts
-                <span class="nav-counter-pill badge bg-danger text-light ms-1" id="navAlertBadge" style="display:none;">0</span>
+                <span class="nav-counter-pill badge bg-danger text-light ms-1" id="navAlertBadge" style="">1</span>
             </a>
             <a href="reports.html" class="nav-pill-link">
                 <i class="fa-solid fa-file-invoice"></i> Reports
@@ -332,21 +332,21 @@
             <div class="kpi-card critical">
                 <div class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
                 <div class="kpi-content">
-                    <h3 id="kpi-critical">0</h3>
+                    <h3 id="kpi-critical">1</h3>
                     <p>Critical Active Hazards</p>
                 </div>
             </div>
             <div class="kpi-card warning">
                 <div class="kpi-icon"><i class="fa-solid fa-bell"></i></div>
                 <div class="kpi-content">
-                    <h3 id="kpi-active">0</h3>
+                    <h3 id="kpi-active">1</h3>
                     <p>Active Unresolved Alerts</p>
                 </div>
             </div>
             <div class="kpi-card info">
                 <div class="kpi-icon"><i class="fa-solid fa-bullhorn"></i></div>
                 <div class="kpi-content">
-                    <h3 id="kpi-total">0</h3>
+                    <h3 id="kpi-total">1</h3>
                     <p>Total Dispatched</p>
                 </div>
             </div>
@@ -379,11 +379,84 @@
         <!-- Alerts Stream Feed -->
         <section class="alerts-feed" id="alerts-list">
             
-                <div class="empty-state">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <h3>No Active Alerts</h3>
-                    <p>No thermal hazard trigger conditions currently match the selected filter criteria.</p>
-                </div>
+                
+                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-2695D863">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
+                                    <span class="status-badge status-ACTIVE" id="status-tag-ALT-2695D863">ACTIVE</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-11T10:43:57.666407+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-2695D863</span>
+                                </div>
+                                <h2 class="alert-title">Unusual Thermal Spike at Korba STPP</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            Severe thermal energy spike detected directly inside facility hazard perimeter (2.00 km from center of Korba STPP). Radiative power reached 79.4 MW with temperature of 352.5 K. Potential runaway combustion, reactor venting, or flare malfunction.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">Korba STPP</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">2.00 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">79.4 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">22.3621, 82.7693</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?lat=22.3621&lon=82.7693&name=Korba%20STPP&frp=79.43&zoom=15" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                                    <button class="btn-action btn-ack" id="ack-btn-ALT-2695D863" onclick="acknowledgeAlert('ALT-2695D863')">
+                                        <i class="fa-solid fa-check"></i> Acknowledge
+                                    </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                
             
         </section>
 
