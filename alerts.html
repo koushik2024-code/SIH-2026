@@ -291,7 +291,7 @@
             </a>
             <a href="alerts.html" class="nav-pill-link active">
                 <i class="fa-solid fa-bell"></i> Alerts
-                <span class="nav-counter-pill badge bg-danger text-light ms-1" id="navAlertBadge" style="display:none;">0</span>
+                <span class="nav-counter-pill badge bg-danger text-light ms-1" id="navAlertBadge" style="">7</span>
             </a>
             <a href="reports.html" class="nav-pill-link">
                 <i class="fa-solid fa-file-invoice"></i> Reports
@@ -332,21 +332,21 @@
             <div class="kpi-card critical">
                 <div class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
                 <div class="kpi-content">
-                    <h3 id="kpi-critical">0</h3>
+                    <h3 id="kpi-critical">7</h3>
                     <p>Critical Active Hazards</p>
                 </div>
             </div>
             <div class="kpi-card warning">
                 <div class="kpi-icon"><i class="fa-solid fa-bell"></i></div>
                 <div class="kpi-content">
-                    <h3 id="kpi-active">0</h3>
+                    <h3 id="kpi-active">7</h3>
                     <p>Active Unresolved Alerts</p>
                 </div>
             </div>
             <div class="kpi-card info">
                 <div class="kpi-icon"><i class="fa-solid fa-bullhorn"></i></div>
                 <div class="kpi-content">
-                    <h3 id="kpi-total">0</h3>
+                    <h3 id="kpi-total">7</h3>
                     <p>Total Dispatched</p>
                 </div>
             </div>
@@ -379,11 +379,546 @@
         <!-- Alerts Stream Feed -->
         <section class="alerts-feed" id="alerts-list">
             
-                <div class="empty-state">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <h3>No Active Alerts</h3>
-                    <p>No thermal hazard trigger conditions currently match the selected filter criteria.</p>
-                </div>
+                
+                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-1CF043A7">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
+                                    <span class="status-badge status-ACTIVE" id="status-tag-ALT-1CF043A7">ACTIVE</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-14T18:02:48.480348+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-1CF043A7</span>
+                                </div>
+                                <h2 class="alert-title">Unusual Thermal Spike at Talcher Coalfield</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            Severe thermal energy spike detected directly inside facility hazard perimeter (1.20 km from center of Talcher Coalfield). Radiative power reached 91.1 MW with temperature of 382.0 K. Potential runaway combustion, reactor venting, or flare malfunction.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">Talcher Coalfield</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">1.20 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">91.1 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">20.9393, 85.2287</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?lat=20.9393&lon=85.2287&name=Talcher%20Coalfield&frp=91.1&zoom=15" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                                    <button class="btn-action btn-ack" id="ack-btn-ALT-1CF043A7" onclick="acknowledgeAlert('ALT-1CF043A7')">
+                                        <i class="fa-solid fa-check"></i> Acknowledge
+                                    </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-BC1EBB73">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
+                                    <span class="status-badge status-ACTIVE" id="status-tag-ALT-BC1EBB73">ACTIVE</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-14T18:02:48.479940+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-BC1EBB73</span>
+                                </div>
+                                <h2 class="alert-title">Unusual Thermal Spike at Korba STPP</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            Severe thermal energy spike detected directly inside facility hazard perimeter (0.56 km from center of Korba STPP). Radiative power reached 44.5 MW with temperature of 373.0 K. Potential runaway combustion, reactor venting, or flare malfunction.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">Korba STPP</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">0.56 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">44.5 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">22.3565, 82.7545</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?lat=22.3565&lon=82.7545&name=Korba%20STPP&frp=44.48&zoom=15" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                                    <button class="btn-action btn-ack" id="ack-btn-ALT-BC1EBB73" onclick="acknowledgeAlert('ALT-BC1EBB73')">
+                                        <i class="fa-solid fa-check"></i> Acknowledge
+                                    </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-7BD3CD34">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
+                                    <span class="status-badge status-ACTIVE" id="status-tag-ALT-7BD3CD34">ACTIVE</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-14T18:02:48.479416+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-7BD3CD34</span>
+                                </div>
+                                <h2 class="alert-title">Unusual Thermal Spike at Singrauli Coalfield</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            Severe thermal energy spike detected directly inside facility hazard perimeter (1.54 km from center of Singrauli Coalfield). Radiative power reached 74.9 MW with temperature of 369.2 K. Potential runaway combustion, reactor venting, or flare malfunction.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">Singrauli Coalfield</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">1.54 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">74.9 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">24.1091, 82.6263</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?lat=24.1091&lon=82.6263&name=Singrauli%20Coalfield&frp=74.94&zoom=15" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                                    <button class="btn-action btn-ack" id="ack-btn-ALT-7BD3CD34" onclick="acknowledgeAlert('ALT-7BD3CD34')">
+                                        <i class="fa-solid fa-check"></i> Acknowledge
+                                    </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-D8841402">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
+                                    <span class="status-badge status-ACTIVE" id="status-tag-ALT-D8841402">ACTIVE</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-14T18:02:48.479065+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-D8841402</span>
+                                </div>
+                                <h2 class="alert-title">Unusual Thermal Spike at Vindhyachal STPP</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            Severe thermal energy spike detected directly inside facility hazard perimeter (0.63 km from center of Vindhyachal STPP). Radiative power reached 66.4 MW with temperature of 356.2 K. Potential runaway combustion, reactor venting, or flare malfunction.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">Vindhyachal STPP</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">0.63 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">66.4 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">24.0853, 82.6575</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?lat=24.0853&lon=82.6575&name=Vindhyachal%20STPP&frp=66.4&zoom=15" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                                    <button class="btn-action btn-ack" id="ack-btn-ALT-D8841402" onclick="acknowledgeAlert('ALT-D8841402')">
+                                        <i class="fa-solid fa-check"></i> Acknowledge
+                                    </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-E4241A86">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
+                                    <span class="status-badge status-ACTIVE" id="status-tag-ALT-E4241A86">ACTIVE</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-14T18:02:48.477897+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-E4241A86</span>
+                                </div>
+                                <h2 class="alert-title">High-Confidence Industrial Fire Near Talcher Coalfield</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            Satellite surveillance confirmed active industrial combustion signature at [20.9393, 85.2287] located 1.20 km from Talcher Coalfield (mining). Thermal intensity is 91.1 MW (Brightness: 382.0 K) with 90% confidence.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">Talcher Coalfield</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">1.20 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">91.1 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">20.9393, 85.2287</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?lat=20.9393&lon=85.2287&name=Talcher%20Coalfield&frp=91.1&zoom=15" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                                    <button class="btn-action btn-ack" id="ack-btn-ALT-E4241A86" onclick="acknowledgeAlert('ALT-E4241A86')">
+                                        <i class="fa-solid fa-check"></i> Acknowledge
+                                    </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-9C156D09">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
+                                    <span class="status-badge status-ACTIVE" id="status-tag-ALT-9C156D09">ACTIVE</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-14T18:02:48.477175+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-9C156D09</span>
+                                </div>
+                                <h2 class="alert-title">High-Confidence Industrial Fire Near Singrauli Coalfield</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            Satellite surveillance confirmed active industrial combustion signature at [24.1091, 82.6263] located 1.54 km from Singrauli Coalfield (mining). Thermal intensity is 74.9 MW (Brightness: 369.2 K) with 87% confidence.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">Singrauli Coalfield</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">1.54 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">74.9 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">24.1091, 82.6263</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?lat=24.1091&lon=82.6263&name=Singrauli%20Coalfield&frp=74.94&zoom=15" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                                    <button class="btn-action btn-ack" id="ack-btn-ALT-9C156D09" onclick="acknowledgeAlert('ALT-9C156D09')">
+                                        <i class="fa-solid fa-check"></i> Acknowledge
+                                    </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                
+                    <div class="alert-card severity-CRITICAL" id="alert-card-ALT-5F166E2F">
+                        <div class="alert-header">
+                            <div>
+                                <div class="alert-meta">
+                                    <span class="severity-badge badge-CRITICAL">CRITICAL</span>
+                                    <span class="status-badge status-ACTIVE" id="status-tag-ALT-5F166E2F">ACTIVE</span>
+                                    <span class="alert-timestamp"><i class="fa-regular fa-clock"></i> 2026-09-14T18:02:48.476784+00:00</span>
+                                    <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace;">ID: ALT-5F166E2F</span>
+                                </div>
+                                <h2 class="alert-title">High-Confidence Industrial Fire Near Vindhyachal STPP</h2>
+                            </div>
+                        </div>
+
+                        <div class="alert-body">
+                            Satellite surveillance confirmed active industrial combustion signature at [24.0853, 82.6575] located 0.63 km from Vindhyachal STPP (thermal_power_plant). Thermal intensity is 66.4 MW (Brightness: 356.2 K) with 90% confidence.
+                        </div>
+
+                        <div class="alert-stats-row">
+                            <div class="stat-pill">
+                                <div class="label">Target Facility</div>
+                                <div class="val">Vindhyachal STPP</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Proximity Distance</div>
+                                <div class="val">0.63 km</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Thermal FRP</div>
+                                <div class="val">66.4 MW</div>
+                            </div>
+                            <div class="stat-pill">
+                                <div class="label">Detection Coordinates</div>
+                                <div class="val">24.0853, 82.6575</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-footer">
+                            <div class="channel-tags">
+                                <span style="font-size:11px; color:var(--text-muted); font-weight:600;">DISPATCHED TO:</span>
+                                
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-desktop"></i> Dashboard SSE
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-file-lines"></i> Audit Log
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-envelope"></i> SMTP Email
+                                            
+                                        </span>
+                                    
+                                        <span class="channel-tag">
+                                            <i class="fa-solid fa-comment-sms"></i> Twilio SMS
+                                            
+                                        </span>
+                                    
+                                
+                            </div>
+
+                            <div class="actions">
+                                <a href="index.html?lat=24.0853&lon=82.6575&name=Vindhyachal%20STPP&frp=66.4&zoom=15" class="btn-action">
+                                    <i class="fa-solid fa-crosshairs"></i> Locate
+                                </a>
+                                
+                                    <button class="btn-action btn-ack" id="ack-btn-ALT-5F166E2F" onclick="acknowledgeAlert('ALT-5F166E2F')">
+                                        <i class="fa-solid fa-check"></i> Acknowledge
+                                    </button>
+                                
+                            </div>
+                        </div>
+                    </div>
+                
             
         </section>
 
