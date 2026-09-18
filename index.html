@@ -381,7 +381,7 @@
                 <i class="fas fa-bell"></i> Alerts
                 
                 <span class="nav-counter-pill bg-danger text-light" id="navAlertBadge">
-                    2
+                    1
                 </span>
             </a>
             <a href="reports.html" class="nav-pill-link">
@@ -449,7 +449,7 @@
                     <div class="hud-chip-icon text-warning"><i class="fas fa-fire"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Avg Fire Power</span>
-                        <span class="hud-chip-value text-warning">81.9 MW</span>
+                        <span class="hud-chip-value text-warning">93.9 MW</span>
                     </div>
                 </div>
 
@@ -458,7 +458,7 @@
                     <div class="hud-chip-icon text-caution"><i class="fas fa-cloud-sun"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Diurnal Split</span>
-                        <span class="hud-chip-value">0☀️ / 29🌙</span>
+                        <span class="hud-chip-value">27☀️ / 0🌙</span>
                     </div>
                 </div>
 
@@ -795,7 +795,7 @@
         }
 
         // Pop toast on load ONLY if there is a real, active unacknowledged alert, and suppress repeating across reloads in the same session
-        const initialAlert = {"alert_id": "ALT-52F579D2", "timestamp": "2026-09-18T03:31:04.064122+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "ef1040c558226703", "latitude": 22.4741, "longitude": 70.0628, "facility_name": "Jamnagar Refinery (Reliance)", "facility_type": "oil_refinery", "distance_km": 0.6461734082294689, "frp": 169.52, "brightness": 406.87, "confidence": 91.60000000000001, "title": "Unusual Thermal Spike at Jamnagar Refinery (Reliance)", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (0.65 km from center of Jamnagar Refinery (Reliance)). Radiative power reached 169.5 MW with temperature of 406.9 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
+        const initialAlert = {"alert_id": "ALT-868C08A3", "timestamp": "2026-09-18T10:41:37.102790+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "76c46f114e5802e2", "latitude": 22.488, "longitude": 70.0552, "facility_name": "Jamnagar Refinery (Reliance)", "facility_type": "oil_refinery", "distance_km": 1.9407458719132342, "frp": 106.26, "brightness": 399.5, "confidence": 75.1, "title": "Unusual Thermal Spike at Jamnagar Refinery (Reliance)", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (1.94 km from center of Jamnagar Refinery (Reliance)). Radiative power reached 106.3 MW with temperature of 399.5 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
         if (initialAlert && initialAlert.status === 'ACTIVE') {
             try {
                 // Check if already acknowledged by operator in localStorage
