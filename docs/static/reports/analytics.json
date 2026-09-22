@@ -9,42 +9,42 @@
       "Other/Unknown"
     ],
     "counts": [
-      1,
       0,
-      15,
-      6,
+      0,
+      17,
+      4,
       0,
       0
     ],
     "percentages": [
-      4.5,
       0.0,
-      68.2,
-      27.3,
+      0.0,
+      81.0,
+      19.0,
       0.0,
       0.0
     ],
     "total_frp": [
-      110.0,
       0.0,
-      1262.6,
-      182.4,
+      0.0,
+      1560.8,
+      107.3,
       0.0,
       0.0
     ],
     "avg_frp": [
-      110.0,
       0.0,
-      84.2,
-      30.4,
+      0.0,
+      91.8,
+      26.8,
       0.0,
       0.0
     ],
     "avg_brightness": [
-      374.3,
       0.0,
-      362.6,
-      342.0,
+      0.0,
+      366.3,
+      358.5,
       0.0,
       0.0
     ],
@@ -59,11 +59,11 @@
     "table": [
       {
         "category": "Industrial Fire",
-        "count": 1,
-        "percentage": 4.5,
-        "total_frp": 110.0,
-        "avg_frp": 110.0,
-        "avg_brightness": 374.3,
+        "count": 0,
+        "percentage": 0.0,
+        "total_frp": 0.0,
+        "avg_frp": 0.0,
+        "avg_brightness": 0.0,
         "color": "#e74c3c"
       },
       {
@@ -77,20 +77,20 @@
       },
       {
         "category": "Forest Fire",
-        "count": 15,
-        "percentage": 68.2,
-        "total_frp": 1262.6,
-        "avg_frp": 84.2,
-        "avg_brightness": 362.6,
+        "count": 17,
+        "percentage": 81.0,
+        "total_frp": 1560.8,
+        "avg_frp": 91.8,
+        "avg_brightness": 366.3,
         "color": "#27ae60"
       },
       {
         "category": "Agricultural Burning",
-        "count": 6,
-        "percentage": 27.3,
-        "total_frp": 182.4,
-        "avg_frp": 30.4,
-        "avg_brightness": 342.0,
+        "count": 4,
+        "percentage": 19.0,
+        "total_frp": 107.3,
+        "avg_frp": 26.8,
+        "avg_brightness": 358.5,
         "color": "#f1c40f"
       },
       {
@@ -123,42 +123,42 @@
       "Other/Unknown"
     ],
     "counts": [
-      1,
       0,
-      15,
-      6,
+      0,
+      17,
+      4,
       0,
       0
     ],
     "percentages": [
-      4.5,
       0.0,
-      68.2,
-      27.3,
+      0.0,
+      81.0,
+      19.0,
       0.0,
       0.0
     ],
     "total_frp": [
-      110.0,
       0.0,
-      1262.6,
-      182.4,
+      0.0,
+      1560.8,
+      107.3,
       0.0,
       0.0
     ],
     "avg_frp": [
-      110.0,
       0.0,
-      84.2,
-      30.4,
+      0.0,
+      91.8,
+      26.8,
       0.0,
       0.0
     ],
     "avg_brightness": [
-      374.3,
       0.0,
-      362.6,
-      342.0,
+      0.0,
+      366.3,
+      358.5,
       0.0,
       0.0
     ],
@@ -173,11 +173,11 @@
     "table": [
       {
         "category": "Industrial Fire",
-        "count": 1,
-        "percentage": 4.5,
-        "total_frp": 110.0,
-        "avg_frp": 110.0,
-        "avg_brightness": 374.3,
+        "count": 0,
+        "percentage": 0.0,
+        "total_frp": 0.0,
+        "avg_frp": 0.0,
+        "avg_brightness": 0.0,
         "color": "#e74c3c"
       },
       {
@@ -191,20 +191,20 @@
       },
       {
         "category": "Forest Fire",
-        "count": 15,
-        "percentage": 68.2,
-        "total_frp": 1262.6,
-        "avg_frp": 84.2,
-        "avg_brightness": 362.6,
+        "count": 17,
+        "percentage": 81.0,
+        "total_frp": 1560.8,
+        "avg_frp": 91.8,
+        "avg_brightness": 366.3,
         "color": "#27ae60"
       },
       {
         "category": "Agricultural Burning",
-        "count": 6,
-        "percentage": 27.3,
-        "total_frp": 182.4,
-        "avg_frp": 30.4,
-        "avg_brightness": 342.0,
+        "count": 4,
+        "percentage": 19.0,
+        "total_frp": 107.3,
+        "avg_frp": 26.8,
+        "avg_brightness": 358.5,
         "color": "#f1c40f"
       },
       {
@@ -232,19 +232,19 @@
       "2026-09-22 00:00:00"
     ],
     "counts": [
-      22
+      21
     ],
     "cumulative_counts": [
-      22
+      21
     ],
     "total_frp": [
-      1555.0
+      1668.1
     ],
     "avg_frp": [
-      70.7
+      79.4
     ],
     "industrial_counts": [
-      1
+      0
     ],
     "vegetation_counts": [
       21
@@ -279,7 +279,6 @@
       0,
       0,
       0,
-      22,
       0,
       0,
       0,
@@ -288,6 +287,7 @@
       0,
       0,
       0,
+      21,
       0,
       0,
       0,
@@ -302,75 +302,40 @@
       0
     ]
   },
-  "top_facilities": [
-    {
-      "name": "Jamnagar Refinery (Reliance)",
-      "facility_type": "Oil Refinery",
-      "fire_count": 1,
-      "count_500m": 0,
-      "count_1km": 0,
-      "count_2km": 1,
-      "count_5km": 0,
-      "min_distance_km": 1.62,
-      "max_frp": 110.0,
-      "total_frp": 110.0,
-      "latitude": 22.4707,
-      "longitude": 70.0577,
-      "avg_frp": 110.0,
-      "risk_level": "MODERATE",
-      "risk_badge_class": "bg-info text-dark"
-    },
-    {
-      "name": "Singrauli Coalfield",
-      "facility_type": "Mining",
-      "fire_count": 1,
-      "count_500m": 0,
-      "count_1km": 0,
-      "count_2km": 0,
-      "count_5km": 1,
-      "min_distance_km": 4.26,
-      "max_frp": 102.3,
-      "total_frp": 102.3,
-      "latitude": 24.0996,
-      "longitude": 82.6373,
-      "avg_frp": 102.3,
-      "risk_level": "SURVEILLANCE",
-      "risk_badge_class": "bg-secondary"
-    }
-  ],
+  "top_facilities": [],
   "regional": {
-    "total_detections": 22,
-    "industrial_fire_count": 1,
-    "industrial_exposure_rate": 4.5,
-    "avg_frp": 70.7,
-    "peak_frp": 124.0,
-    "avg_brightness": 357.5,
-    "peak_brightness": 414.1,
-    "high_confidence_count": 14,
-    "high_confidence_rate": 63.6,
-    "daytime_count": 0,
-    "nighttime_count": 22,
-    "day_percentage": 0.0,
+    "total_detections": 21,
+    "industrial_fire_count": 0,
+    "industrial_exposure_rate": 0.0,
+    "avg_frp": 79.4,
+    "peak_frp": 163.5,
+    "avg_brightness": 364.8,
+    "peak_brightness": 393.9,
+    "high_confidence_count": 15,
+    "high_confidence_rate": 71.4,
+    "daytime_count": 21,
+    "nighttime_count": 0,
+    "day_percentage": 100.0,
     "quadrants": [
       {
         "region": "North-East Zone",
-        "fire_count": 4,
+        "fire_count": 3,
         "industrial_count": 0,
-        "avg_frp": 72.1,
+        "avg_frp": 121.6,
         "dominant_type": "Forest Fire",
         "risk_status": "NORMAL"
       },
       {
         "region": "North-West Zone",
-        "fire_count": 7,
-        "industrial_count": 1,
-        "avg_frp": 54.2,
-        "dominant_type": "Agricultural Burning",
+        "fire_count": 8,
+        "industrial_count": 0,
+        "avg_frp": 66.0,
+        "dominant_type": "Forest Fire",
         "risk_status": "NORMAL"
       },
       {
         "region": "South-East Zone",
-        "fire_count": 7,
+        "fire_count": 8,
         "industrial_count": 0,
         "avg_frp": 68.2,
         "dominant_type": "Forest Fire",
@@ -378,47 +343,47 @@
       },
       {
         "region": "South-West Zone",
-        "fire_count": 4,
+        "fire_count": 2,
         "industrial_count": 0,
-        "avg_frp": 102.5,
+        "avg_frp": 114.8,
         "dominant_type": "Forest Fire",
         "risk_status": "NORMAL"
       }
     ]
   },
   "regional_summary": {
-    "total_detections": 22,
-    "industrial_fire_count": 1,
-    "industrial_exposure_rate": 4.5,
-    "avg_frp": 70.7,
-    "peak_frp": 124.0,
-    "avg_brightness": 357.5,
-    "peak_brightness": 414.1,
-    "high_confidence_count": 14,
-    "high_confidence_rate": 63.6,
-    "daytime_count": 0,
-    "nighttime_count": 22,
-    "day_percentage": 0.0,
+    "total_detections": 21,
+    "industrial_fire_count": 0,
+    "industrial_exposure_rate": 0.0,
+    "avg_frp": 79.4,
+    "peak_frp": 163.5,
+    "avg_brightness": 364.8,
+    "peak_brightness": 393.9,
+    "high_confidence_count": 15,
+    "high_confidence_rate": 71.4,
+    "daytime_count": 21,
+    "nighttime_count": 0,
+    "day_percentage": 100.0,
     "quadrants": [
       {
         "region": "North-East Zone",
-        "fire_count": 4,
+        "fire_count": 3,
         "industrial_count": 0,
-        "avg_frp": 72.1,
+        "avg_frp": 121.6,
         "dominant_type": "Forest Fire",
         "risk_status": "NORMAL"
       },
       {
         "region": "North-West Zone",
-        "fire_count": 7,
-        "industrial_count": 1,
-        "avg_frp": 54.2,
-        "dominant_type": "Agricultural Burning",
+        "fire_count": 8,
+        "industrial_count": 0,
+        "avg_frp": 66.0,
+        "dominant_type": "Forest Fire",
         "risk_status": "NORMAL"
       },
       {
         "region": "South-East Zone",
-        "fire_count": 7,
+        "fire_count": 8,
         "industrial_count": 0,
         "avg_frp": 68.2,
         "dominant_type": "Forest Fire",
@@ -426,9 +391,9 @@
       },
       {
         "region": "South-West Zone",
-        "fire_count": 4,
+        "fire_count": 2,
         "industrial_count": 0,
-        "avg_frp": 102.5,
+        "avg_frp": 114.8,
         "dominant_type": "Forest Fire",
         "risk_status": "NORMAL"
       }
