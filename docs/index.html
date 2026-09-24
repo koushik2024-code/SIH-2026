@@ -449,7 +449,7 @@
                     <div class="hud-chip-icon text-warning"><i class="fas fa-fire"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Avg Fire Power</span>
-                        <span class="hud-chip-value text-warning">96.7 MW</span>
+                        <span class="hud-chip-value text-warning">75.1 MW</span>
                     </div>
                 </div>
 
@@ -458,7 +458,7 @@
                     <div class="hud-chip-icon text-caution"><i class="fas fa-cloud-sun"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Diurnal Split</span>
-                        <span class="hud-chip-value">0☀️ / 24🌙</span>
+                        <span class="hud-chip-value">33☀️ / 0🌙</span>
                     </div>
                 </div>
 
@@ -467,7 +467,7 @@
                     <div class="hud-chip-icon text-success"><i class="fas fa-shield-check"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Confidence Verified</span>
-                        <span class="hud-chip-value text-success">15 Verified (%)</span>
+                        <span class="hud-chip-value text-success">20 Verified (%)</span>
                     </div>
                 </div>
             </div>
@@ -795,7 +795,7 @@
         }
 
         // Pop toast on load ONLY if there is a real, active unacknowledged alert, and suppress repeating across reloads in the same session
-        const initialAlert = {"alert_id": "ALT-F8241D3B", "timestamp": "2026-09-24T03:28:33.517768+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "912d9f73f249116c", "latitude": 20.9475, "longitude": 85.1949, "facility_name": "Talcher Super TPS", "facility_type": "thermal_power_plant", "distance_km": 1.966983365987793, "frp": 90.95, "brightness": 400.68, "confidence": 72.5, "title": "Unusual Thermal Spike at Talcher Super TPS", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (1.97 km from center of Talcher Super TPS). Radiative power reached 91.0 MW with temperature of 400.7 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
+        const initialAlert = {"alert_id": "ALT-54ED7B82", "timestamp": "2026-09-24T11:14:12.547124+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "ccfd66f8e3823902", "latitude": 24.0831, "longitude": 82.6324, "facility_name": "Singrauli Coalfield", "facility_type": "mining", "distance_km": 1.9009436125433767, "frp": 80.54, "brightness": 348.78, "confidence": 67.2, "title": "Unusual Thermal Spike at Singrauli Coalfield", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (1.90 km from center of Singrauli Coalfield). Radiative power reached 80.5 MW with temperature of 348.8 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
         if (initialAlert && initialAlert.status === 'ACTIVE') {
             try {
                 // Check if already acknowledged by operator in localStorage
