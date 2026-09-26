@@ -1,19 +1,19 @@
 {
-  "total_fires": 31,
-  "avg_brightness": 358.2,
-  "avg_frp": 88.2,
-  "high_confidence": 20,
+  "total_fires": 34,
+  "avg_brightness": 364.3,
+  "avg_frp": 75.3,
+  "high_confidence": 23,
   "industrial_count": 0,
-  "daytime_fires": 0,
-  "nighttime_fires": 31,
+  "daytime_fires": 34,
+  "nighttime_fires": 0,
   "fire_type_distribution": {
-    "Forest Fire": 29,
-    "Agricultural Burning": 2
+    "Forest Fire": 25,
+    "Agricultural Burning": 9
   },
   "nearest_facility_distribution": {
-    "oil_refinery": 12,
-    "thermal_power_plant": 11,
-    "gas_flare": 4,
+    "oil_refinery": 16,
+    "thermal_power_plant": 9,
+    "gas_flare": 5,
     "mining": 4
   },
   "date_range": {
