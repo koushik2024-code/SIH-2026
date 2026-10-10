@@ -449,7 +449,7 @@
                     <div class="hud-chip-icon text-warning"><i class="fas fa-fire"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Avg Fire Power</span>
-                        <span class="hud-chip-value text-warning">77.8 MW</span>
+                        <span class="hud-chip-value text-warning">75.3 MW</span>
                     </div>
                 </div>
 
@@ -458,7 +458,7 @@
                     <div class="hud-chip-icon text-caution"><i class="fas fa-cloud-sun"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Diurnal Split</span>
-                        <span class="hud-chip-value">0☀️ / 31🌙</span>
+                        <span class="hud-chip-value">29☀️ / 0🌙</span>
                     </div>
                 </div>
 
@@ -467,7 +467,7 @@
                     <div class="hud-chip-icon text-success"><i class="fas fa-shield-check"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Confidence Verified</span>
-                        <span class="hud-chip-value text-success">25 Verified (%)</span>
+                        <span class="hud-chip-value text-success">19 Verified (%)</span>
                     </div>
                 </div>
             </div>
@@ -795,7 +795,7 @@
         }
 
         // Pop toast on load ONLY if there is a real, active unacknowledged alert, and suppress repeating across reloads in the same session
-        const initialAlert = {"alert_id": "ALT-4CB7B9EC", "timestamp": "2026-10-10T04:38:46.257343+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "101b651abf0385eb", "latitude": 22.365, "longitude": 82.7345, "facility_name": "Korba STPP", "facility_type": "thermal_power_plant", "distance_km": 1.7168132019736555, "frp": 47.31, "brightness": 343.46, "confidence": 87.0, "title": "Unusual Thermal Spike at Korba STPP", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (1.72 km from center of Korba STPP). Radiative power reached 47.3 MW with temperature of 343.5 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
+        const initialAlert = {"alert_id": "ALT-7CE159F0", "timestamp": "2026-10-10T12:00:36.039540+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "cf7669264246934c", "latitude": 22.3461, "longitude": 82.6966, "facility_name": "Korba Coalfield", "facility_type": "mining", "distance_km": 0.5570710203246704, "frp": 55.03, "brightness": 333.26, "confidence": 91.4, "title": "Unusual Thermal Spike at Korba Coalfield", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (0.56 km from center of Korba Coalfield). Radiative power reached 55.0 MW with temperature of 333.3 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
         if (initialAlert && initialAlert.status === 'ACTIVE') {
             try {
                 // Check if already acknowledged by operator in localStorage
