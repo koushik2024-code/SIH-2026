@@ -381,7 +381,7 @@
                 <i class="fas fa-bell"></i> Alerts
                 
                 <span class="nav-counter-pill bg-danger text-light" id="navAlertBadge">
-                    1
+                    2
                 </span>
             </a>
             <a href="reports.html" class="nav-pill-link">
@@ -449,7 +449,7 @@
                     <div class="hud-chip-icon text-warning"><i class="fas fa-fire"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Avg Fire Power</span>
-                        <span class="hud-chip-value text-warning">82.4 MW</span>
+                        <span class="hud-chip-value text-warning">75.5 MW</span>
                     </div>
                 </div>
 
@@ -458,7 +458,7 @@
                     <div class="hud-chip-icon text-caution"><i class="fas fa-cloud-sun"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Diurnal Split</span>
-                        <span class="hud-chip-value">0☀️ / 21🌙</span>
+                        <span class="hud-chip-value">0☀️ / 23🌙</span>
                     </div>
                 </div>
 
@@ -795,7 +795,7 @@
         }
 
         // Pop toast on load ONLY if there is a real, active unacknowledged alert, and suppress repeating across reloads in the same session
-        const initialAlert = {"alert_id": "ALT-DE87E013", "timestamp": "2026-10-31T21:04:48.848300+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "777861c860553df0", "latitude": 22.36, "longitude": 82.7667, "facility_name": "Korba STPP", "facility_type": "thermal_power_plant", "distance_km": 1.7079590033973746, "frp": 83.82, "brightness": 336.65, "confidence": 80.4, "title": "Unusual Thermal Spike at Korba STPP", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (1.71 km from center of Korba STPP). Radiative power reached 83.8 MW with temperature of 336.6 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
+        const initialAlert = {"alert_id": "ALT-5BFEC662", "timestamp": "2026-11-01T04:43:34.320804+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "c5a7222c0314cf44", "latitude": 20.9613, "longitude": 85.2361, "facility_name": "Talcher Coalfield", "facility_type": "mining", "distance_km": 1.4071341911322122, "frp": 106.81, "brightness": 356.13, "confidence": 91.4, "title": "Unusual Thermal Spike at Talcher Coalfield", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (1.41 km from center of Talcher Coalfield). Radiative power reached 106.8 MW with temperature of 356.1 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
         if (initialAlert && initialAlert.status === 'ACTIVE') {
             try {
                 // Check if already acknowledged by operator in localStorage
