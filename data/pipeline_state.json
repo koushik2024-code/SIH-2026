@@ -1,7 +1,7 @@
 {
-  "last_run_timestamp": "2026-11-01T21:45:47.277947",
-  "last_detection_datetime": "2026-11-01 21:45:00",
-  "total_detections_ingested": 7250,
-  "total_runs": 207,
+  "last_run_timestamp": "2026-11-02T04:45:26.005221",
+  "last_detection_datetime": "2026-11-02 04:45:00",
+  "total_detections_ingested": 7274,
+  "total_runs": 208,
   "status": "SUCCESS"
 }
