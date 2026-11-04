@@ -449,7 +449,7 @@
                     <div class="hud-chip-icon text-warning"><i class="fas fa-fire"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Avg Fire Power</span>
-                        <span class="hud-chip-value text-warning">82.7 MW</span>
+                        <span class="hud-chip-value text-warning">70.3 MW</span>
                     </div>
                 </div>
 
@@ -458,7 +458,7 @@
                     <div class="hud-chip-icon text-caution"><i class="fas fa-cloud-sun"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Diurnal Split</span>
-                        <span class="hud-chip-value">28☀️ / 0🌙</span>
+                        <span class="hud-chip-value">0☀️ / 28🌙</span>
                     </div>
                 </div>
 
@@ -467,7 +467,7 @@
                     <div class="hud-chip-icon text-success"><i class="fas fa-shield-check"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Confidence Verified</span>
-                        <span class="hud-chip-value text-success">23 Verified (%)</span>
+                        <span class="hud-chip-value text-success">17 Verified (%)</span>
                     </div>
                 </div>
             </div>
@@ -795,7 +795,7 @@
         }
 
         // Pop toast on load ONLY if there is a real, active unacknowledged alert, and suppress repeating across reloads in the same session
-        const initialAlert = {"alert_id": "ALT-A2BE2E59", "timestamp": "2026-11-04T13:52:37.748879+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "a0f3f8d44a003ca5", "latitude": 20.9403, "longitude": 85.2029, "facility_name": "Talcher Super TPS", "facility_type": "thermal_power_plant", "distance_km": 1.6653177167101647, "frp": 96.63, "brightness": 379.21, "confidence": 72.1, "title": "Unusual Thermal Spike at Talcher Super TPS", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (1.67 km from center of Talcher Super TPS). Radiative power reached 96.6 MW with temperature of 379.2 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
+        const initialAlert = {"alert_id": "ALT-6F217DDF", "timestamp": "2026-11-04T23:17:15.348366+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "09537900b62a2580", "latitude": 22.4692, "longitude": 70.0463, "facility_name": "Jamnagar Refinery (Reliance)", "facility_type": "oil_refinery", "distance_km": 1.183199554503239, "frp": 108.36, "brightness": 401.19, "confidence": 47.5, "title": "Unusual Thermal Spike at Jamnagar Refinery (Reliance)", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (1.18 km from center of Jamnagar Refinery (Reliance)). Radiative power reached 108.4 MW with temperature of 401.2 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
         if (initialAlert && initialAlert.status === 'ACTIVE') {
             try {
                 // Check if already acknowledged by operator in localStorage
