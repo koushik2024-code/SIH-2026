@@ -381,7 +381,7 @@
                 <i class="fas fa-bell"></i> Alerts
                 
                 <span class="nav-counter-pill bg-danger text-light" id="navAlertBadge">
-                    1
+                    2
                 </span>
             </a>
             <a href="reports.html" class="nav-pill-link">
@@ -449,7 +449,7 @@
                     <div class="hud-chip-icon text-warning"><i class="fas fa-fire"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Avg Fire Power</span>
-                        <span class="hud-chip-value text-warning">88.2 MW</span>
+                        <span class="hud-chip-value text-warning">75.2 MW</span>
                     </div>
                 </div>
 
@@ -458,7 +458,7 @@
                     <div class="hud-chip-icon text-caution"><i class="fas fa-cloud-sun"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Diurnal Split</span>
-                        <span class="hud-chip-value">0☀️ / 24🌙</span>
+                        <span class="hud-chip-value">33☀️ / 0🌙</span>
                     </div>
                 </div>
 
@@ -467,7 +467,7 @@
                     <div class="hud-chip-icon text-success"><i class="fas fa-shield-check"></i></div>
                     <div class="hud-chip-content">
                         <span class="hud-chip-label">Confidence Verified</span>
-                        <span class="hud-chip-value text-success">16 Verified (%)</span>
+                        <span class="hud-chip-value text-success">20 Verified (%)</span>
                     </div>
                 </div>
             </div>
@@ -795,7 +795,7 @@
         }
 
         // Pop toast on load ONLY if there is a real, active unacknowledged alert, and suppress repeating across reloads in the same session
-        const initialAlert = {"alert_id": "ALT-10356DC5", "timestamp": "2026-11-18T23:57:41.949910+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "829fa3d1857d8b20", "latitude": 22.3733, "longitude": 82.76, "facility_name": "Korba STPP", "facility_type": "thermal_power_plant", "distance_km": 1.841469865380391, "frp": 97.78, "brightness": 356.37, "confidence": 95.0, "title": "Unusual Thermal Spike at Korba STPP", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (1.84 km from center of Korba STPP). Radiative power reached 97.8 MW with temperature of 356.4 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
+        const initialAlert = {"alert_id": "ALT-67DE6EFC", "timestamp": "2026-11-19T06:49:04.672420+00:00", "trigger_type": "FACILITY_THERMAL_SPIKE", "severity": "CRITICAL", "detection_id": "f3220a9ff9a0ded7", "latitude": 22.4775, "longitude": 70.0544, "facility_name": "Jamnagar Refinery (Reliance)", "facility_type": "oil_refinery", "distance_km": 0.8286721297650039, "frp": 64.59, "brightness": 390.84, "confidence": 93.89999999999999, "title": "Unusual Thermal Spike at Jamnagar Refinery (Reliance)", "description": "Severe thermal energy spike detected directly inside facility hazard perimeter (0.83 km from center of Jamnagar Refinery (Reliance)). Radiative power reached 64.6 MW with temperature of 390.8 K. Potential runaway combustion, reactor venting, or flare malfunction.", "channels_dispatched": ["dashboard", "log", "email", "sms"], "status": "ACTIVE", "acknowledged_at": null, "acknowledged_by": null};
         if (initialAlert && initialAlert.status === 'ACTIVE') {
             try {
                 // Check if already acknowledged by operator in localStorage
